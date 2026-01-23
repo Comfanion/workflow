@@ -13,114 +13,163 @@ metadata:
 ## When to Use
 
 Use this skill when you need to:
-- Conduct stakeholder interviews
-- Extract functional requirements (FR)
-- Extract non-functional requirements (NFR)
-- Discover hidden requirements through questions
+- Gather requirements from stakeholders
+- Document functional and non-functional requirements
+- Create the foundation for PRD
 
-## Interview Technique
+## Template
 
-### Phase 1: Context Discovery
+Use template at: `@.opencode/templates/requirements-template.md`
 
-Ask these questions first:
-1. What problem are we solving?
-2. Who are the users/stakeholders?
-3. What existing systems does this integrate with?
-4. What's the timeline and budget?
-5. What happens if we don't build this?
+## Requirements Document Structure (v2)
 
-### Phase 2: Functional Discovery
+### 1. Header
 
-For each user type:
-1. What actions should they be able to perform?
-2. What are the main workflows?
-3. What data do they need to see/edit?
-4. What are the edge cases?
-5. What errors might occur?
-
-### Phase 3: Quality Attributes (NFR)
-
-Ask about:
-- **Performance**: Expected response times? Concurrent users?
-- **Security**: Authentication? Data sensitivity? Compliance?
-- **Scalability**: Data volume growth? User growth?
-- **Reliability**: Uptime requirements? Recovery time?
-- **Usability**: User expertise level? Accessibility?
-
-### Phase 4: Constraints & Assumptions
-
-Document:
-- Technical constraints (existing systems, languages, platforms)
-- Business constraints (budget, timeline, regulations)
-- Assumptions being made
-
-## Output Format
-
-### Functional Requirements
-
-```markdown
-### FR-001: [Requirement Title]
-
-**Priority:** P0 | P1 | P2
-**Source:** [Stakeholder / Document / Interview]
-**Category:** [Domain area]
-
-**Description:**
-[Clear, unambiguous description of what the system must do]
-
-**Acceptance Criteria:**
-- [ ] [Testable criterion 1]
-- [ ] [Testable criterion 2]
-
-**Dependencies:** [FR-XXX, NFR-XXX]
-**Notes:** [Additional context]
+```yaml
+id: REQ-001
+version: 1.0
+status: draft | approved
+date: {{date}}
+author: {{author}}
 ```
 
-### Non-Functional Requirements
+### 2. Summary
+
+Brief prose explaining:
+- What problem is being solved
+- Who the primary users are
+- Key outcomes expected
+
+### 3. Stakeholders
+
+| Role | Representative | Interest | Influence |
+|------|---------------|----------|-----------|
+| Product Owner | Name | Feature delivery | High |
+| End Users | Segment | Daily usage | High |
+
+### 4. Functional Requirements
+
+**Grouped by domain:**
 
 ```markdown
-### NFR-001: [Requirement Title]
+### Task Management
 
-**Priority:** P0 | P1 | P2
-**Category:** Performance | Security | Scalability | Reliability | Usability
+Core task lifecycle operations.
 
-**Requirement:**
-[Specific, measurable requirement]
+| ID | Requirement | Priority | Source |
+|----|-------------|----------|--------|
+| FR-001 | User can create task | P0 | Team Lead |
 
-**Metric:** [How to measure]
-**Target:** [Specific target value]
+**Business Rules:**
+- One task = one assignee
 
-**Verification Method:** [How to verify compliance]
+**Notes:**
+- Notifications in separate domain
 ```
 
-## Requirement Quality Checklist
+### 5. Non-Functional Requirements
 
-Each requirement must be:
-- [ ] **Specific** - Clear, unambiguous
-- [ ] **Measurable** - Has acceptance criteria or metrics
-- [ ] **Achievable** - Technically feasible
-- [ ] **Relevant** - Tied to business value
-- [ ] **Traceable** - Has unique ID and source
+Separate tables by category:
+- Performance (with metrics)
+- Security
+- Scalability
 
-## Common Anti-patterns to Avoid
+### 6. Constraints
 
-1. **Vague language**: "The system should be fast" → "API response < 200ms p95"
-2. **Missing metrics**: "High availability" → "99.9% uptime"
-3. **Solution masquerading as requirement**: "Use Redis" → "Cache frequently accessed data"
-4. **Missing acceptance criteria**: Always include testable criteria
+| Type | Constraint | Impact |
+|------|------------|--------|
+| Technical | Must use existing auth | Limits options |
+| Timeline | MVP in 3 months | Scope pressure |
 
-## Discovery Questions Bank
+### 7. Assumptions
 
-### For Hidden Requirements
-- "What would make this a failure even if it works correctly?"
-- "Who else needs to be involved that we haven't talked to?"
-- "What reports or dashboards do you need?"
-- "How do you handle this process today?"
+| # | Assumption | Risk if Wrong | Validation |
+|---|------------|---------------|------------|
+| 1 | Users have modern browsers | IE support needed | Analytics |
 
-### For Prioritization
-- "If you could only have 3 features, which would they be?"
-- "What's the minimum needed to go live?"
-- "What's the cost of NOT having this feature?"
+### 8. Dependencies
+
+| Dependency | Type | Owner | Status | Risk |
+|------------|------|-------|--------|------|
+| Auth service | Technical | Platform team | Available | Low |
+
+### 9. Open Questions
+
+| # | Question | Owner | Due | Status |
+|---|----------|-------|-----|--------|
+| 1 | Max file size? | PM | Jan 30 | Open |
+
+### 10. Glossary
+
+| Term | Definition |
+|------|------------|
+| Task | Unit of work assigned to user |
+
+### 11. References
+
+```markdown
+→ PRD: `docs/prd.md`
+→ Stakeholder Interviews: `docs/interviews/`
+```
+
+## Reference Format
+
+Use `→` for all references:
+```markdown
+→ PRD: `docs/prd.md`
+→ FR: `FR-001`
+```
+
+## Requirement Writing Rules
+
+### Good Requirements
+
+| Rule | Good | Bad |
+|------|------|-----|
+| Atomic | User can create task | User can create and edit task |
+| Measurable | Load in < 2s | Load quickly |
+| Testable | Title max 200 chars | Title reasonable length |
+| Unambiguous | Required field | Important field |
+
+### Requirement IDs
+
+- Functional: `FR-001`, `FR-002`, ...
+- Non-Functional: `NFR-001`, `NFR-002`, ...
+
+### Priority
+
+| Level | Meaning | Scope |
+|-------|---------|-------|
+| P0 | Must have | MVP |
+| P1 | Should have | Growth |
+| P2 | Nice to have | Vision |
+
+## Interview Questions
+
+### Functional Discovery
+
+1. What do you need to accomplish?
+2. What information do you need to see?
+3. What actions do you need to take?
+4. What happens when X fails?
+
+### NFR Discovery
+
+1. How many users concurrently?
+2. What response time is acceptable?
+3. What's the data retention policy?
+4. What security standards apply?
+
+## Validation Checklist
+
+- [ ] All stakeholders identified
+- [ ] Requirements grouped by domain
+- [ ] Each requirement is atomic and testable
+- [ ] NFRs have measurable metrics
+- [ ] Constraints documented
+- [ ] Assumptions validated
+- [ ] Dependencies identified with owners
+- [ ] Uses `→` reference format
 
 ## Output
 
@@ -128,5 +177,6 @@ Save to: `docs/requirements/requirements.md`
 
 ## Related Skills
 
-- `prd-writing` - For turning requirements into PRD
-- `requirements-validation` - For validating requirements
+- `prd-writing` - Uses requirements as input
+- `requirements-validation` - Validates requirements
+- `acceptance-criteria` - For testable AC

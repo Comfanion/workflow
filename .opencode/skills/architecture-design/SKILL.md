@@ -28,9 +28,105 @@ Always check project standards: `@CLAUDE.md`
 
 Use template at: `@.opencode/templates/architecture-template.md`
 
+## Architecture Document Structure (v2)
+
+### 1. Executive Summary
+
+Brief prose with:
+- What the system is
+- Architecture pattern + why chosen
+- Key domains with module counts
+- Critical business rules
+- Scale targets
+
+### 2. Decision Summary
+
+| Category | Decision | Rationale |
+|----------|----------|-----------|
+| Architecture | Hexagonal | Organizational standard |
+| Database | PostgreSQL per module | Service isolation |
+
+### 3. System Context
+
+ASCII diagram showing:
+- External systems
+- Main system boundary
+- Internal modules
+- Storage layer
+
+### 4. Modules Overview
+
+For each domain, then each module:
+
+```markdown
+### {{Domain}} ({{N}} modules)
+
+#### {{Module}}
+
+**Purpose:** {{single_responsibility}}
+
+**Internal Services:**
+
+| Service | Responsibilities | Storage |
+|---------|-----------------|---------|
+
+**Database Schema:**
+```
+table_name    # field descriptions
+```
+
+**Events:**
+- **Produces:** Event1, Event2
+- **Consumes:** Event3
+
+**Notes:**
+- Important details
+```
+
+### 5. Data Architecture
+
+| Module | Primary DB | Cache | Other |
+|--------|-----------|-------|-------|
+
+With entity relations diagram.
+
+### 6. Integration
+
+External systems table + internal communication table.
+
+### 7. Cross-Cutting Concerns
+
+- Security (AuthN, AuthZ)
+- Observability (Logging, Metrics, Tracing)
+- Error Handling table
+
+### 8. NFR Compliance
+
+| NFR | Requirement | How Addressed |
+|-----|-------------|---------------|
+
+### 9. References
+
+```
+→ PRD: `docs/prd.md`
+→ ADRs: `docs/architecture/adr/`
+```
+
+## Unit Documentation
+
+For each module/domain/entity, create separate Unit document.
+
+Use: `@.opencode/templates/unit-template.md`
+
+Reference in architecture:
+```
+→ Unit: `catalog`
+→ Unit: `Task`
+```
+
 ## Architecture Principles
 
-### 1. Hexagonal Architecture (Ports & Adapters)
+### Hexagonal Architecture
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -47,33 +143,9 @@ Use template at: `@.opencode/templates/architecture-template.md`
 └─────────────────────────────────────────────────────┘
 
 Dependency Direction: Infrastructure → Application → Domain
-                      (NEVER reverse!)
 ```
 
-### 2. Module Structure
-
-```
-module/
-├── domain/              # Business logic ONLY
-│   ├── aggregate/       # Entities with business rules
-│   ├── valueobject/     # Immutable value objects
-│   ├── service/         # Domain services
-│   ├── repository/      # Repository INTERFACES (ports)
-│   └── event/           # Domain events
-├── application/         # Use cases
-│   └── usecase/
-│       └── CreateEntity/
-│           ├── inport.go    # Interface
-│           ├── dto.go       # Command & Result
-│           ├── handler.go   # Orchestration
-│           └── mappers.go   # Explicit mapping
-└── infrastructure/      # Adapters
-    ├── repo/            # DB implementations
-    ├── http/            # HTTP handlers
-    └── kafka/           # Event publishers
-```
-
-### 3. Module Boundaries
+### Module Boundaries
 
 Each module must have:
 - **Single responsibility** - One business capability
@@ -81,75 +153,17 @@ Each module must have:
 - **Defined interfaces** - API contracts for communication
 - **No cross-module imports** - Communicate via Kafka/HTTP only
 
-## Design Process
+### Reference Format
 
-### Step 1: Identify Bounded Contexts
-
-From PRD, identify:
-1. Major business capabilities
-2. Data ownership boundaries
-3. Team boundaries (Conway's Law)
-
-### Step 2: Define Module Contracts
-
-For each module:
-```yaml
-module: catalog
-responsibility: Product and category management
-owns:
-  - Product
-  - Category
-  - Attribute
-consumes:
-  - merchant.created (from Merchant module)
-produces:
-  - product.created
-  - product.updated
-  - category.created
-api:
-  - POST /api/v1/products
-  - GET /api/v1/products/{id}
-  - GET /api/v1/categories
+Always use `→` prefix:
+```
+→ Unit: `catalog`
+→ FR: `FR-001`
+→ ADR: `ADR-001`
+→ PRD: `docs/prd.md`
 ```
 
-### Step 3: Design Data Model
-
-For each owned entity:
-- Primary key strategy (UUID recommended)
-- Required fields
-- Indexes (for query patterns)
-- Relationships
-- Audit fields (created_at, updated_at, version)
-
-### Step 4: Design Events
-
-For state changes:
-```yaml
-event: product.created
-version: "1.0"
-payload:
-  product_id: uuid
-  merchant_id: uuid
-  name: string
-  created_at: timestamp
-```
-
-### Step 5: Document Decisions (ADRs)
-
-Use skill: `adr-writing`
-
-## NFR Mapping
-
-Map each NFR to architectural solution:
-
-| NFR | Architectural Support |
-|-----|----------------------|
-| Response < 200ms | Caching (Redis), connection pooling |
-| 99.9% availability | K8s HA, health checks, circuit breakers |
-| 1000 RPS | Horizontal scaling, async processing |
-| Data security | TLS, encryption at rest, audit logs |
-
-## Architecture Checklist
+## Validation Checklist
 
 Before completing:
 - [ ] All PRD functional areas have architectural home
@@ -159,25 +173,17 @@ Before completing:
 - [ ] No circular dependencies between modules
 - [ ] Integration points are well-defined
 - [ ] ADRs exist for major decisions
-- [ ] Aligns with CLAUDE.md patterns
-- [ ] Diagrams included (context, container, component)
-
-## Anti-patterns to Avoid
-
-1. **Distributed monolith** - Modules that must deploy together
-2. **Shared database** - Multiple modules accessing same tables
-3. **Circular dependencies** - Module A depends on B depends on A
-4. **God module** - One module doing everything
-5. **Anemic domain** - Business logic in services, not entities
+- [ ] Uses `→` reference format
+- [ ] Unit docs created for key modules
 
 ## Output
 
-Save to: `docs/architecture.md`
+- Main: `docs/architecture.md`
+- Units: `docs/architecture/units/` or inline
+- ADRs: `docs/architecture/adr/`
 
 ## Related Skills
 
 - `adr-writing` - For architecture decisions
-- `data-modeling` - For database design
-- `api-design` - For REST API contracts
-- `event-design` - For Kafka event schemas
+- `unit-writing` - For module/entity documentation
 - `architecture-validation` - For validation

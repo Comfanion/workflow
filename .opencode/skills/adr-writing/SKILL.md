@@ -5,7 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   domain: software-architecture
-  artifacts: docs/architecture/adr/
+  artifacts: docs/architecture/adr/*.md
 ---
 
 # ADR Writing Skill
@@ -15,227 +15,190 @@ metadata:
 Use this skill when you need to:
 - Document a significant architectural decision
 - Record the rationale behind a technical choice
-- Track decision history over time
-- Communicate decisions to the team
+- Create a reference for future developers
+- Track decision evolution over time
 
-## When to Write an ADR
+## Template
 
-Write an ADR when:
-- Choosing between multiple valid approaches
-- Making a decision that affects multiple modules
-- Selecting a technology or framework
-- Defining a pattern to follow consistently
-- Making a trade-off between quality attributes
+Use template at: `@.opencode/templates/adr-template.md`
 
-## ADR Template
+## ADR Structure (v2)
+
+### 1. Header
+
+```yaml
+id: ADR-{{N}}
+status: proposed | accepted | deprecated | superseded
+date: {{date}}
+deciders: [{{names}}]
+supersedes: ADR-{{X}}  # if applicable
+```
+
+### 2. Context
+
+Prose explaining:
+- The situation and problem
+- What decision is needed
+- Why it's needed now
+
+With **Forces:** (tensions/tradeoffs) and **Constraints:**
 
 ```markdown
-# ADR-NNN: [Decision Title]
-
-**Status:** Proposed | Accepted | Deprecated | Superseded by ADR-XXX
-**Date:** YYYY-MM-DD
-**Deciders:** [Names of people involved]
-**Technical Story:** [Link to epic/story if applicable]
-
 ## Context
 
-[Describe the situation that led to this decision. What is the problem?
-What forces are at play? What constraints exist?]
+We need to choose the primary database for the Task module.
 
+We need to decide now because development starts next sprint.
+
+**Forces:**
+- Need ACID transactions — pushes toward relational
+- Team expertise is SQL — reduces risk
+
+**Constraints:**
+- Must run on existing K8s cluster
+```
+
+### 3. Decision
+
+Bold statement + brief explanation:
+
+```markdown
 ## Decision
 
-[State the decision clearly. What are we going to do?]
+**We will use PostgreSQL as the primary database.**
 
+This means all Task module data will be stored in PostgreSQL with JSONB for flexible attributes.
+```
+
+### 4. Options Considered
+
+For each option:
+- Brief description
+- Pros/Cons table
+- Mark chosen with ✓
+
+```markdown
+### Option 1: MongoDB
+
+Document database with flexible schema.
+
+| Pros | Cons |
+|------|------|
+| Flexible schema | No ACID across documents |
+
+### Option 2: PostgreSQL ✓ CHOSEN
+
+Relational database with JSON support.
+
+| Pros | Cons |
+|------|------|
+| ACID transactions | Schema migrations needed |
+| Team expertise | |
+
+**Why chosen:** ACID critical for assignments. Team expertise reduces risk.
+```
+
+### 5. Consequences
+
+Grouped by type:
+- Positive (✓)
+- Negative (✗)
+- Risks (⚠)
+
+```markdown
 ## Consequences
 
 ### Positive
-- [Benefit 1]
-- [Benefit 2]
+- Single deploy = simple CI/CD
+- Team already knows PostgreSQL
 
 ### Negative
-- [Drawback 1]
-- [Drawback 2]
+- Must manage migrations carefully
 
-### Neutral
-- [Side effect that is neither good nor bad]
-
-## Alternatives Considered
-
-### Alternative 1: [Name]
-[Brief description]
-- **Pros:** [advantages]
-- **Cons:** [disadvantages]
-- **Rejected because:** [reason]
-
-### Alternative 2: [Name]
-[Brief description]
-- **Pros:** [advantages]
-- **Cons:** [disadvantages]
-- **Rejected because:** [reason]
-
-## References
-
-- [Link to relevant documentation]
-- [Link to research or benchmarks]
-
-## Notes
-
-[Any additional context, caveats, or follow-up actions]
+### Risks
+- Schema evolution — mitigated by versioned migrations
 ```
 
-## Naming Convention
+### 6. Implementation Notes (optional)
+
+Specific guidance for implementing the decision.
+
+### 7. References
+
+```markdown
+→ Architecture: `docs/architecture.md`
+→ Related ADR: → ADR: `ADR-002`
+→ Affected Units: → Unit: `Task`
+```
+
+## Reference Format
+
+Always use `→` prefix:
+
+```markdown
+→ ADR: `ADR-001`
+→ Unit: `Task`
+→ Architecture: `docs/architecture.md`
+```
+
+## When to Write ADR
+
+| Situation | Write ADR? |
+|-----------|-----------|
+| Database choice | Yes |
+| Framework choice | Yes |
+| Architecture pattern | Yes |
+| API design decision | Yes |
+| Library choice | Maybe (if significant) |
+| Code style decision | No (use coding-standards) |
+
+## ADR Lifecycle
 
 ```
-ADR-NNN-short-description.md
+proposed ──► accepted ──► deprecated
+                │
+                └──► superseded (by new ADR)
+```
+
+When superseding:
+1. Create new ADR
+2. Add `supersedes: ADR-XXX` to new ADR
+3. Update old ADR status to `superseded`
+4. Add `superseded_by: ADR-YYY` to old ADR
+
+## Naming Conventions
+
+### File Names
+
+```
+ADR-[NNN]-[short-title].md
 
 Examples:
-- ADR-001-use-postgresql.md
-- ADR-002-event-driven-integration.md
-- ADR-003-modular-monolith-architecture.md
+- ADR-001-postgresql-database.md
+- ADR-002-hexagonal-architecture.md
 ```
 
-## Status Lifecycle
+### IDs
 
-```
-Proposed → Accepted → (Deprecated | Superseded)
-```
+Sequential: `ADR-001`, `ADR-002`, ...
 
-- **Proposed:** Under discussion
-- **Accepted:** Decision made and in effect
-- **Deprecated:** No longer relevant (system changed)
-- **Superseded:** Replaced by a newer ADR
+## Validation Checklist
 
-## Good ADR Examples
-
-### Example: Database Choice
-
-```markdown
-# ADR-001: Use PostgreSQL as Primary Database
-
-**Status:** Accepted
-**Date:** 2026-01-15
-**Deciders:** Tech Lead, Architect
-
-## Context
-
-We need a primary database for the marketplace system.
-Requirements:
-- ACID transactions for orders
-- Complex queries for product search
-- JSON support for flexible attributes
-- Proven reliability at scale
-
-## Decision
-
-Use PostgreSQL 17+ with AWS RDS.
-
-## Consequences
-
-### Positive
-- Strong ACID guarantees
-- Excellent JSON/JSONB support
-- GIN indexes for full-text search
-- Team expertise exists
-
-### Negative
-- Requires careful schema design
-- Scaling writes is harder than NoSQL
-- AWS RDS costs
-
-## Alternatives Considered
-
-### MySQL
-- Pros: Simpler, cheaper
-- Cons: Weaker JSON support, fewer features
-- Rejected: JSON operations are critical for us
-
-### MongoDB
-- Pros: Flexible schema, easy scaling
-- Cons: No ACID across documents, eventual consistency
-- Rejected: Need strong consistency for orders
-```
-
-### Example: Integration Pattern
-
-```markdown
-# ADR-002: Event-Driven Integration Between Modules
-
-**Status:** Accepted
-**Date:** 2026-01-16
-**Deciders:** Architect, Tech Lead
-
-## Context
-
-Modules need to communicate. Options:
-1. Direct API calls (synchronous)
-2. Event-driven (asynchronous)
-3. Shared database (anti-pattern)
-
-## Decision
-
-Use Kafka for event-driven integration between modules.
-Modules publish domain events, others subscribe.
-
-## Consequences
-
-### Positive
-- Loose coupling between modules
-- Better scalability
-- Natural audit trail
-- Resilient to failures
-
-### Negative
-- Eventual consistency complexity
-- Need idempotent consumers
-- Additional infrastructure (Kafka)
-- Harder to debug
-
-## Alternatives Considered
-
-### Direct HTTP Calls
-- Rejected: Creates tight coupling, cascading failures
-```
-
-## Directory Structure
-
-```
-docs/architecture/adr/
-├── ADR-001-use-postgresql.md
-├── ADR-002-event-driven-integration.md
-├── ADR-003-modular-monolith.md
-├── ADR-004-hexagonal-architecture.md
-└── README.md  # Index of all ADRs
-```
-
-## ADR Index (README.md)
-
-```markdown
-# Architecture Decision Records
-
-| ADR | Title | Status | Date |
-|-----|-------|--------|------|
-| [ADR-001](ADR-001-use-postgresql.md) | Use PostgreSQL | Accepted | 2026-01-15 |
-| [ADR-002](ADR-002-event-driven-integration.md) | Event-driven integration | Accepted | 2026-01-16 |
-| [ADR-003](ADR-003-modular-monolith.md) | Modular monolith | Accepted | 2026-01-17 |
-```
-
-## Quality Checklist
-
-Before finalizing ADR:
 - [ ] Context explains the problem clearly
-- [ ] Decision is stated unambiguously
-- [ ] Consequences include both positive and negative
-- [ ] At least 2 alternatives were considered
-- [ ] Alternatives explain why they were rejected
-- [ ] Status is set correctly
-- [ ] Date and deciders are recorded
+- [ ] Forces describe tensions/tradeoffs
+- [ ] Decision is a clear statement
+- [ ] At least 2 options were considered
+- [ ] Chosen option is marked
+- [ ] Rationale explains why chosen
+- [ ] Consequences include positives AND negatives
+- [ ] Uses `→` reference format
+- [ ] Links to affected units
 
 ## Output
 
-Save to: `docs/architecture/adr/ADR-NNN-description.md`
-Update: `docs/architecture/adr/README.md` (index)
+Save to: `docs/architecture/adr/ADR-[NNN]-[title].md`
 
 ## Related Skills
 
-- `architecture-design` - For overall architecture
-- `architecture-validation` - For validating ADRs exist
+- `architecture-design` - Creates ADRs for decisions
+- `unit-writing` - ADRs affect units
