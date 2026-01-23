@@ -18,7 +18,7 @@ const program = new Command();
 program
   .name('create-opencode-workflow')
   .description('Initialize OpenCode Workflow system for AI-assisted development')
-  .version('3.0.0');
+  .version('3.5.0');
 
 program
   .command('init')
@@ -29,7 +29,7 @@ program
   .option('--stub', 'Use STUB methodology')
   .option('--full', 'Create full repo structure')
   .action(async (options) => {
-    console.log(chalk.blue.bold('\n🚀 OpenCode Workflow v3.0\n'));
+    console.log(chalk.blue.bold('\n🚀 OpenCode Workflow v3.5\n'));
     
     let config = {
       user_name: 'Developer',
@@ -273,7 +273,8 @@ program
 program
   .command('update')
   .description('Update .opencode/ to latest version (preserves config.yaml)')
-  .action(async () => {
+  .option('--no-backup', 'Skip creating backup')
+  .action(async (options) => {
     const spinner = ora('Updating OpenCode Workflow...').start();
     
     try {
@@ -285,18 +286,39 @@ program
       }
       
       const configPath = path.join(targetDir, 'config.yaml');
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      const backupDir = path.join(process.cwd(), `.opencode.backup-${timestamp}`);
       
-      // Backup config
+      // Backup config.yaml content
+      spinner.text = 'Reading config.yaml...';
       const configBackup = await fs.readFile(configPath, 'utf8');
       
-      // Copy new files
-      await fs.copy(OPENCODE_SRC, targetDir, { overwrite: true });
+      // Create full backup (unless --no-backup)
+      if (options.backup !== false) {
+        spinner.text = 'Creating backup...';
+        await fs.copy(targetDir, backupDir);
+      }
       
-      // Restore config
+      // Remove old .opencode directory completely
+      spinner.text = 'Removing old files...';
+      await fs.remove(targetDir);
+      
+      // Copy new files
+      spinner.text = 'Installing new version...';
+      await fs.copy(OPENCODE_SRC, targetDir);
+      
+      // Restore user's config.yaml
+      spinner.text = 'Restoring config.yaml...';
       await fs.writeFile(configPath, configBackup);
       
       spinner.succeed(chalk.green('OpenCode Workflow updated!'));
-      console.log(chalk.yellow('\n✅ Your config.yaml was preserved.\n'));
+      
+      if (options.backup !== false) {
+        console.log(chalk.yellow(`\n📦 Backup created: ${chalk.cyan(`.opencode.backup-${timestamp}/`)}`));
+        console.log(chalk.gray('   You can delete it after verifying the update works.\n'));
+      }
+      
+      console.log(chalk.green('✅ Your config.yaml was preserved.\n'));
       
     } catch (error) {
       spinner.fail(chalk.red('Failed to update'));
