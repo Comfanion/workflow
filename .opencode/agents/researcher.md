@@ -1,16 +1,17 @@
 ---
-description: Conducts technical, market, and domain research with structured documentation
-mode: subagent
-model: anthropic/claude-sonnet-4-20250514
-temperature: 0.3
+description: "Research Specialist - Technical, market, and domain research with structured documentation"
+mode: primary
 tools:
   write: true
   edit: true
   bash: true
   webfetch: true
+  glob: true
+  grep: true
+  read: true
 permission:
   bash:
-    "*": deny
+    "*": ask
     "ls *": allow
     "cat *": allow
     "tree *": allow

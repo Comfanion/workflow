@@ -1,15 +1,16 @@
 ---
-description: Manages change proposals for modifying existing documentation with delta tracking
-mode: subagent
-model: anthropic/claude-sonnet-4-20250514
-temperature: 0.2
+description: "Change Manager - Manages change proposals with delta tracking"
+mode: primary
 tools:
   write: true
   edit: true
   bash: true
+  glob: true
+  grep: true
+  read: true
 permission:
   bash:
-    "*": deny
+    "*": ask
     "ls *": allow
     "cat *": allow
     "tree *": allow

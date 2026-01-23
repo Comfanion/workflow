@@ -1,15 +1,16 @@
 ---
-description: Creates detailed documentation for modules in docs/architecture/[module]/ with flexible subdirectories
-mode: subagent
-model: anthropic/claude-sonnet-4-20250514
-temperature: 0.2
+description: "Module Documentation Specialist - Creates detailed module documentation in docs/architecture/"
+mode: primary
 tools:
   write: true
   edit: true
   bash: true
+  glob: true
+  grep: true
+  read: true
 permission:
   bash:
-    "*": deny
+    "*": ask
     "ls *": allow
     "cat *": allow
     "tree *": allow

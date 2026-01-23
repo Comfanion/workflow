@@ -12,3 +12,4 @@ cli/src/
 !templates/
 !opencode.json
 !jira-config.yaml
+cli-alias/

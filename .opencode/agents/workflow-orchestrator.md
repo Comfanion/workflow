@@ -1,20 +1,20 @@
 ---
-description: Orchestrates the documentation workflow, suggests next steps, detects issues
-mode: subagent
-model: anthropic/claude-sonnet-4-20250514
-temperature: 0.2
+description: "Workflow Orchestrator - Suggests next steps, detects issues, tracks progress"
+mode: primary
 tools:
   write: true
   edit: true
   bash: true
+  glob: true
+  grep: true
+  read: true
 permission:
   bash:
-    "*": deny
+    "*": ask
     "ls *": allow
     "cat *": allow
     "tree *": allow
     "wc -l *": allow
-    "grep *": allow
     "find *": allow
 ---
 
