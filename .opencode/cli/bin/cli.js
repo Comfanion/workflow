@@ -18,7 +18,7 @@ const program = new Command();
 program
   .name('create-opencode-workflow')
   .description('Initialize OpenCode Workflow system for AI-assisted development')
-  .version('3.5.1');
+  .version('3.6.0');
 
 program
   .command('init')
@@ -29,16 +29,81 @@ program
   .option('--stub', 'Use STUB methodology')
   .option('--full', 'Create full repo structure')
   .action(async (options) => {
-    console.log(chalk.blue.bold('\n🚀 OpenCode Workflow v3.5\n'));
+    console.log(chalk.blue.bold('\n🚀 OpenCode Workflow v3.6\n'));
     
+    const targetDir = path.join(process.cwd(), '.opencode');
+    const existingConfigPath = path.join(targetDir, 'config.yaml');
+    
+    // Default config
     let config = {
       user_name: 'Developer',
       communication_language: 'Ukrainian',
       methodology: 'tdd',
       jira_enabled: false,
+      jira_url: 'https://your-domain.atlassian.net',
+      jira_project: 'PROJ',
       create_repo_structure: false,
       project_name: path.basename(process.cwd())
     };
+    
+    // Check if .opencode/ already exists
+    let isUpdate = false;
+    if (await fs.pathExists(targetDir)) {
+      // Try to read existing config
+      if (await fs.pathExists(existingConfigPath)) {
+        try {
+          const existingContent = await fs.readFile(existingConfigPath, 'utf8');
+          
+          // Parse existing values
+          const nameMatch = existingContent.match(/user_name:\s*"([^"]+)"/);
+          const langMatch = existingContent.match(/communication_language:\s*"([^"]+)"/);
+          const methMatch = existingContent.match(/methodology:\s*(tdd|stub)/);
+          const jiraMatch = existingContent.match(/jira:[\s\S]*?enabled:\s*(true|false)/);
+          const jiraUrlMatch = existingContent.match(/base_url:\s*"([^"]+)"/);
+          const jiraProjMatch = existingContent.match(/project_key:\s*"([^"]+)"/);
+          
+          if (nameMatch) config.user_name = nameMatch[1];
+          if (langMatch) config.communication_language = langMatch[1];
+          if (methMatch) config.methodology = methMatch[1];
+          if (jiraMatch) config.jira_enabled = jiraMatch[1] === 'true';
+          if (jiraUrlMatch) config.jira_url = jiraUrlMatch[1];
+          if (jiraProjMatch) config.jira_project = jiraProjMatch[1];
+          
+          isUpdate = true;
+        } catch (e) {
+          // Could not parse, use defaults
+        }
+      }
+      
+      console.log(chalk.yellow('.opencode/ already exists'));
+      
+      if (isUpdate) {
+        console.log(chalk.gray(`  Found config: ${config.user_name}, ${config.communication_language}, ${config.methodology.toUpperCase()}\n`));
+      }
+      
+      const { action } = await inquirer.prompt([{
+        type: 'list',
+        name: 'action',
+        message: 'What would you like to do?',
+        choices: [
+          { name: 'Update files only (keep my settings)', value: 'update' },
+          { name: 'Reconfigure (change settings)', value: 'reconfigure' },
+          { name: 'Cancel', value: 'cancel' }
+        ],
+        default: 'update'
+      }]);
+      
+      if (action === 'cancel') {
+        console.log(chalk.yellow('\nAborted.\n'));
+        process.exit(0);
+      }
+      
+      if (action === 'update') {
+        // Use existing config, skip prompts
+        options.yes = true;
+      }
+      // If 'reconfigure', continue to prompts with existing values as defaults
+    }
 
     if (!options.yes) {
       const answers = await inquirer.prompt([
@@ -53,7 +118,7 @@ program
           name: 'communication_language',
           message: 'Communication language:',
           choices: ['Ukrainian', 'English'],
-          default: 'Ukrainian'
+          default: config.communication_language
         },
         {
           type: 'list',
@@ -63,27 +128,27 @@ program
             { name: 'TDD - Test-Driven Development (write tests first)', value: 'tdd' },
             { name: 'STUB - Stub-First Development (write stubs, then implement)', value: 'stub' }
           ],
-          default: options.tdd ? 'tdd' : (options.stub ? 'stub' : 'tdd')
+          default: options.tdd ? 'tdd' : (options.stub ? 'stub' : config.methodology)
         },
         {
           type: 'confirm',
           name: 'jira_enabled',
           message: 'Enable Jira integration?',
-          default: options.jira || false
+          default: options.jira || config.jira_enabled
         },
         {
           type: 'input',
           name: 'jira_url',
           message: 'Jira URL:',
           when: (answers) => answers.jira_enabled,
-          default: 'https://your-domain.atlassian.net'
+          default: config.jira_url
         },
         {
           type: 'input',
           name: 'jira_project',
           message: 'Jira project key:',
           when: (answers) => answers.jira_enabled,
-          default: 'PROJ'
+          default: config.jira_project
         },
         {
           type: 'confirm',
@@ -105,35 +170,18 @@ program
     const spinner = ora('Initializing OpenCode Workflow...').start();
 
     try {
-      const targetDir = path.join(process.cwd(), '.opencode');
-      
-      // Check if already exists
-      let existingConfig = null;
+      // If updating, create backup and remove old directory
       if (await fs.pathExists(targetDir)) {
-        spinner.warn(chalk.yellow('.opencode/ already exists'));
-        const { overwrite } = await inquirer.prompt([{
-          type: 'confirm',
-          name: 'overwrite',
-          message: 'Overwrite existing .opencode/?',
-          default: false
-        }]);
-        
-        if (!overwrite) {
-          console.log(chalk.yellow('\nAborted. Use `update` command to update existing installation.\n'));
-          process.exit(0);
-        }
-        
-        // Create backup and remove old directory
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
         const backupDir = path.join(process.cwd(), `.opencode.backup-${timestamp}`);
         
-        spinner.start('Creating backup...');
+        spinner.text = 'Creating backup...';
         await fs.copy(targetDir, backupDir);
         
         spinner.text = 'Removing old .opencode/...';
         await fs.remove(targetDir);
         
-        console.log(chalk.yellow(`\n📦 Backup created: ${chalk.cyan(`.opencode.backup-${timestamp}/`)}`));
+        console.log(chalk.yellow(`\n📦 Backup: ${chalk.cyan(`.opencode.backup-${timestamp}/`)}`));
       }
       
       spinner.start('Copying OpenCode Workflow files...');
