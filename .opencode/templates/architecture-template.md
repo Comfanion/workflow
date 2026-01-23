@@ -1,362 +1,212 @@
-# [Project Name] - Architecture Document
+# {{project}} — Architecture
 
-**Author:** [Name]
-**Date:** [YYYY-MM-DD]
-**Version:** [X.Y]
-**Status:** Draft | Review | Approved
+```yaml
+id: ARCH-001
+version: 1.0
+status: draft | approved
+date: {{date}}
+author: {{author}}
+```
 
 ---
 
-## Architecture Overview
+## Executive Summary
 
-### System Context
+{{project}} is a {{type}} for {{purpose}}. The system handles {{core_capabilities}}.
 
-[High-level description of system boundaries and external actors]
+**Architecture Pattern:** {{pattern}} — {{why_this_pattern}}
 
-```
-                    ┌─────────────────────────────────────────┐
-                    │           External Systems              │
-                    │  ┌─────────┐  ┌─────────┐  ┌─────────┐ │
-                    │  │  PIM    │  │   DAX   │  │ Payment │ │
-                    │  └────┬────┘  └────┬────┘  └────┬────┘ │
-                    └───────┼────────────┼────────────┼──────┘
-                            │            │            │
-                    ┌───────▼────────────▼────────────▼──────┐
-                    │              API Gateway                │
-                    └───────────────────┬────────────────────┘
-                                        │
-                    ┌───────────────────▼────────────────────┐
-                    │            Your System                  │
-                    │  ┌─────────┐  ┌─────────┐  ┌─────────┐ │
-                    │  │Module A │  │Module B │  │Module C │ │
-                    │  └─────────┘  └─────────┘  └─────────┘ │
-                    └─────────────────────────────────────────┘
-```
+**Key Domains:**
+1. **{{domain_1}}** ({{modules_count}} modules) — {{description}}
+2. **{{domain_2}}** ({{modules_count}} modules) — {{description}}
 
-### Architecture Style
+**Critical Business Rules:**
+- {{rule_1}}
+- {{rule_2}}
 
-| Aspect | Choice | Rationale |
-|--------|--------|-----------|
-| Overall | Modular Monolith / Microservices | [Why] |
-| Communication | REST + Kafka Events | [Why] |
-| Data | PostgreSQL + Redis | [Why] |
-| Deployment | Kubernetes | [Why] |
+**Scale:**
+- **MVP:** {{scale}}
+- **Growth:** {{scale}}
 
-### Key Decisions Summary
+<!-- e.g.
+TaskFlow is a task management platform for distributed teams.
 
-| Decision | Choice | ADR |
-|----------|--------|-----|
-| [Decision 1] | [Choice] | ADR-001 |
-| [Decision 2] | [Choice] | ADR-002 |
+**Architecture Pattern:** Modular Monolith with Hexagonal Architecture — enables independent scaling while keeping deployment simple
+
+**Key Domains:**
+1. **Task Domain** (2 modules) — Task CRUD, assignments, status workflow
+2. **Team Domain** (2 modules) — Users, roles, permissions
+
+**Critical Business Rules:**
+- One task = one assignee (no shared ownership)
+- Status transitions: todo → in_progress → done
+-->
 
 ---
 
-## Module/Service Architecture
+## Decision Summary
 
-### [Module 1 Name]
+| Category | Decision | Rationale |
+|----------|----------|-----------|
+| Architecture | {{decision}} | {{why}} |
+| Database | {{decision}} | {{why}} |
+| Communication | {{decision}} | {{why}} |
 
-**Responsibility:** [Single responsibility description]
-
-#### Boundaries
-
-| Aspect | Details |
-|--------|---------|
-| **Owns** | [Entities/data this module owns] |
-| **Consumes** | [Events/APIs it consumes from other modules] |
-| **Produces** | [Events/APIs it produces for other modules] |
-
-#### Internal Structure
-
-```
-module-name/
-├── domain/              # Business logic (NO infrastructure imports!)
-│   ├── aggregate/       # Entities with business rules
-│   │   └── entity.go
-│   ├── valueobject/     # Immutable value objects
-│   │   └── entity_id.go
-│   ├── service/         # Domain services
-│   └── repository/      # Repository INTERFACES (ports)
-│       └── entity_repository.go
-├── application/         # Use cases (orchestration)
-│   └── usecase/
-│       └── CreateEntity/
-│           ├── inport.go    # Interface
-│           ├── dto.go       # Command & Result
-│           ├── handler.go   # Orchestration
-│           └── mappers.go   # Explicit mapping
-└── infrastructure/      # Adapters (implements ports)
-    ├── repo/            # Database implementations
-    ├── http/            # HTTP handlers, routes
-    └── kafka/           # Event bus implementations
-```
-
-#### API Endpoints
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | /api/v1/entities | Create entity | JWT |
-| GET | /api/v1/entities/{id} | Get entity | JWT |
-| PUT | /api/v1/entities/{id} | Update entity | JWT |
-
-#### Events
-
-| Event | Direction | Description |
-|-------|-----------|-------------|
-| entity.created | Produces | When entity is created |
-| other.event | Consumes | Triggers action X |
+<!-- e.g.
+| Architecture | Hexagonal (Ports & Adapters) | Organizational standard |
+| Database | PostgreSQL per module | Service isolation |
+| Communication | REST sync + Kafka async | REST for queries, Kafka for events |
+-->
 
 ---
 
-### [Module 2 Name]
+## System Context
 
-**Responsibility:** [Single responsibility description]
+```
+     {{external_1}}        {{external_2}}
+          │                     │
+          ▼                     ▼
+┌─────────────────────────────────────────┐
+│              {{project}}                 │
+│                                          │
+│   ┌─────────┐  ┌─────────┐  ┌─────────┐ │
+│   │{{mod_1}}│  │{{mod_2}}│  │{{mod_3}}│ │
+│   └─────────┘  └─────────┘  └─────────┘ │
+│                                          │
+└─────────────────────────────────────────┘
+          │                     │
+          ▼                     ▼
+     {{storage_1}}         {{storage_2}}
+```
 
-[Same structure as above...]
+---
+
+## Modules Overview
+
+### {{Domain_1}} ({{N}} modules)
+
+#### {{Module_1}}
+
+**Purpose:** {{single_responsibility}}
+
+**Internal Services:**
+
+| Service | Responsibilities | Storage |
+|---------|-----------------|---------|
+| {{service}} | {{what_it_does}} | {{db}} |
+| {{service}} | {{what_it_does}} | {{db}} |
+
+**Database Schema:**
+```
+{{table_1}}    # {{fields_description}}
+{{table_2}}    # {{fields_description}}
+```
+
+**Events:**
+- **Produces:** {{event_1}}, {{event_2}}
+- **Consumes:** {{event_1}}
+
+**Notes:**
+- {{important_detail}}
+
+<!-- e.g.
+#### Task Module
+
+**Purpose:** Task lifecycle management — CRUD, assignments, status transitions
+
+**Internal Services:**
+
+| Service | Responsibilities | Storage |
+|---------|-----------------|---------|
+| tasks | Task CRUD, validation | PostgreSQL |
+| assignments | User-task linking | PostgreSQL |
+| workflow | Status transitions | PostgreSQL |
+
+**Database Schema:**
+```
+tasks           # id, title, description, status, assignee_id, due_date
+task_history    # task_id, field, old_value, new_value, changed_at
+```
+
+**Events:**
+- **Produces:** TaskCreated, TaskUpdated, TaskAssigned, StatusChanged
+- **Consumes:** UserDeactivated (to reassign tasks)
+
+**Notes:**
+- Status flow: todo → in_progress → done (configurable per workspace)
+-->
 
 ---
 
 ## Data Architecture
 
-### Database Design
+### Storage by Module
 
-#### [Table 1 Name]
+| Module | Primary DB | Cache | Other |
+|--------|-----------|-------|-------|
+| {{module}} | {{db}} | {{cache}} | {{other}} |
 
-```sql
-CREATE TABLE entities (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    status VARCHAR(50) NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    version INTEGER NOT NULL DEFAULT 1  -- Optimistic locking
-);
-
--- Indexes
-CREATE INDEX idx_entities_status ON entities(status);
-CREATE INDEX idx_entities_name_trgm ON entities USING gin(name gin_trgm_ops);
-```
-
-#### Entity Relationship Diagram
+### Key Entity Relations
 
 ```
-┌──────────────┐       ┌──────────────┐
-│   Entity A   │       │   Entity B   │
-├──────────────┤       ├──────────────┤
-│ id (PK)      │──────<│ entity_a_id  │
-│ name         │       │ id (PK)      │
-│ status       │       │ data         │
-└──────────────┘       └──────────────┘
-```
-
-### Data Flow
-
-```
-[External] → [API Gateway] → [Module A] → [Database]
-                                │
-                                ▼
-                          [Kafka Topic]
-                                │
-                                ▼
-                          [Module B] → [External System]
-```
-
-### Event Schema
-
-#### entity.created
-
-```json
-{
-  "event_type": "entity.created",
-  "version": "1.0",
-  "timestamp": "2026-01-23T10:00:00Z",
-  "correlation_id": "uuid",
-  "payload": {
-    "entity_id": "uuid",
-    "name": "string",
-    "created_by": "uuid"
-  }
-}
+{{entity_1}} ──< {{entity_2}}
+      │
+      └──── {{entity_3}}
 ```
 
 ---
 
-## Integration Architecture
+## Integration
 
 ### External Systems
 
-| System | Type | Protocol | Data Exchanged | Frequency |
-|--------|------|----------|----------------|-----------|
-| [System 1] | Inbound | REST API | Product data | On-demand |
-| [System 2] | Outbound | Kafka | Order events | Real-time |
-| [System 3] | Sync | REST API | Inventory levels | Every 5 min |
+| System | Protocol | Direction | Purpose |
+|--------|----------|-----------|---------|
+| {{system}} | {{protocol}} | In/Out | {{purpose}} |
 
-### API Contracts
+**Notes:**
+- {{integration_detail}}
 
-#### [External API 1]
+### Internal Communication
 
-**Base URL:** https://external-system.com/api/v1
-**Authentication:** API Key in header
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| /resources | GET | Fetch resources |
-| /resources | POST | Create resource |
+| From | To | Method | When |
+|------|-----|--------|------|
+| {{module}} | {{module}} | {{REST/Kafka}} | {{trigger}} |
 
 ---
 
 ## Cross-Cutting Concerns
 
 ### Security
-
 | Concern | Implementation |
 |---------|---------------|
-| Authentication | JWT tokens via API Gateway |
-| Authorization | Role-based (RBAC) |
-| Data Protection | TLS 1.3, AES-256 at rest |
-| Secrets | HashiCorp Vault |
+| AuthN | {{approach}} |
+| AuthZ | {{approach}} |
 
 ### Observability
-
-| Concern | Tool | Implementation |
-|---------|------|----------------|
-| Logging | Loki + zerolog | Structured JSON logs |
-| Metrics | VictoriaMetrics | Prometheus exposition |
-| Tracing | Tempo | OpenTelemetry |
-| Profiling | Pyroscope | Continuous profiling |
+- **Logging:** {{tool}}
+- **Metrics:** {{tool}}
+- **Tracing:** {{tool}}
 
 ### Error Handling
-
-| Error Type | HTTP Code | Strategy |
-|------------|-----------|----------|
-| Validation | 400 | Return structured errors |
+| Error Type | HTTP | Strategy |
+|------------|------|----------|
+| Validation | 400 | Return field errors |
 | Not Found | 404 | Return with message |
-| Business Rule | 422 | Return with error code |
-| Internal | 500 | Log + correlation ID |
-| External Failure | 503 | Circuit breaker + retry |
-
----
-
-## Architecture Decision Records (ADRs)
-
-### ADR-001: [Decision Title]
-
-**Status:** Accepted | Superseded | Deprecated
-**Date:** YYYY-MM-DD
-**Deciders:** [Names]
-
-**Context:**
-[Why this decision was needed - the problem or requirement]
-
-**Decision:**
-[What was decided - the chosen solution]
-
-**Consequences:**
-- **Positive:** [Benefits]
-- **Negative:** [Trade-offs]
-- **Risks:** [What could go wrong]
-
-**Alternatives Considered:**
-1. [Alternative 1] - Rejected because [reason]
-2. [Alternative 2] - Rejected because [reason]
-
----
-
-### ADR-002: [Decision Title]
-
-[Same structure...]
+| Business Rule | 422 | Return error code |
 
 ---
 
 ## NFR Compliance
 
-| NFR ID | Requirement | Architectural Support |
-|--------|-------------|----------------------|
-| NFR-001 | Response time < 200ms | Caching, connection pooling |
-| NFR-002 | 99.9% availability | K8s HA, health checks |
-| NFR-003 | 1000 RPS throughput | Horizontal scaling |
-| NFR-010 | Data encryption | TLS + encryption at rest |
-
----
-
-## Deployment Architecture
-
-### Infrastructure
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Kubernetes Cluster                       │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │                    Namespace: prod                    │   │
-│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐     │   │
-│  │  │  Service A │  │  Service B │  │  Service C │     │   │
-│  │  │  (3 pods)  │  │  (3 pods)  │  │  (2 pods)  │     │   │
-│  │  └────────────┘  └────────────┘  └────────────┘     │   │
-│  └──────────────────────────────────────────────────────┘   │
-│                                                              │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │                External Services                      │   │
-│  │  PostgreSQL (RDS)    Kafka (MSK)    Redis (Elasticache)│ │
-│  └──────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Scaling Strategy
-
-| Service | Min Pods | Max Pods | Scaling Metric |
-|---------|----------|----------|----------------|
-| Service A | 3 | 10 | CPU > 70% |
-| Service B | 3 | 8 | RPS > 500 |
-
----
-
-## Risks & Technical Debt
-
-| Item | Type | Impact | Mitigation Plan | Owner |
-|------|------|--------|-----------------|-------|
-| [Item 1] | Risk | High | [Plan] | [Name] |
-| [Item 2] | Tech Debt | Medium | [Plan] | [Name] |
-
----
-
-## Diagrams
-
-### C4 - Container Diagram
-
-[Link to diagram or embedded]
-
-### Sequence Diagram - [Flow Name]
-
-```
-┌─────┐     ┌─────┐     ┌─────┐     ┌─────┐
-│Client│     │ API │     │Svc A│     │ DB  │
-└──┬──┘     └──┬──┘     └──┬──┘     └──┬──┘
-   │  request  │           │           │
-   │──────────>│           │           │
-   │           │  forward  │           │
-   │           │──────────>│           │
-   │           │           │   query   │
-   │           │           │──────────>│
-   │           │           │   result  │
-   │           │           │<──────────│
-   │           │  response │           │
-   │           │<──────────│           │
-   │  response │           │           │
-   │<──────────│           │           │
-```
+| NFR | Requirement | How Addressed |
+|-----|-------------|---------------|
+| NFR-001 | {{requirement}} | {{solution}} |
 
 ---
 
 ## References
 
-- CLAUDE.md - Coding standards and patterns
-- PRD - Product requirements
-- docs/architecture/adr/ - All ADRs
-
----
-
-## Revision History
-
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 0.1 | YYYY-MM-DD | [Name] | Initial draft |
-| 1.0 | YYYY-MM-DD | [Name] | Approved |
+→ PRD: `{{path}}`
+→ ADRs: `{{path}}`
+→ Diagrams: `{{path}}`

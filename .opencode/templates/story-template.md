@@ -1,148 +1,206 @@
----
-stepsCompleted: []
-inputDocuments: []
-workflowType: 'story'
----
+# Story {{E}}.{{N}}: {{title}}
 
-# Story {{epic_number}}.{{story_number}}: {{story_title}}
-
-**Story ID:** {{module}}-S{{epic_number}}-{{story_number}}
-**Epic:** {{module}}-E{{epic_number}} - {{epic_title}}
-**Status:** draft | ready-for-dev | in-progress | review | done
-**Size:** XS | S | M | L | XL
-
----
-
-## Prerequisites (PM reads before writing tasks)
-
-<!-- ⚠️ MANDATORY: Read these docs before writing tasks! -->
-
-- [ ] `AGENTS.md` / `CLAUDE.md` - coding patterns, naming, error handling
-- [ ] `docs/coding-standards/` - detailed coding standards
-- [ ] `docs/architecture/{{module}}/` - module architecture, data model
-- [ ] Existing code in `src/services/{{module}}/` - patterns to follow
+```yaml
+id: {{PREFIX}}-S{{E}}-{{N}}
+epic: {{PREFIX}}-E{{E}}
+status: draft | ready | in_progress | review | done
+size: S | M | L
+```
 
 ---
 
 ## Goal
 
-{{Short description - 1-2 sentences. What this story achieves. Same as in epic's stories table.}}
+{{one_sentence_describing_what_user_or_system_can_do_after_this}}
+
+**Context:** This story is part of Epic {{E}} ({{epic_title}}). It focuses on {{specific_aspect}}.
+
+**Out of Scope:**
+- {{what_this_story_does_NOT_do}}
+
+<!-- e.g.
+Implement CRUD operations for Task entity following hexagonal architecture.
+
+**Context:** This story is part of Epic 1 (Task Management Core). It focuses on the domain layer and repository.
+
+**Out of Scope:**
+- HTTP handlers (separate story)
+- Notifications (separate epic)
+-->
+
+---
+
+## Units Affected
+
+| Unit | Action | Description |
+|------|--------|-------------|
+| → Unit: `{{unit}}` | Create | {{what_is_created}} |
+| → Unit: `{{unit}}` | Modify | {{what_changes}} |
+
+---
+
+## Required Reading
+
+**Before starting, read these documents:**
+
+| Document | Section | Why |
+|----------|---------|-----|
+| → `CLAUDE.md` | All | Project patterns, conventions |
+| → `docs/coding-standards/` | All | **MANDATORY** — code style, patterns |
+| → Unit: `{{unit}}` | Data Model | Field definitions, constraints |
+| → `docs/architecture.md` | {{module}} Module | Service structure, events |
+| → Epic: `{{epic_path}}` | Technical Decisions | ADRs for this epic |
+
+<!-- e.g.
+| → `CLAUDE.md` | All | Project patterns, naming |
+| → `docs/coding-standards/` | All | **MANDATORY** — hexagonal, error handling |
+| → Unit: `Task` | Data Model, Operations | Fields, validation rules |
+| → `docs/architecture.md` | Task Module | Internal services, events |
+| → `docs/architecture.md#error-handling` | Error Handling | Error codes format |
+-->
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] {{criterion_1}}
-- [ ] {{criterion_2}}
-- [ ] {{criterion_3}}
-- [ ] All tests pass
-- [ ] No linting errors
+Story is complete when:
+- [ ] {{user_can_or_system_does}}
+- [ ] {{edge_case_handled}}
+- [ ] {{error_case_handled}}
+- [ ] Tests pass (unit + integration)
+- [ ] Follows coding-standards
+- [ ] No lint errors
+
+<!-- e.g.
+- [ ] User can create task with title and description
+- [ ] Empty title returns validation error (400, TASK_001)
+- [ ] Task ID is UUID format
+- [ ] Tests cover: create, validation, duplicate handling
+- [ ] Code follows hexagonal architecture from coding-standards
+-->
 
 ---
 
 ## Tasks
 
-| ID | Task | Deps | Status |
-|----|------|------|--------|
-| T1 | {{task_1_name}} | - | ⬜ |
-| T2 | {{task_2_name}} | T1 | ⬜ |
-| T3 | {{task_3_name}} | T2 | ⬜ |
-
-**Status:** ⬜ TODO | 🔄 IN_PROGRESS | ✅ DONE | ⏸️ BLOCKED
+| # | Task | Output | Status |
+|---|------|--------|--------|
+| T1 | {{task}} | `{{file_path}}` | ⬜ |
+| T2 | {{task}} | `{{file_path}}` | ⬜ |
+| T3 | {{task}} | `{{file_path}}` | ⬜ |
 
 ---
 
-### T1: {{task_1_name}}
+### T1: {{task_name}}
 
-**Goal:** {{what_this_task_achieves}}
+**Goal:** {{what_this_achieves}}
 
-**Documentation:**
-- [AGENTS.md#section](../../../AGENTS.md#section) - {{what_pattern}}
-- [data-model.md#table](../../../docs/data-model.md#section) - {{schema_info}}
-- [existing_example.go](../path/to/example.go) - Pattern to follow
+**Read First:**
+| Document | Section | What to Look For |
+|----------|---------|------------------|
+| → `docs/coding-standards/` | Naming | Struct/method naming |
+| → `docs/coding-standards/` | Validation | Validation patterns |
+| → Unit: `{{unit}}` | Data Model | All fields and types |
+| → `{{existing_code_path}}` | Example | Similar implementation |
 
-**Input (Prerequisites):**
-- {{what_must_exist_before_starting}}
-- Existing file: `path/to/dependency.go` - provides {{what}}
+**Output Files:**
+- `{{path/to/file}}`
+- `{{path/to/file}}_test.go`
 
-**Output (Deliverables):**
-- `path/to/new_file.go` - {{description}}
-- `path/to/new_file_test.go` - Tests for {{what}}
+**Approach:**
+1. {{step}}
+2. {{step}}
+3. Write tests: {{test_cases}}
 
-**Implementation Steps:**
-1. Read documentation links above
-2. {{step_2}}
-3. {{step_3}}
-4. Write tests covering: happy path, errors, edge cases
-5. Run: `go test ./path/to/...`
+**Done when:**
+- [ ] {{specific_criterion}}
+- [ ] Follows patterns from coding-standards
+- [ ] Tests pass
 
-**Acceptance Criteria:**
-- [ ] Files created at specified paths
-- [ ] Follows patterns from AGENTS.md
-- [ ] Tests pass: `go test ./path/to/...`
-- [ ] Lint passes: `golangci-lint run`
+<!-- e.g.
+### T1: Domain Model
 
-**Notes:** {{additional_context_or_gotchas}}
+**Goal:** Define Task entity with validation logic
+
+**Read First:**
+| Document | Section | What to Look For |
+|----------|---------|------------------|
+| → `docs/coding-standards/` | Domain Layer | Entity patterns |
+| → `docs/coding-standards/` | Validation | How to validate |
+| → `docs/coding-standards/` | Errors | Error types, codes |
+| → Unit: `Task` | Data Model | All fields |
+| → `internal/user/domain/user.go` | Example | Similar entity |
+
+**Output Files:**
+- `internal/task/domain/task.go`
+- `internal/task/domain/task_test.go`
+
+**Approach:**
+1. Create Task struct with fields from Unit doc
+2. Add NewTask() constructor with validation
+3. Add Validate() method
+4. Write tests: valid task, empty title, invalid status
+
+**Done when:**
+- [ ] Task struct matches Unit data model
+- [ ] Validation follows coding-standards patterns
+- [ ] Error codes match architecture.md#error-handling
+- [ ] Tests cover happy path + all error cases
+-->
 
 ---
 
-### T2: {{task_2_name}}
+### T2: {{task_name}}
 
-**Goal:** {{what_this_task_achieves}}
+**Goal:** {{what_this_achieves}}
 
-**Documentation:**
-- [AGENTS.md#section](link) - {{pattern}}
-- [T1 output](../path/from/T1) - Uses types from T1
+**Depends on:** T1
 
-**Input (Prerequisites):**
-- T1 completed
-- Files from T1: `path/to/aggregate.go`
+**Read First:**
+| Document | Section | What to Look For |
+|----------|---------|------------------|
+| → `docs/coding-standards/` | Repository | Interface patterns |
+| → `docs/coding-standards/` | Database | SQLC usage |
+| → `{{similar_repo_path}}` | Example | Query patterns |
 
-**Output (Deliverables):**
-- `path/to/file.go` - {{description}}
-- `path/to/file_test.go` - Tests
+**Output Files:**
+- `{{path}}`
 
-**Implementation Steps:**
+**Approach:**
 1. {{step}}
 2. {{step}}
 
-**Acceptance Criteria:**
+**Done when:**
 - [ ] {{criterion}}
-- [ ] Tests pass
-
-**Notes:** {{notes}}
+- [ ] Uses SQLC per coding-standards
 
 ---
 
-### T3: {{task_3_name}}
+### T3: {{task_name}}
 
-**Goal:** {{goal}}
+**Goal:** {{what_this_achieves}}
 
-**Documentation:**
-- {{links}}
+**Depends on:** T1, T2
 
-**Input (Prerequisites):**
-- T2 completed
-- {{dependencies}}
+**Read First:**
+| Document | Section | What to Look For |
+|----------|---------|------------------|
+| → `docs/coding-standards/` | Use Cases | Handler patterns |
+| → `docs/coding-standards/` | Testing | Test structure |
 
-**Output (Deliverables):**
-- {{files}}
+**Output Files:**
+- `{{path}}`
 
-**Implementation Steps:**
-1. {{steps}}
-
-**Acceptance Criteria:**
-- [ ] {{criteria}}
-- [ ] All tests pass
-- [ ] **⚠️ NO REGRESSIONS** (run full test suite)
-
-**Notes:** {{notes}}
+**Done when:**
+- [ ] {{criterion}}
+- [ ] Integration tests pass
 
 ---
 
 ## Notes
 
-<!-- Optional: additional context, learnings, blockers -->
+- {{important_implementation_detail}}
+- {{gotcha_or_warning}}
 
 ---
 
@@ -150,33 +208,7 @@ workflowType: 'story'
 
 - [ ] All acceptance criteria met
 - [ ] All tasks completed
-- [ ] Tests passing (>80% coverage)
-- [ ] Code follows AGENTS.md patterns
-- [ ] No linting errors
-- [ ] PR merged to epic branch
-
----
-
-## Changelog
-
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 0.1 | {{date}} | @pm | Story created |
-
-<!-- 
-Changelog Guidelines:
-- Update at END of work session
-- Dev: summarize what was implemented
-- Version: 0.x=draft, 1.0=ready-for-dev, 1.x=in-progress, 2.0=done
--->
-
----
-
-## Jira Metadata
-
-```yaml
-# Added after /jira-sync
-jira_id: 
-jira_url: 
-last_sync: 
-```
+- [ ] Code follows `docs/coding-standards/`
+- [ ] Tests pass
+- [ ] Code reviewed
+- [ ] No lint errors

@@ -1,50 +1,85 @@
-# Requirements Document
+# {{project}} — Requirements
 
-**Project:** {{project_name}}
-**Author:** {{author}}
-**Date:** {{date}}
-**Version:** 1.0
-**Status:** Draft | Review | Approved
+```yaml
+id: REQ-001
+version: 1.0
+status: draft | approved
+date: {{date}}
+author: {{author}}
+```
 
 ---
 
-## Executive Summary
+## Summary
 
-[Brief description of what this project aims to achieve and why]
+{{project}} addresses the need for {{problem_being_solved}}. The primary users are {{target_users}} who need to {{what_they_need_to_accomplish}}.
+
+**Key Outcomes:**
+- {{outcome_1}}
+- {{outcome_2}}
+
+<!-- e.g.
+TaskFlow addresses the need for lightweight task management for small remote teams. The primary users are team leads and developers who need to coordinate daily work without heavy project management overhead.
+
+**Key Outcomes:**
+- Reduce time spent on task coordination by 50%
+- Provide visibility into team workload
+-->
+
+---
 
 ## Stakeholders
 
-| Role | Name | Interest |
-|------|------|----------|
-| Product Owner | | |
-| Tech Lead | | |
-| End Users | | |
+| Role | Representative | Interest | Influence |
+|------|---------------|----------|-----------|
+| {{role}} | {{name}} | {{what_they_care_about}} | High/Med/Low |
 
 ---
 
 ## Functional Requirements
 
-### [Domain Area 1]
+### {{Domain_1}}: {{domain_name}}
 
-- **FR-001:** [Requirement description]
-  - **Priority:** P0 | P1 | P2
-  - **Source:** [stakeholder/document/interview]
-  - **Acceptance Criteria:**
-    - Given [precondition]
-    - When [action]
-    - Then [expected result]
+{{brief_context_for_this_group_of_requirements}}
 
-- **FR-002:** [Requirement description]
-  - **Priority:** P0 | P1 | P2
-  - **Source:** [stakeholder/document/interview]
-  - **Acceptance Criteria:**
-    - Given [precondition]
-    - When [action]
-    - Then [expected result]
+| ID | Requirement | Priority | Source |
+|----|-------------|----------|--------|
+| FR-001 | {{user_can_action}} | P0 | {{stakeholder}} |
+| FR-002 | {{user_can_action}} | P0 | {{stakeholder}} |
+| FR-003 | {{system_does_action}} | P1 | {{stakeholder}} |
 
-### [Domain Area 2]
+**Business Rules:**
+- {{rule}}
 
-- **FR-0XX:** ...
+**Notes:**
+- {{clarification}}
+
+<!-- e.g.
+### Task Management
+
+Core task lifecycle operations that all users need.
+
+| ID | Requirement | Priority | Source |
+|----|-------------|----------|--------|
+| FR-001 | User can create task with title (required) and description (optional) | P0 | Team Lead |
+| FR-002 | User can assign task to team member | P0 | Team Lead |
+| FR-003 | System validates title is not empty and under 200 chars | P0 | Tech Lead |
+
+**Business Rules:**
+- Task can have only one assignee at a time
+- Title is required, description is optional
+
+**Notes:**
+- Assignment notifications handled in FR-010 (Notifications domain)
+-->
+
+### {{Domain_2}}: {{domain_name}}
+
+{{brief_context}}
+
+| ID | Requirement | Priority | Source |
+|----|-------------|----------|--------|
+| FR-010 | {{requirement}} | P1 | {{stakeholder}} |
 
 ---
 
@@ -52,68 +87,58 @@
 
 ### Performance
 
-- **NFR-001:** [Requirement description]
-  - **Category:** Performance
-  - **Metric:** [specific measurable target, e.g., "API response < 100ms p95"]
-  - **Priority:** P0 | P1 | P2
+| ID | Requirement | Metric | Priority |
+|----|-------------|--------|----------|
+| NFR-001 | {{what}} | {{measurable_target}} | P0 |
 
 ### Security
 
-- **NFR-0XX:** [Requirement description]
-  - **Category:** Security
-  - **Metric:** [specific requirement]
-  - **Priority:** P0 | P1 | P2
+| ID | Requirement | Standard/Approach | Priority |
+|----|-------------|-------------------|----------|
+| NFR-010 | {{what}} | {{how}} | P0 |
 
 ### Scalability
 
-- **NFR-0XX:** [Requirement description]
-  - **Category:** Scalability
-  - **Metric:** [specific target, e.g., "Support 10K concurrent users"]
-  - **Priority:** P0 | P1 | P2
-
-### Reliability
-
-- **NFR-0XX:** [Requirement description]
-  - **Category:** Reliability
-  - **Metric:** [specific target, e.g., "99.9% uptime"]
-  - **Priority:** P0 | P1 | P2
+| ID | Requirement | Target | Priority |
+|----|-------------|--------|----------|
+| NFR-020 | {{what}} | {{number}} | P1 |
 
 ---
 
 ## Constraints
 
-### Technical Constraints
-- [Constraint 1]
-- [Constraint 2]
-
-### Business Constraints
-- [Constraint 1]
-- [Constraint 2]
-
-### Timeline Constraints
-- [Constraint 1]
+| Type | Constraint | Impact |
+|------|------------|--------|
+| Technical | {{constraint}} | {{how_it_affects_solution}} |
+| Business | {{constraint}} | {{how_it_affects_solution}} |
+| Timeline | {{constraint}} | {{what_must_be_true}} |
 
 ---
 
 ## Assumptions
 
-- [Assumption 1]
-- [Assumption 2]
+| # | Assumption | Risk if Wrong | Validation |
+|---|------------|---------------|------------|
+| 1 | {{assumption}} | {{impact}} | {{how_to_verify}} |
 
 ---
 
 ## Dependencies
 
-| Dependency | Type | Owner | Risk |
-|------------|------|-------|------|
-| [External system] | Integration | [Team] | [H/M/L] |
+| Dependency | Type | Owner | Status | Risk |
+|------------|------|-------|--------|------|
+| {{system_or_team}} | {{technical/organizational}} | {{who}} | {{status}} | H/M/L |
 
 ---
 
 ## Open Questions
 
-- [ ] [Question 1]
-- [ ] [Question 2]
+| # | Question | Owner | Due | Status |
+|---|----------|-------|-----|--------|
+| 1 | {{question}} | {{name}} | {{date}} | Open |
+
+**Resolved Questions:**
+- Q: {{question}} — A: {{answer}}
 
 ---
 
@@ -121,12 +146,11 @@
 
 | Term | Definition |
 |------|------------|
-| | |
+| {{term}} | {{definition}} |
 
 ---
 
-## Revision History
+## References
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0 | {{date}} | {{author}} | Initial draft |
+→ PRD: `{{path}}`
+→ Stakeholder Interviews: `{{path}}`

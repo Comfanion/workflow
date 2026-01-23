@@ -1,166 +1,119 @@
-# Epic {{epic_number}}: {{epic_title}}
+# Epic {{N}}: {{title}}
 
-**Epic ID:** {{module}}-E{{epic_number}}
-**Status:** TODO | IN_PROGRESS | DONE
-**Priority:** P0 | P1 | P2
-**Sprint:** sprint-{{sprint_number}}
-**Branch:** feature/epic-{{epic_number}}-{{short_name}}
+```yaml
+id: {{PREFIX}}-E{{N}}
+status: backlog | ready | in_progress | done
+priority: P0 | P1
+sprint: {{sprint}}
+```
 
 ---
 
 ## Overview
 
-[2-3 sentences describing what this epic delivers and why it matters]
+This epic delivers **{{user_visible_outcome}}** for {{target_users}}. When complete, users will be able to {{what_they_can_do}}.
 
-### Business Value
+**Business Value:** {{why_this_matters}}
 
-[Why is this epic important? What problem does it solve?]
+**Scope:**
+- {{included_1}}
+- {{included_2}}
 
-### Dependencies
+**Not Included:**
+- {{excluded}}
 
-**Requires (must complete first):**
-- [Epic ID]: [brief reason]
+<!-- e.g.
+This epic delivers **complete task management** for team members. When complete, users will be able to create, assign, and track tasks through their lifecycle.
 
-**Enables (unlocks these):**
-- [Epic ID]: [brief reason]
+**Business Value:** Core functionality needed for MVP launch
 
-### Technical Documentation (MANDATORY)
+**Scope:**
+- Task CRUD operations
+- Assignment to team members
+- Status workflow (todo → in_progress → done)
 
-**Documents used to create this epic:**
-- [ ] `CLAUDE.md` - Project patterns and conventions
-- [ ] `docs/architecture.md` - Section: [specific section]
-- [ ] `docs/architecture/{{module}}/` - Module documentation
-  - [ ] `index.md` - Module overview
-  - [ ] `architecture.md` - Module design
-  - [ ] `data-model.md` - Database schema
-  - [ ] `api/` - API contracts
-  - [ ] `events/` - Event schemas
+**Not Included:**
+- Recurring tasks (Growth feature)
+- Task templates
+-->
 
-### Architecture References
+---
 
-- [Link to architecture section that this epic implements]
-- [Link to data model section]
-- [Link to API contracts if applicable]
+## Units Affected
 
-### PRD Coverage
+| Unit | Changes | Impact |
+|------|---------|--------|
+| → Unit: `{{unit}}` | Create | New entity |
+| → Unit: `{{unit}}` | Modify | Add {{what}} |
 
-| FR ID | Requirement | Covered |
-|-------|-------------|---------|
-| FR-XXX | [description] | [ ] |
-| FR-YYY | [description] | [ ] |
+---
+
+## Dependencies
+
+| Type | Item | Why |
+|------|------|-----|
+| **Requires** | {{epic/system}} | {{reason}} |
+| **Enables** | {{epic/system}} | {{reason}} |
+
+---
+
+## PRD Coverage
+
+| FR | Requirement | Notes |
+|----|-------------|-------|
+| → FR: `FR-{{N}}` | {{short_description}} | {{notes}} |
+| → FR: `FR-{{N}}` | {{short_description}} | |
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] [High-level acceptance criterion 1]
-- [ ] [High-level acceptance criterion 2]
-- [ ] [High-level acceptance criterion 3]
-- [ ] All stories completed and reviewed
-- [ ] All tests passing
+Epic is complete when:
+- [ ] {{measurable_outcome}}
+- [ ] {{measurable_outcome}}
+- [ ] All stories completed
+- [ ] Tests pass (coverage >{{N}}%)
 - [ ] Documentation updated
 
 ---
 
 ## Stories
 
-### Story Breakdown
+| ID | Title | Size | Focus | Status |
+|----|-------|------|-------|--------|
+| S{{E}}-01 | {{title}} | S/M/L | → Unit: `{{unit}}` | ⬜ |
+| S{{E}}-02 | {{title}} | S/M/L | → Unit: `{{unit}}` | ⬜ |
 
-| ID | Title | Status | Priority | Est | Tasks | Deps |
-|----|-------|--------|----------|-----|-------|------|
-| {{module}}-S{{epic_number}}-01 | [Domain Layer] | TODO | P0 | M | 6 | - |
-| {{module}}-S{{epic_number}}-02 | [Use Cases] | TODO | P0 | M | 8 | S01 |
-| {{module}}-S{{epic_number}}-03 | [HTTP Handlers] | TODO | P1 | S | 5 | S02 |
-| {{module}}-S{{epic_number}}-04 | [Integration Tests] | TODO | P1 | S | 4 | S03 |
-
-### Story Dependency Graph
-
+**Dependency Flow:**
 ```
-S01 ──► S02 ──► S03 ──► S04
-  │              │
-  └──────────────┘ (S03 also needs domain from S01)
+S01 ──► S02 ──► S03
+         │
+         └──► S04
 ```
 
-### Story Decomposition Rules
-
-Each story MUST:
-1. Be completable (not too big, not too small)
-2. Have self-contained tasks with documentation links
-3. Have clear dependencies on other stories
-4. Map to specific Acceptance Criteria
-
-### Recommended Story Order
-
-1. **Domain Layer** - Aggregates, value objects, domain services
-2. **Repository Interfaces** - Ports (domain layer)
-3. **Use Cases** - Application layer handlers
-4. **Repository Implementations** - Infrastructure adapters
-5. **HTTP/API Handlers** - Infrastructure entry points
-6. **Events** - Domain events, Kafka publishers
-7. **Integration Tests** - End-to-end verification
-
-### Stories by Layer
-
-| Layer | Stories | Tasks | Size |
-|-------|---------|-------|------|
-| Domain | 1 | 4 | M |
-| Application | 2 | 6 | M |
-| Infrastructure | 2 | 5 | L |
-| Testing | 1 | 3 | S |
-| **Total** | **6** | **18** | |
-
-**Note:** No hour estimates. Size = relative complexity (XS/S/M/L/XL).
+**Notes:**
+- {{implementation_note}}
 
 ---
 
-## Technical Notes
+## Technical Decisions
 
-### Key Decisions
-- [Decision 1]
-- [Decision 2]
-
-### Implementation Hints
-- [Hint 1]
-- [Hint 2]
-
-### Files to Create/Modify
-- `src/path/to/file` - [description]
-- `src/path/to/another` - [description]
-
-### Testing Strategy
-- Unit tests: [approach]
-- Integration tests: [approach]
+| Decision | Rationale | ADR |
+|----------|-----------|-----|
+| {{decision}} | {{why}} | → ADR: `ADR-{{N}}` |
 
 ---
 
-## Risks & Mitigations
+## Risks
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| [Risk 1] | H/M/L | H/M/L | [How to address] |
-
----
-
-## Notes
-
-[Any additional context, links, or references]
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| {{risk}} | H/M/L | {{approach}} |
 
 ---
 
-## Changelog
+## References
 
-<!-- UPDATE AT END OF SESSION -->
-
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 0.1 | {{date}} | @{{author}} | Initial creation |
-
-<!-- 
-Changelog Guidelines:
-- Update at END of work session
-- Summarize all changes in one entry
-- Version: 0.x=planning, 1.0=sprint-ready, 1.x=in-progress
-
-Example:
-| 1.0 | 2024-01-15 | @sm | Add stories S01-S05; Define all AC; Ready for sprint |
--->
+→ PRD: `{{path}}`
+→ Architecture: `{{path}}`
+→ Unit: `{{unit}}`
