@@ -18,7 +18,7 @@ const program = new Command();
 program
   .name('create-opencode-workflow')
   .description('Initialize OpenCode Workflow system for AI-assisted development')
-  .version('3.6.0');
+  .version('3.7.0');
 
 program
   .command('init')
@@ -29,7 +29,7 @@ program
   .option('--stub', 'Use STUB methodology')
   .option('--full', 'Create full repo structure')
   .action(async (options) => {
-    console.log(chalk.blue.bold('\n🚀 OpenCode Workflow v3.6\n'));
+    console.log(chalk.blue.bold('\n🚀 OpenCode Workflow v3.7\n'));
     
     const targetDir = path.join(process.cwd(), '.opencode');
     const existingConfigPath = path.join(targetDir, 'config.yaml');

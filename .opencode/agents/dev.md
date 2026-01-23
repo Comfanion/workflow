@@ -1,6 +1,6 @@
 ---
-description: "Senior Developer - Story implementation, TDD, code review"
-mode: primary
+description: "Senior Developer - Use for: implementing stories, TDD development, code review, running tests. Has skills: code-review, test-design"
+mode: all
 tools:
   write: true
   edit: true

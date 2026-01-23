@@ -11,17 +11,10 @@
   "agent": {
     "build": {
       "mode": "primary",
-      "description": "Default development agent with full tool access",
-      "model": "anthropic/claude-sonnet-4-20250514"
+      "description": "Default development agent - use @pm, @architect, @analyst, @dev for specialized tasks"
     },
     "plan": {
-      "mode": "primary",
-      "description": "Planning agent - analyzes without making changes",
-      "model": "anthropic/claude-sonnet-4-20250514",
-      "permission": {
-        "edit": "ask",
-        "bash": "ask"
-      }
+      "disable": true
     }
   },
   

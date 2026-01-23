@@ -1,6 +1,6 @@
 ---
-description: "Research Specialist - Technical, market, and domain research with structured documentation"
-mode: primary
+description: "Research Specialist - Use for: technical research, market research, domain research, competitive analysis. Has skills: research-methodology, methodologies"
+mode: all
 tools:
   write: true
   edit: true

@@ -1,6 +1,6 @@
 ---
-description: "Solution Architect - System design, module docs, ADRs, coding standards, API design"
-mode: primary
+description: "Solution Architect - Use for: system architecture, module documentation, ADRs, coding standards, API design. Has skills: architecture-design, architecture-validation, adr-writing, module-documentation, coding-standards"
+mode: all
 tools:
   write: true
   edit: true

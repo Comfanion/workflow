@@ -1,6 +1,6 @@
 ---
-description: "Product Manager - PRD, epics, stories, sprint planning, Jira sync"
-mode: primary
+description: "Product Manager - Use for: creating PRD, writing epics, writing stories, sprint planning, Jira sync. Has skills: prd-writing, epic-writing, story-writing, sprint-planning, jira-integration"
+mode: all
 tools:
   write: true
   edit: true

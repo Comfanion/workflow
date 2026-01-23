@@ -1,6 +1,6 @@
 ---
-description: "Strategic Business Analyst - Requirements gathering, validation, research"
-mode: primary
+description: "Business Analyst - Use for: gathering requirements, validating requirements, brainstorming. Has skills: requirements-gathering, requirements-validation"
+mode: all
 tools:
   write: true
   edit: true

@@ -1,6 +1,6 @@
 ---
-description: "Change Manager - Manages change proposals with delta tracking"
-mode: primary
+description: "Change Manager - Use for: change proposals, document updates with delta tracking, reviewing changes before merge"
+mode: all
 tools:
   write: true
   edit: true
