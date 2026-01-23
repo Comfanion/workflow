@@ -18,42 +18,57 @@ Use this skill when you need to:
 - Define technical implementation tasks
 - Specify test scenarios
 
-## MANDATORY: Load Technical Standards First
+## MANDATORY: Read Before Writing Tasks
 
-**Before writing ANY story with tasks, you MUST read and understand:**
+**⚠️ STOP! Before writing ANY task, execute these steps:**
 
-### 1. Coding Standards (REQUIRED)
-```
-Search and read in order:
-1. CLAUDE.md (root) - Project patterns, code style, conventions
-2. docs/coding-standards/ - Detailed coding standards
-3. docs/coding-standards/testing-standards.md - Test patterns
-```
+### Step 1: Find and Read Coding Standards
 
-### 2. Module Architecture (REQUIRED)
-```
-For the specific module this story covers:
-1. docs/architecture/[module]/architecture.md - Module design
-2. docs/architecture/[module]/data-model.md - Database schema
-3. Existing code in src/services/[module]/ - Current patterns
+```bash
+# Execute these Glob searches:
+Glob "**/AGENTS.md" OR "**/CLAUDE.md"      # → Read the file found
+Glob "**/coding-standards/**/*.md"          # → Read ALL files found
+Glob "**/testing-standards*.md"             # → Read if exists
 ```
 
-### 3. Parent Epic (REQUIRED)
+**You MUST read these files before writing tasks!**
+
+### Step 2: Find and Read Module Architecture
+
+```bash
+# For the module this story covers (e.g., "catalog"):
+Glob "**/docs/**/catalog/**/*.md"           # → Read architecture docs
+Glob "**/catalog-data-model*.md"            # → Read data model
 ```
-1. The epic this story belongs to - for context and dependencies
-2. Other stories in the epic - for coordination
+
+### Step 3: Find and Read Existing Code Patterns
+
+```bash
+# Find existing code to use as patterns:
+Glob "**/src/services/[module]/modules/*/domain/entity/*.go"      # → Example entities
+Glob "**/src/services/[module]/modules/*/domain/valueobject/*.go" # → Example VOs
+Glob "**/src/services/[module]/modules/*/application/usecase/*"   # → Example use cases
+```
+
+**Pick 1-2 existing files as patterns for Documentation links in tasks.**
+
+### Step 4: Read Parent Epic
+
+```bash
+Glob "**/epic-[NN]*.md"                     # → Find and read the epic
 ```
 
 ### Pre-Story Checklist
 
-Before writing story tasks, confirm you have read:
-- [ ] CLAUDE.md - coding patterns and file structure
-- [ ] Coding standards - naming, error handling, testing
-- [ ] Module architecture - component boundaries
-- [ ] Parent epic - scope and dependencies
+Before writing tasks, confirm you executed:
+- [ ] **Glob + Read** AGENTS.md/CLAUDE.md 
+- [ ] **Glob + Read** coding-standards/*.md (ALL files)
+- [ ] **Glob + Read** module architecture and data-model
+- [ ] **Glob + Read** existing code patterns (at least 2 files)
+- [ ] **Read** parent epic
 
-**⚠️ DO NOT write technical tasks without reading coding standards!**
-**Tasks MUST follow project conventions and patterns from CLAUDE.md.**
+**⛔ DO NOT WRITE TASKS WITHOUT COMPLETING ALL STEPS ABOVE!**
+**Tasks without proper Documentation links = REJECTED.**
 
 ### Task File Paths
 

@@ -18,44 +18,57 @@ Use this skill when you need to:
 - Define epic-level acceptance criteria
 - Track PRD coverage
 
-## MANDATORY: Load Technical Context First
+## MANDATORY: Read Before Writing Epic
 
-**Before writing ANY epic, you MUST read and understand:**
+**⚠️ STOP! Before writing ANY epic, execute these steps:**
 
-### 1. Project Architecture (REQUIRED)
-```
-Search and read in order:
-1. CLAUDE.md (root) - Project patterns, conventions, tech stack
-2. docs/architecture.md - System architecture, module boundaries
-3. docs/architecture/[module]/ - Module-specific documentation
-```
+### Step 1: Find and Read Project Standards
 
-### 2. Module/Domain Documentation (REQUIRED)
-```
-For the specific module this epic covers:
-1. docs/architecture/[module]/index.md - Module overview
-2. docs/architecture/[module]/architecture.md - Module architecture
-3. docs/architecture/[module]/data-model.md - Database schema
-4. docs/architecture/[module]/api/ - API contracts
-5. docs/architecture/[module]/events/ - Event schemas
+```bash
+# Execute these Glob searches:
+Glob "**/AGENTS.md" OR "**/CLAUDE.md"       # → Read the file found
+Glob "**/docs/architecture.md"              # → Read system architecture
+Glob "**/coding-standards/**/*.md"          # → Read ALL coding standards
 ```
 
-### 3. PRD Requirements (REQUIRED)
+**You MUST read these files before writing epic!**
+
+### Step 2: Find and Read Module Documentation
+
+```bash
+# For the module this epic covers (e.g., "catalog"):
+Glob "**/docs/**/catalog/**/*.md"           # → Read ALL module docs
+Glob "**/catalog-data-model*.md"            # → Read data model
+Glob "**/catalog-architecture*.md"          # → Read module architecture
 ```
-1. docs/prd.md - Functional requirements (FR-XXX)
-2. docs/requirements/ - Detailed requirements if exists
+
+### Step 3: Find and Read PRD
+
+```bash
+Glob "**/prd.md"                            # → Read PRD for FR-XXX references
+Glob "**/requirements/*.md"                 # → Read detailed requirements if exist
+```
+
+### Step 4: Find Existing Code Patterns (for technical notes)
+
+```bash
+# Find existing code to reference in Technical Notes:
+Glob "**/src/services/[module]/modules/*/domain/**/*.go"       # → Domain patterns
+Glob "**/src/services/[module]/modules/*/application/**/*.go"  # → Use case patterns
 ```
 
 ### Pre-Epic Checklist
 
-Before writing epic, confirm you have read:
-- [ ] CLAUDE.md - coding patterns and conventions
-- [ ] Architecture document - system design
-- [ ] Module documentation - specific module architecture
-- [ ] PRD - requirements this epic implements
+Before writing epic, confirm you executed:
+- [ ] **Glob + Read** AGENTS.md/CLAUDE.md
+- [ ] **Glob + Read** docs/architecture.md
+- [ ] **Glob + Read** coding-standards/*.md (ALL files)
+- [ ] **Glob + Read** module documentation (architecture, data-model)
+- [ ] **Glob + Read** PRD for requirements
+- [ ] **Glob** existing code patterns (for Technical Notes section)
 
-**⚠️ DO NOT proceed without reading technical documentation!**
-**Epic MUST reference architecture sections and follow established patterns.**
+**⛔ DO NOT WRITE EPIC WITHOUT COMPLETING ALL STEPS ABOVE!**
+**Epic without proper architecture references = REJECTED.**
 
 ---
 
