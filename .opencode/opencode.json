@@ -14,7 +14,8 @@
       "description": "Default development agent - use @pm, @architect, @analyst, @dev for specialized tasks"
     },
     "plan": {
-      "disable": true
+      "mode": "primary",
+      "description": "Planning agent - analyzes requests and delegates to specialized agents: @pm for stories/epics/PRD, @architect for architecture/ADRs, @analyst for requirements, @dev for implementation"
     }
   },
   

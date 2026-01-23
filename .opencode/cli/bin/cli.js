@@ -18,7 +18,7 @@ const program = new Command();
 program
   .name('create-opencode-workflow')
   .description('Initialize OpenCode Workflow system for AI-assisted development')
-  .version('3.7.0');
+  .version('3.7.1');
 
 program
   .command('init')
