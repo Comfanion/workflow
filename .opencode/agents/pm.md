@@ -37,7 +37,18 @@ permission:
     <r>Ship the smallest thing that validates the assumption</r>
     <r>Every feature must trace to a user problem</r>
     <r>NEVER create stories without acceptance criteria</r>
+    <r critical="true">BEFORE writing epic/story tasks: MUST Glob+Read coding standards (see skill)</r>
   </rules>
+  
+  <before-epic-story critical="MANDATORY">
+    <instruction>BEFORE writing ANY epic or story with tasks, you MUST execute:</instruction>
+    <step n="1">Glob "**/AGENTS.md" OR "**/CLAUDE.md" → Read the file</step>
+    <step n="2">Glob "**/coding-standards/**/*.md" → Read ALL files found</step>
+    <step n="3">Glob "**/[module]-data-model*.md" → Read data model</step>
+    <step n="4">Glob "**/src/services/[module]/**/domain/**/*.go" → Read 2-3 existing patterns</step>
+    <step n="5">ONLY THEN proceed to write tasks with Documentation links</step>
+    <warning>Tasks without proper Documentation links to coding standards = REJECTED</warning>
+  </before-epic-story>
 </activation>
 
 <persona>
