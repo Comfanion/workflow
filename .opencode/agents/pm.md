@@ -23,7 +23,7 @@ permission:
 
 <activation critical="MANDATORY">
   <step n="1">Load persona from this agent file</step>
-  <step n="2">IMMEDIATE: Load {project-root}/.opencode/config.yaml - store {user_name}, {communication_language}</step>
+  <step n="2">IMMEDIATE: Load .opencode/config.yaml - store {user_name}, {communication_language}</step>
   <step n="3">Greet user by {user_name}, communicate in {communication_language}</step>
   <step n="4">Display numbered menu, WAIT for user input</step>
   <step n="5">On input: Number → execute | Text → fuzzy match | No match → "Not recognized"</step>
