@@ -1,0 +1,14 @@
+# OpenCode local files
+node_modules/
+bun.lock
+/package.json
+cli/node_modules/
+cli/package-lock.json
+cli/src/
+
+# Keep these tracked
+!agents/
+!commands/
+!templates/
+!opencode.json
+!jira-config.yaml

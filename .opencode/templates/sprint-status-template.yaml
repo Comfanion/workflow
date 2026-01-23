@@ -1,0 +1,84 @@
+# Sprint Status Tracker
+# This file tracks the status of all epics and stories across sprints
+# Updated automatically by SM agent and Dev agent
+
+# =============================================================================
+# PROJECT METADATA
+# =============================================================================
+project: "{{project_name}}"
+created: "{{date}}"
+last_updated: "{{date}}"
+
+# =============================================================================
+# STATUS DEFINITIONS
+# =============================================================================
+# Epic Statuses:
+#   planned     - Epic defined but not started
+#   in-progress - At least one story started
+#   completed   - All stories done
+#
+# Story Statuses:
+#   draft         - Story being written
+#   ready-for-dev - Story complete, AC defined, ready for implementation
+#   in-progress   - Developer working on story
+#   review        - Implementation complete, awaiting code review
+#   done          - Story complete, merged
+#   blocked       - Story blocked by dependency/issue
+
+# =============================================================================
+# CURRENT SPRINT
+# =============================================================================
+current_sprint:
+  number: 1
+  name: "Sprint 1 - Foundation"
+  start_date: "{{sprint_start}}"
+  end_date: "{{sprint_end}}"
+  goal: "{{sprint_goal}}"
+  
+# =============================================================================
+# DEVELOPMENT STATUS
+# =============================================================================
+development_status:
+  # Epic 1
+  epic-1: planned
+  1-1-story-name: draft
+  1-2-story-name: draft
+  
+  # Epic 2
+  epic-2: planned
+  2-1-story-name: draft
+
+# =============================================================================
+# SPRINT BACKLOG (Stories for current sprint)
+# =============================================================================
+sprint_backlog:
+  - key: "1-1-story-name"
+    epic: "epic-1"
+    title: "Story Title"
+    size: M
+    assignee: ""
+    
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  total_epics: 0
+  total_stories: 0
+  stories_done: 0
+  stories_in_progress: 0
+  stories_ready: 0
+  velocity_points: 0
+
+# =============================================================================
+# BLOCKERS
+# =============================================================================
+blockers: []
+  # - story: "1-2-story-name"
+  #   blocker: "Description of blocker"
+  #   since: "2024-01-15"
+
+# =============================================================================
+# NOTES
+# =============================================================================
+notes: |
+  Sprint planning notes and decisions go here.

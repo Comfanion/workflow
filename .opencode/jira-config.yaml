@@ -1,0 +1,70 @@
+# Jira Integration Configuration
+# Update these values for your Jira instance
+
+jira:
+  # Your Jira Cloud URL
+  base_url: "https://YOUR-COMPANY.atlassian.net"
+  
+  # Your Jira project key (e.g., MKT, PROJ, DEV)
+  project_key: "MKT"
+  
+  # Issue type mappings (match your Jira issue type names exactly)
+  issue_types:
+    epic: "Epic"
+    story: "Story"
+    task: "Sub-task"
+  
+  # Custom field IDs
+  # Find these via: curl -u email:token https://your-domain.atlassian.net/rest/api/3/field
+  fields:
+    # Epic Name field (required for creating epics)
+    epic_name: "customfield_10011"
+    
+    # Epic Link field (links stories to epics)
+    epic_link: "customfield_10014"
+    
+    # Story Points field
+    story_points: "customfield_10016"
+    
+    # Sprint field
+    sprint: "customfield_10020"
+  
+  # Status mappings: local status -> Jira status name
+  status_map:
+    TODO: "To Do"
+    IN_PROGRESS: "In Progress"
+    REVIEW: "In Review"
+    DONE: "Done"
+  
+  # Priority mappings: local priority -> Jira priority name
+  priority_map:
+    P0: "Highest"
+    P1: "High"
+    P2: "Medium"
+    P3: "Low"
+
+# Sync settings
+sync:
+  # Auto-add Jira ID to local files after creation
+  update_local_files: true
+  
+  # Include description in sync (can be verbose)
+  sync_descriptions: true
+  
+  # Sync acceptance criteria as subtasks
+  create_subtasks_from_ac: false
+  
+  # Default story points by size
+  story_points:
+    XS: 1
+    S: 2
+    M: 3
+    L: 5
+    XL: 8
+
+# Environment variables required:
+# JIRA_USER=your-email@company.com
+# JIRA_API_TOKEN=your-api-token
+# 
+# Or combined as base64:
+# JIRA_AUTH=$(echo -n "$JIRA_USER:$JIRA_API_TOKEN" | base64)

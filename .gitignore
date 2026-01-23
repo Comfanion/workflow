@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Working documents (not part of package)
+/docs/
+.opencode/CONSISTENCY-REPORT.md
+.opencode/USAGE-EXAMPLES.md
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+.opencode/cli/src/
+
+# Local config (user-specific)
+.opencode/jira-cache.yaml
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test outputs
+/tmp/
+coverage/

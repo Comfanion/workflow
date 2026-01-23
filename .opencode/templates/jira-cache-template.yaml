@@ -1,0 +1,103 @@
+# Jira Cache File
+# Auto-generated and maintained by SM agent
+# Manual edits will be overwritten on next sync
+
+metadata:
+  project_key: "{{project_key}}"
+  last_sync: "{{timestamp}}"
+  cache_ttl_minutes: 30
+  total_items: 0
+
+# Project configuration
+project:
+  key: "{{project_key}}"
+  name: "{{project_name}}"
+  url: "{{jira_base_url}}/browse/{{project_key}}"
+  
+  # Available issue types
+  issue_types:
+    - name: "Epic"
+      id: "10000"
+    - name: "Story"
+      id: "10001"
+    - name: "Task"
+      id: "10002"
+    - name: "Bug"
+      id: "10003"
+      
+  # Available statuses
+  statuses:
+    - name: "Backlog"
+      id: "10000"
+      category: "backlog"
+    - name: "In Progress"
+      id: "10001"
+      category: "in_progress"
+    - name: "In Review"
+      id: "10002"
+      category: "review"
+    - name: "QA"
+      id: "10003"
+      category: "qa"
+    - name: "Done"
+      id: "10004"
+      category: "done"
+      
+  # Status workflow validated
+  workflow_valid: true
+  missing_statuses: []
+
+# Active sprints
+sprints:
+  - id: "{{sprint_id}}"
+    name: "Sprint {{sprint_number}}"
+    state: "active"  # active | future | closed
+    start_date: "{{start_date}}"
+    end_date: "{{end_date}}"
+    goal: "{{sprint_goal}}"
+    
+# Epics in project
+epics:
+  - key: "PROJ-E01"
+    summary: "{{epic_title}}"
+    status: "In Progress"
+    url: "{{jira_base_url}}/browse/PROJ-E01"
+    local_doc: "docs/sprint-artifacts/sprint-1/epic-01.md"
+    stories:
+      - key: "PROJ-S01"
+        summary: "{{story_title}}"
+        status: "In Progress"
+        url: "{{jira_base_url}}/browse/PROJ-S01"
+        local_doc: "docs/sprint-artifacts/sprint-1/stories/story-01.md"
+        branch: "feature/PROJ-S01-story-title"
+        tasks:
+          - key: "PROJ-T01"
+            summary: "{{task_title}}"
+            status: "Done"
+            assignee: "{{user}}"
+
+# Quick lookup maps (for fast access)
+lookup:
+  by_key:
+    "PROJ-E01":
+      type: "epic"
+      index: 0
+    "PROJ-S01":
+      type: "story"
+      epic_key: "PROJ-E01"
+      index: 0
+  by_local_doc:
+    "docs/sprint-artifacts/sprint-1/epic-01.md": "PROJ-E01"
+    "docs/sprint-artifacts/sprint-1/stories/story-01.md": "PROJ-S01"
+  by_status:
+    backlog: []
+    in_progress: ["PROJ-S01"]
+    review: []
+    qa: []
+    done: ["PROJ-T01"]
+
+# Pending sync queue (local changes not yet synced)
+pending_sync:
+  create: []
+  update: []
+  transition: []

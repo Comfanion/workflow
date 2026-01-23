@@ -1,0 +1,64 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Documents
+*.md text
+*.txt text
+*.yaml text
+*.yml text
+*.json text
+*.xml text
+
+# Scripts
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Source code (add your language)
+*.js text
+*.ts text
+*.jsx text
+*.tsx text
+*.py text
+*.rb text
+*.java text
+*.kt text
+*.swift text
+*.rs text
+*.go text
+*.php text
+*.c text
+*.cpp text
+*.h text
+*.cs text
+
+# Config
+*.config text
+*.conf text
+*.ini text
+*.env text
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# Lock files (exact)
+package-lock.json -diff
+yarn.lock -diff
+pnpm-lock.yaml -diff
+Gemfile.lock -diff
+poetry.lock -diff
+
+# Generated (don't merge)
+*.generated.* merge=ours

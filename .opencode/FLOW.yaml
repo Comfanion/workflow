@@ -1,0 +1,900 @@
+# Documentation & Sprint Management Workflow
+# This file defines the complete workflow pipeline for AI-assisted development
+
+name: documentation-workflow
+version: "3.0"
+description: |
+  End-to-end workflow from research to implementation and review.
+  
+  Architecture: Commands → Agents → Skills
+  - Commands: Entry points (user invokes)
+  - Agents: Personas (WHO does work)
+  - Skills: Knowledge (HOW to do things)
+  
+  Config: .opencode/config.yaml
+
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+config:
+  file: config.yaml
+  variables:
+    - user_name
+    - communication_language
+    - document_output_language
+    - output_folder
+    - sprint_artifacts
+    - implementation_artifacts
+
+# =============================================================================
+# WORKFLOW PIPELINE (Main Flow)
+# =============================================================================
+# 
+# PLANNING PHASE:
+#   research (opt) → requirements → prd → coding-standards → architecture → module-docs (opt)
+#
+# SPRINT PHASE:
+#   epics → stories → sprint-plan → jira-sync
+#
+# IMPLEMENTATION PHASE:
+#   dev-story → code-review → (repeat) → retrospective
+#
+pipeline:
+  stages:
+    # =========================================================================
+    # PLANNING PHASE
+    # =========================================================================
+    
+    # OPTIONAL: Research before requirements
+    - id: research
+      name: Research (Optional)
+      description: Technical, market, or domain research before requirements
+      phase: planning
+      optional: true
+      command: /research [type] [topic]
+      agent: researcher
+      skills:
+        - research-methodology
+      artifacts:
+        output:
+          - docs/research/[type]/[topic]-research.md
+      next: requirements
+
+    - id: requirements
+      name: Requirements Gathering
+      description: Collect FR/NFR through stakeholder interviews
+      phase: planning
+      command: /requirements
+      agent: analyst
+      skills:
+        - requirements-gathering
+        - acceptance-criteria
+      artifacts:
+        output:
+          - docs/requirements/requirements.md
+      validation:
+        command: /validate requirements
+        skill: requirements-validation
+        required: true
+      next: prd
+
+    - id: prd
+      name: Product Requirements Document
+      description: Create PRD from validated requirements
+      phase: planning
+      command: /prd
+      agent: pm
+      skills:
+        - prd-writing
+        - acceptance-criteria
+      artifacts:
+        input:
+          - docs/requirements/requirements.md
+        output:
+          - docs/prd.md
+      validation:
+        command: /validate prd
+        skill: prd-validation
+        required: true
+      qa:
+        artifact: docs/prd-acceptance-criteria.md
+        description: Acceptance criteria for all FRs
+        template: templates/prd-acceptance-criteria-template.md
+        mandatory: true
+      next: coding-standards
+
+    - id: coding-standards
+      name: Coding Standards
+      description: Define coding patterns, style, and conventions
+      phase: planning
+      command: /coding-standards
+      agent: architect
+      skills:
+        - coding-standards
+      artifacts:
+        input:
+          - docs/prd.md
+        output:
+          - docs/coding-standards/README.md
+          - docs/coding-standards/patterns.md
+          - docs/coding-standards/testing.md
+      next: architecture
+
+    - id: architecture
+      name: Architecture Design
+      description: Create system architecture from PRD
+      phase: planning
+      command: /architecture
+      agent: architect
+      skills:
+        - architecture-design
+        - adr-writing
+      artifacts:
+        input:
+          - docs/prd.md
+          - CLAUDE.md
+        output:
+          - docs/architecture.md
+          - docs/architecture/adr/*.md
+      validation:
+        command: /validate architecture
+        skill: architecture-validation
+        required: true
+      qa:
+        artifact: docs/architecture-integration-tests.md
+        description: Integration test specifications
+        template: templates/integration-tests-template.md
+        mandatory: true
+      next: module-docs
+
+    # OPTIONAL: Detailed module documentation
+    - id: module-docs
+      name: Module Documentation (Optional)
+      description: Create detailed docs for each module
+      phase: planning
+      optional: true
+      command: /module-docs [module-name]
+      agent: module-docs
+      skills:
+        - module-documentation
+      artifacts:
+        input:
+          - docs/architecture.md
+          - docs/prd.md
+        output:
+          - docs/architecture/[module]/index.md
+          - docs/architecture/[module]/architecture.md
+          - docs/architecture/[module]/data-model.md
+      next: epics
+
+    # =========================================================================
+    # SPRINT PHASE
+    # =========================================================================
+    
+    - id: epics
+      name: Epic Creation
+      description: Break PRD into implementation epics
+      phase: sprint
+      command: /epics
+      agent: sm
+      skills:
+        - epic-writing
+        - acceptance-criteria
+      artifacts:
+        input:
+          - docs/prd.md
+          - docs/architecture.md
+        output:
+          - docs/sprint-artifacts/backlog/epic-*.md
+          - docs/sprint-artifacts/sprint-*/epic-*.md
+      validation:
+        command: /validate epics
+        required: true
+        rules:
+          - All epics have acceptance criteria
+      next: stories
+
+    - id: stories
+      name: Story Creation
+      description: Create detailed stories for each epic
+      phase: sprint
+      command: /stories {epic-id}
+      agent: sm
+      skills:
+        - story-writing
+        - acceptance-criteria
+      artifacts:
+        input:
+          - docs/sprint-artifacts/*/epic-*.md
+        output:
+          - docs/sprint-artifacts/*/stories/story-*.md
+      validation:
+        command: /validate stories
+        required: true
+        rules:
+          - All stories have Given/When/Then AC
+          - All stories have tasks/subtasks
+      next: sprint-plan
+
+    - id: sprint-plan
+      name: Sprint Planning
+      description: Organize epics and stories into sprints
+      phase: sprint
+      command: /sprint-plan
+      agent: sm
+      skills:
+        - sprint-planning
+      artifacts:
+        output:
+          - docs/sprint-artifacts/sprint-status.yaml
+      next: jira-sync
+
+    - id: jira-sync
+      name: Jira Synchronization
+      description: Sync epics/stories/tasks to Jira with development control
+      phase: sprint
+      command: /jira-sync [links...]
+      agent: sm
+      skills:
+        - jira-integration
+      artifacts:
+        input:
+          - docs/sprint-artifacts/*/epic-*.md
+          - docs/sprint-artifacts/*/stories/story-*.md
+        output:
+          - docs/sprint-artifacts/jira-sync-report.md
+          - .opencode/jira-cache.yaml
+      modes:
+        with_links: "User provides Jira links → fetch, find related, ask what to update"
+        auto_create: "No links → scan local docs, create/update in Jira project"
+      features:
+        - cache_system
+        - find_related_issues
+        - control_development
+        - branch_creation
+      next: dev-story
+
+    # =========================================================================
+    # IMPLEMENTATION PHASE
+    # =========================================================================
+    
+    - id: dev-story
+      name: Story Implementation
+      description: Implement story using red-green-refactor cycle
+      phase: implementation
+      command: /dev-story [story-path | jira-link]
+      agent: dev
+      skills:
+        - dev-story
+        - test-design
+        - jira-integration
+      artifacts:
+        input:
+          - docs/sprint-artifacts/*/stories/story-*.md
+          - .opencode/jira-cache.yaml
+          - CLAUDE.md
+        output:
+          - Implementation code
+          - Unit tests
+          - Integration tests
+      workflow: workflows/dev-story/instructions.md
+      jira_integration:
+        on_start: "transition to in_progress, create branch"
+        on_review: "transition to review, link PR"
+        on_complete: "update Jira description with summary"
+      next: code-review
+
+    - id: code-review
+      name: Code Review
+      description: Review implemented code for quality and correctness
+      phase: implementation
+      command: /code-review [story-path]
+      agent: dev
+      skills:
+        - code-review
+      artifacts:
+        input:
+          - docs/sprint-artifacts/*/stories/story-*.md
+        output:
+          - Review comments in story file
+          - Review follow-up tasks
+      next: dev-story  # Loop back if changes requested
+
+    - id: retrospective
+      name: Sprint Retrospective
+      description: Review sprint and capture learnings
+      phase: implementation
+      command: /retrospective
+      agent: sm
+      artifacts:
+        output:
+          - docs/sprint-artifacts/sprint-N/retrospective.md
+
+# =============================================================================
+# AGENTS (Personas - WHO does work)
+# =============================================================================
+agents:
+  analyst:
+    name: Mary
+    title: Business Analyst
+    icon: "📊"
+    description: Requirements Analyst - extracts FR/NFR through stakeholder interviews
+    mode: subagent
+    model: anthropic/claude-sonnet-4-20250514
+    temperature: 0.3
+    file: agents/analyst.md
+    expertise:
+      - Requirements engineering
+      - Business analysis
+      - Stakeholder interviews
+    personality: Methodical, thorough, asks clarifying questions
+    skills_used:
+      - requirements-gathering
+      - requirements-validation
+      - acceptance-criteria
+      - methodologies
+
+  pm:
+    name: John
+    title: Product Manager
+    icon: "📋"
+    description: Product Manager - creates PRDs, defines scope, prioritizes features
+    mode: subagent
+    model: anthropic/claude-sonnet-4-20250514
+    temperature: 0.3
+    file: agents/pm.md
+    expertise:
+      - Product management
+      - B2B SaaS
+      - Marketplace platforms
+    personality: Business-focused, user-centric, data-driven
+    skills_used:
+      - prd-writing
+      - prd-validation
+      - acceptance-criteria
+      - methodologies
+
+  architect:
+    name: Winston
+    title: Solution Architect
+    icon: "🏗️"
+    description: Solution Architect - designs system architecture, makes technical decisions
+    mode: subagent
+    model: anthropic/claude-sonnet-4-20250514
+    temperature: 0.2
+    file: agents/architect.md
+    expertise:
+      - Distributed systems
+      - DDD, hexagonal architecture
+      - System design
+    personality: Technical, precise, patterns-focused
+    skills_used:
+      - architecture-design
+      - architecture-validation
+      - adr-writing
+      - coding-standards
+      - methodologies
+
+  sm:
+    name: Sarah
+    title: Sprint Manager
+    icon: "📊"
+    description: Sprint Manager - creates epics/stories, plans sprints, tracks progress
+    mode: subagent
+    model: anthropic/claude-sonnet-4-20250514
+    temperature: 0.2
+    file: agents/sm.md
+    expertise:
+      - Agile project management
+      - Sprint planning
+      - Backlog management
+    personality: Organized, detail-oriented, pragmatic
+    skills_used:
+      - epic-writing
+      - story-writing
+      - sprint-planning
+      - jira-integration
+      - acceptance-criteria
+
+  dev:
+    name: Amelia
+    title: Senior Developer
+    icon: "💻"
+    description: Developer - implements stories following red-green-refactor cycle
+    mode: subagent
+    model: anthropic/claude-sonnet-4-20250514
+    temperature: 0.2
+    file: agents/dev.md
+    expertise:
+      - Software development
+      - TDD/BDD
+      - Code review
+    personality: Precise, test-driven, follows story specifications exactly
+    skills_used:
+      - dev-story
+      - code-review
+      - test-design
+
+  # Supporting Agents (not in main pipeline)
+  researcher:
+    name: Alex
+    title: Researcher
+    icon: "🔍"
+    description: Researcher - conducts technical, market, and domain research
+    mode: subagent
+    model: anthropic/claude-sonnet-4-20250514
+    temperature: 0.4
+    file: agents/researcher.md
+    expertise:
+      - Technical research
+      - Market analysis
+      - Domain expertise
+    personality: Curious, thorough, evidence-based
+    skills_used:
+      - research-methodology
+      - methodologies
+
+  module-docs:
+    name: Marcus
+    title: Module Documenter
+    icon: "📚"
+    description: Module Documenter - creates detailed per-module documentation
+    mode: subagent
+    model: anthropic/claude-sonnet-4-20250514
+    temperature: 0.2
+    file: agents/module-docs.md
+    expertise:
+      - Technical writing
+      - System documentation
+      - API documentation
+    personality: Precise, structured, detail-oriented
+    skills_used:
+      - module-documentation
+
+  change-manager:
+    name: Charles
+    title: Change Manager
+    icon: "🔄"
+    description: Change Manager - manages documentation change proposals
+    mode: subagent
+    model: anthropic/claude-sonnet-4-20250514
+    temperature: 0.2
+    file: agents/change-manager.md
+    expertise:
+      - Change management
+      - Impact analysis
+      - Version control
+    personality: Careful, systematic, risk-aware
+    skills_used:
+      - change-management
+
+# =============================================================================
+# SKILLS (Knowledge - HOW to do things)
+# =============================================================================
+skills:
+  # Requirements Skills
+  requirements-gathering:
+    description: How to interview stakeholders, extract FR/NFR
+    file: skills/requirements-gathering/SKILL.md
+    used_by: [analyst]
+    produces: docs/requirements/requirements.md
+
+  requirements-validation:
+    description: How to validate requirements (SMART, no conflicts)
+    file: skills/requirements-validation/SKILL.md
+    used_by: [analyst, architect]
+    produces: docs/validation/requirements-validation-*.md
+
+  # PRD Skills
+  prd-writing:
+    description: How to write PRD (template, sections, examples)
+    file: skills/prd-writing/SKILL.md
+    used_by: [pm]
+    produces: docs/prd.md
+
+  prd-validation:
+    description: How to validate PRD completeness
+    file: skills/prd-validation/SKILL.md
+    used_by: [architect]
+    produces: docs/validation/prd-validation-*.md
+
+  acceptance-criteria:
+    description: How to write testable AC (Given/When/Then)
+    file: skills/acceptance-criteria/SKILL.md
+    used_by: [analyst, pm, sm]
+
+  # Architecture Skills
+  architecture-design:
+    description: How to design system architecture
+    file: skills/architecture-design/SKILL.md
+    used_by: [architect]
+    produces: docs/architecture.md
+
+  architecture-validation:
+    description: How to validate architecture
+    file: skills/architecture-validation/SKILL.md
+    used_by: [architect]
+    produces: docs/validation/architecture-validation-*.md
+
+  adr-writing:
+    description: How to write Architecture Decision Records
+    file: skills/adr-writing/SKILL.md
+    used_by: [architect]
+    produces: docs/architecture/adr/*.md
+
+  coding-standards:
+    description: How to define coding patterns and conventions
+    file: skills/coding-standards/SKILL.md
+    used_by: [architect]
+    produces: docs/coding-standards/
+
+  # Sprint Skills
+  epic-writing:
+    description: How to write epics with AC
+    file: skills/epic-writing/SKILL.md
+    used_by: [sm]
+    produces: docs/sprint-artifacts/*/epic-*.md
+
+  story-writing:
+    description: How to write user stories with AC and tasks
+    file: skills/story-writing/SKILL.md
+    used_by: [sm]
+    produces: docs/sprint-artifacts/*/stories/story-*.md
+
+  sprint-planning:
+    description: How to plan and organize sprints
+    file: skills/sprint-planning/SKILL.md
+    used_by: [sm]
+    produces: docs/sprint-artifacts/sprint-status.yaml
+
+  jira-integration:
+    description: Bidirectional Jira sync with development control
+    file: skills/jira-integration/SKILL.md
+    used_by: [sm, dev]
+    cache: "{project-root}/.opencode/jira-cache.yaml"
+    produces: docs/sprint-artifacts/jira-sync-report.md
+    modes:
+      - with_links     # User provides Jira links
+      - auto_create    # Agent creates in project
+      - mixed          # Sync existing with local
+    features:
+      - cache_system           # Local cache for speed
+      - find_related           # Find parent/children
+      - control_development    # Manage statuses, branches
+      - status_validation      # Ensure workflow statuses exist
+
+  # Implementation Skills
+  dev-story:
+    description: How to implement stories using red-green-refactor
+    file: workflows/dev-story/instructions.md
+    used_by: [dev]
+
+  code-review:
+    description: How to perform code reviews
+    file: skills/code-review/SKILL.md
+    used_by: [dev]
+
+  test-design:
+    description: How to design and write tests
+    file: skills/test-design/SKILL.md
+    used_by: [dev]
+
+  # Utility Skills
+  research-methodology:
+    description: How to conduct technical, market, domain research
+    file: skills/research-methodology/SKILL.md
+    used_by: [researcher]
+    produces: docs/research/
+
+  module-documentation:
+    description: How to create detailed module documentation
+    file: skills/module-documentation/SKILL.md
+    used_by: [module-docs]
+    produces: docs/architecture/[module]/
+
+  archiving:
+    description: How to archive documents properly
+    file: skills/archiving/SKILL.md
+    used_by: [sm, architect]
+    produces: docs/archive/
+
+  diagram-creation:
+    description: How to create C4, sequence, ER, flowchart diagrams
+    file: skills/diagram-creation/SKILL.md
+    used_by: [architect]
+    produces: docs/diagrams/
+
+  methodologies:
+    description: Structured methods for requirements, analysis, problem-solving
+    file: skills/methodologies/SKILL.md
+    used_by: [analyst, pm, architect, researcher]
+    methods:
+      analyst: [User Interviews, Empathy Mapping, Journey Mapping, Affinity Clustering, Five Whys, Fishbone]
+      pm: [Problem Framing, HMW, POV Statement, JTBD, Brainstorming, SCAMPER]
+      architect: [Systems Thinking, Fishbone, Is/Is Not Analysis, Decision Matrix]
+      researcher: [Analogous Inspiration, Five Whys, Systems Thinking, Is/Is Not]
+
+  doc-todo:
+    description: Incremental document writing with TODO placeholders
+    file: skills/doc-todo/SKILL.md
+    used_by: [analyst, pm, architect, sm]
+    types:
+      - DRAFT       # Section is draft, needs review
+      - EXPAND      # Section needs more detail
+      - RESEARCH    # Needs research/investigation
+      - REVIEW      # Needs stakeholder review
+      - DECISION    # Decision needed
+      - DEPENDENCY  # Waiting on other document
+      - EXAMPLE     # Add examples
+      - DIAGRAM     # Add diagram
+      - NUMBERS     # Add metrics/numbers
+      - LINK        # Add links/references
+
+  changelog:
+    description: Maintain changelogs for repository and documents
+    file: skills/changelog/SKILL.md
+    used_by: [dev, sm, pm, architect]
+    mandatory: true
+    artifacts:
+      repo: CHANGELOG.md
+      docs: "## Changelog section in each document"
+    format:
+      repo: keepachangelog
+      docs: table
+
+  translation:
+    description: Translate docs to user language, export to Confluence
+    file: skills/translation/SKILL.md
+    used_by: [pm, analyst]
+    output_folder: "docs/confluence/"
+    formats: [confluence, markdown, html]
+    rules:
+      - "Technical docs (docs/) ALWAYS in English"
+      - "Translations go to docs/confluence/"
+      - "Preserve technical terms in English"
+      - "Keep code blocks unchanged"
+
+# =============================================================================
+# COMMANDS (Entry Points)
+# =============================================================================
+commands:
+  # Planning Commands
+  requirements:
+    description: Gather FR/NFR requirements
+    agent: analyst
+    file: commands/requirements.md
+    skills_loaded: [requirements-gathering, acceptance-criteria]
+
+  prd:
+    description: Create/edit PRD
+    agent: pm
+    file: commands/prd.md
+    skills_loaded: [prd-writing, acceptance-criteria]
+
+  coding-standards:
+    description: Define coding standards
+    agent: architect
+    file: commands/coding-standards.md
+    skills_loaded: [coding-standards]
+
+  architecture:
+    description: Create/edit architecture
+    agent: architect
+    file: commands/architecture.md
+    skills_loaded: [architecture-design, adr-writing]
+
+  # Sprint Commands
+  epics:
+    description: Create epics from PRD
+    agent: sm
+    file: commands/epics.md
+    skills_loaded: [epic-writing, acceptance-criteria]
+
+  stories:
+    description: Create stories for epic
+    agent: sm
+    file: commands/stories.md
+    arguments:
+      - name: epic-id
+        required: true
+    skills_loaded: [story-writing, acceptance-criteria]
+
+  sprint-plan:
+    description: Plan sprints
+    agent: sm
+    file: commands/sprint-plan.md
+    skills_loaded: [sprint-planning]
+
+  jira-sync:
+    description: Sync to Jira
+    agent: sm
+    file: commands/jira-sync.md
+    skills_loaded: [jira-integration]
+
+  # Implementation Commands
+  dev-story:
+    description: Implement a story
+    agent: dev
+    file: commands/dev-story.md
+    arguments:
+      - name: story-path
+        required: false
+    skills_loaded: [dev-story, test-design]
+
+  code-review:
+    description: Review implemented code
+    agent: dev
+    file: commands/code-review.md
+    arguments:
+      - name: story-path
+        required: false
+    skills_loaded: [code-review]
+
+  # Utility Commands
+  validate:
+    description: Validate artifacts
+    agent: architect
+    file: commands/validate.md
+    arguments:
+      - name: type
+        values: [requirements, prd, architecture, epics, stories, all]
+    skills_loaded: [requirements-validation, prd-validation, architecture-validation]
+
+  workflow-status:
+    description: Show workflow status
+    agent: sm
+    file: commands/workflow-status.md
+
+  research:
+    description: Conduct research
+    agent: researcher
+    file: commands/research.md
+    arguments:
+      - name: type
+        values: [market, technical, domain, competitive]
+      - name: topic
+        required: true
+
+  module-docs:
+    description: Create module documentation
+    agent: module-docs
+    file: commands/module-docs.md
+    arguments:
+      - name: module-name
+        required: true
+
+  change:
+    description: Manage documentation changes
+    agent: change-manager
+    file: commands/change.md
+    arguments:
+      - name: action
+        values: [propose, review, apply, reject]
+
+# =============================================================================
+# ARTIFACTS
+# =============================================================================
+artifacts:
+  requirements:
+    path: docs/requirements/requirements.md
+    template: templates/requirements-template.md
+
+  prd:
+    path: docs/prd.md
+    template: templates/prd-template.md
+
+  prd-qa:
+    path: docs/prd-acceptance-criteria.md
+    template: templates/prd-acceptance-criteria-template.md
+    mandatory: true
+
+  architecture:
+    path: docs/architecture.md
+    template: templates/architecture-template.md
+
+  architecture-qa:
+    path: docs/architecture-integration-tests.md
+    template: templates/integration-tests-template.md
+    mandatory: true
+
+  epic:
+    path: docs/sprint-artifacts/*/epic-*.md
+    template: templates/epic-template.md
+    naming: "epic-{NN}-{module}-{description}.md"
+    id_format: "{MODULE}-E{NN}"
+
+  story:
+    path: docs/sprint-artifacts/*/stories/story-*.md
+    template: templates/story-template.md
+    naming: "story-{EPIC}-{NN}-{description}.md"
+    id_format: "{MODULE}-S{EPIC}-{NN}"
+
+  sprint-status:
+    path: docs/sprint-artifacts/sprint-status.yaml
+    template: templates/sprint-status-template.yaml
+    format: yaml
+
+# =============================================================================
+# QUICK START
+# =============================================================================
+quickstart:
+  phases:
+    - name: Planning
+      steps:
+        - step: 1
+          command: /workflow-status
+          description: Check current status
+
+        - step: 2
+          command: /requirements
+          description: Gather requirements (if missing)
+
+        - step: 3
+          command: /validate requirements
+          description: Validate requirements
+
+        - step: 4
+          command: /prd
+          description: Create PRD
+
+        - step: 5
+          action: Create QA artifact
+          file: docs/prd-acceptance-criteria.md
+          description: AC for all FRs (MANDATORY)
+
+        - step: 6
+          command: /validate prd
+          description: Validate PRD + QA artifact
+
+        - step: 7
+          command: /coding-standards
+          description: Define coding standards
+
+        - step: 8
+          command: /architecture
+          description: Design architecture
+
+        - step: 9
+          action: Create QA artifact
+          file: docs/architecture-integration-tests.md
+          description: Integration tests (MANDATORY)
+
+        - step: 10
+          command: /validate architecture
+          description: Validate architecture + QA artifact
+
+    - name: Sprint
+      steps:
+        - step: 11
+          command: /epics
+          description: Create epics
+
+        - step: 12
+          command: /stories {epic-id}
+          description: Create stories for each epic
+
+        - step: 13
+          command: /sprint-plan
+          description: Plan sprints
+
+        - step: 14
+          command: /jira-sync
+          description: Sync to Jira
+
+    - name: Implementation
+      steps:
+        - step: 15
+          command: /dev-story
+          description: Implement story (red-green-refactor)
+
+        - step: 16
+          command: /code-review
+          description: Review implementation
+
+        - step: 17
+          action: Repeat steps 15-16
+          description: Until all stories done
+
+        - step: 18
+          command: /retrospective
+          description: Sprint retrospective

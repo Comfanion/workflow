@@ -1,0 +1,223 @@
+# OpenCode Workflow Configuration
+# This file provides centralized configuration for all agents and workflows
+# Version: 3.0.0
+
+# =============================================================================
+# PROJECT CONFIGURATION
+# =============================================================================
+project_name: "ai-wf"
+version: "3.0.0"
+
+# =============================================================================
+# USER CONFIGURATION
+# =============================================================================
+user_name: "Evgeniy"
+user_skill_level: expert  # beginner | intermediate | expert
+
+# Communication language (agent talks to user)
+communication_language: "Ukrainian"  # or English
+
+# =============================================================================
+# DOCUMENTATION LANGUAGES
+# =============================================================================
+documentation:
+  # Technical docs ALWAYS in English (agents understand better)
+  technical:
+    language: "English"
+    enforced: true  # Cannot be changed
+    paths:
+      - "docs/"
+      - "CLAUDE.md"
+      - "README.md"
+      - ".opencode/"
+      
+  # User-facing docs (translations, Confluence export)
+  user_facing:
+    enabled: true
+    output_folder: "docs/confluence/"
+    default_language: "Ukrainian"  # or English
+    formats:
+      - confluence    # Confluence wiki format
+      - markdown      # Translated markdown
+      - html          # Standalone HTML
+    
+  # What to translate
+  translate:
+    prd: true
+    architecture: true
+    epics: true
+    stories: false        # Usually not needed
+    coding_standards: false  # Keep technical
+
+# =============================================================================
+# OUTPUT PATHS
+# =============================================================================
+output_folder: "{project-root}/docs"
+planning_artifacts: "{project-root}/docs/planning-artifacts"
+implementation_artifacts: "{project-root}/docs/implementation-artifacts"
+sprint_artifacts: "{project-root}/docs/sprint-artifacts"
+project_knowledge: "{project-root}/docs"
+
+# =============================================================================
+# ARTIFACT PATHS
+# =============================================================================
+artifacts:
+  requirements: "{output_folder}/requirements"
+  prd: "{output_folder}/prd.md"
+  architecture: "{output_folder}/architecture.md"
+  adr: "{output_folder}/architecture/adr"
+  epics: "{sprint_artifacts}/backlog"
+  stories: "{sprint_artifacts}/stories"
+  sprint_status: "{sprint_artifacts}/sprint-status.yaml"
+  
+# =============================================================================
+# WORKFLOW SETTINGS
+# =============================================================================
+workflow:
+  # Auto-save after each template section
+  auto_save: true
+  
+  # Show confirmation after each step (false = YOLO mode)
+  interactive: true
+  
+  # Default validation level: strict | normal | minimal
+  validation_level: normal
+
+# =============================================================================
+# AGENT DEFAULTS
+# =============================================================================
+agents:
+  default_model: "anthropic/claude-sonnet-4-20250514"
+  default_temperature: 0.3
+  
+# =============================================================================
+# JIRA INTEGRATION
+# =============================================================================
+jira:
+  enabled: true
+  
+  # Connection
+  base_url: "https://your-domain.atlassian.net"
+  project_key: "PROJ"           # Default project
+  # Auth: use environment variables JIRA_EMAIL, JIRA_API_TOKEN
+  
+  # Cache for faster operations
+  cache:
+    enabled: true
+    file: "{project-root}/.opencode/jira-cache.yaml"
+    ttl_minutes: 30             # Refresh cache after 30 min
+    
+  # Hierarchy mapping
+  hierarchy:
+    epic_type: "Epic"
+    story_type: "Story"
+    task_type: "Task"           # Sub-task under Story
+    bug_type: "Bug"
+    
+  # Development control mode
+  # If true: agent controls task statuses, creates branches, links PRs
+  control_development: true
+  
+  # Required statuses for workflow (agent will validate)
+  required_statuses:
+    backlog: ["Backlog", "To Do", "Open"]           # Any of these
+    planned: ["Planned", "Selected for Development", "Ready"]
+    in_progress: ["In Progress", "In Development"]
+    review: ["In Review", "Code Review", "Review"]
+    qa: ["QA", "Testing", "In QA"]
+    done: ["Done", "Closed", "Resolved"]
+    
+  # Status transitions for dev workflow
+  workflow:
+    start_work: "backlog → in_progress"
+    submit_review: "in_progress → review"
+    review_passed: "review → qa"
+    qa_passed: "qa → done"
+    review_failed: "review → in_progress"
+    qa_failed: "qa → in_progress"
+    
+  # Branch naming
+  branch:
+    epic: "feature/epic-{epic_key}-{slug}"
+    story: "feature/{story_key}-{slug}"
+    task: "feature/{story_key}/{task_key}-{slug}"
+    
+  # Auto-create settings
+  auto_create:
+    stories_from_epics: true    # Auto-create stories under epic
+    tasks_from_stories: true    # Auto-create tasks under story
+    link_to_docs: true          # Add link to local doc in Jira description
+
+# =============================================================================
+# DEVELOPMENT METHODOLOGY
+# =============================================================================
+development:
+  # Methodology: tdd | stub
+  # TDD:  Interface → Test (RED) → Implementation (GREEN) → Refactor
+  # STUB: Interface → Stub Implementation → Test → Full Implementation
+  methodology: tdd
+  
+  # Task structure
+  task:
+    max_hours: 2           # Maximum hours per atomic task
+    include_tests: true    # Each task includes test as validation
+    require_interface: true # Interface defined before implementation
+
+  # TODO comments for future work
+  todo:
+    enabled: true
+    require_id: true  # Must reference task/story/epic ID (except BACKLOG, HACK)
+    
+    # Code TODOs (IDE-compatible)
+    code:
+      format: "// TODO({type}:{id}): {description}"
+      types: [TASK, STORY, EPIC, SPRINT, BACKLOG, TECH_DEBT, FIXME, HACK]
+    
+    # Documentation TODOs (Markdown)
+    docs:
+      format: "<!-- TODO({type}): {description} -->"
+      block_format: |
+        <!-- TODO({type}): {description}
+        {context}
+        -->
+      types:
+        - DRAFT       # Section is draft, needs review
+        - EXPAND      # Section needs more detail
+        - RESEARCH    # Needs research/investigation
+        - REVIEW      # Needs stakeholder review
+        - DECISION    # Decision needed
+        - DEPENDENCY  # Waiting on other document
+        - EXAMPLE     # Add examples
+        - DIAGRAM     # Add diagram
+        - NUMBERS     # Add metrics/numbers
+        - LINK        # Add links/references
+
+# =============================================================================
+# CHANGELOG
+# =============================================================================
+changelog:
+  # Repository changelog
+  repo:
+    enabled: true
+    file: "CHANGELOG.md"
+    format: "keepachangelog"  # https://keepachangelog.com/
+    versioning: "semver"      # https://semver.org/
+    
+  # Document changelogs (in each doc)
+  docs:
+    enabled: true
+    mandatory: true  # Fail validation if missing
+    format: |
+      | Version | Date | Author | Changes |
+      |---------|------|--------|---------|
+    
+  # Update timing
+  update_when: "session_end"  # Update at end of session, not on every change
+  # Summarize all session changes in one entry
+
+# =============================================================================
+# TEST ARCHITECTURE
+# =============================================================================
+testarch:
+  use_playwright: false
+  use_mcp_enhancements: true

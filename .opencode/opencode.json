@@ -1,0 +1,36 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  
+  "instructions": [
+    ".opencode/FLOW.yaml",
+    "docs/requirements/requirements.md",
+    "docs/prd.md",
+    "docs/architecture.md"
+  ],
+  
+  "agent": {
+    "build": {
+      "mode": "primary",
+      "description": "Default development agent with full tool access",
+      "model": "anthropic/claude-sonnet-4-20250514"
+    },
+    "plan": {
+      "mode": "primary",
+      "description": "Planning agent - analyzes without making changes",
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "permission": {
+        "edit": "ask",
+        "bash": "ask"
+      }
+    }
+  },
+  
+  "permission": {
+    "bash": {
+      "*": "allow",
+      "rm -rf *": "deny",
+      "git push --force*": "ask",
+      "git reset --hard*": "ask"
+    }
+  }
+}
