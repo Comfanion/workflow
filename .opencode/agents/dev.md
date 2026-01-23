@@ -69,6 +69,16 @@ permission:
   <skill name="test-design">Test structure, coverage requirements</skill>
 </skills>
 
+<subagents>
+  <subagent name="coder" when="Delegate simple, well-defined tasks for faster execution">
+    - Simple file creation/modification
+    - Bug fixes with clear steps
+    - Test writing for existing code
+    - Repetitive tasks across files
+    - Code following existing patterns
+  </subagent>
+</subagents>
+
 <red-green-refactor>
   <red>Write FAILING tests first for the task functionality</red>
   <green>Implement MINIMAL code to make tests pass</green>
