@@ -206,25 +206,26 @@ S01 (Domain) ──┬──► S02 (Repo Interface) ──► S04 (Repo Impl)
                └──► S03 (Use Cases) ──► S05 (HTTP) ─┴──► S06 (Events) ──► S07 (Tests)
 ```
 
-### Total Effort Calculation
+### Story Breakdown
 
 ```markdown
-### Effort Summary
+### Stories Summary
 
-| Story | Tasks | Hours | Days |
-|-------|-------|-------|------|
-| S01 | 4 | 20h | 2.5d |
-| S02 | 3 | 15h | 2d |
-| S03 | 5 | 26h | 3d |
-| S04 | 4 | 22h | 3d |
-| S05 | 3 | 16h | 2d |
-| S06 | 3 | 15h | 2d |
-| S07 | 3 | 15h | 2d |
-| **Total** | **25** | **129h** | **~16d** |
+| Story | Tasks | Size | Deps |
+|-------|-------|------|------|
+| S01 | 4 | M | - |
+| S02 | 3 | S | S01 |
+| S03 | 5 | L | S01 |
+| S04 | 4 | M | S02 |
+| S05 | 3 | S | S03 |
+| S06 | 3 | S | S04 |
+| S07 | 3 | S | S05,S06 |
+| **Total** | **25** | | |
 
 **Parallel Opportunities:** S02+S03, S04+S05
-**With Parallelism:** ~10 days (2 weeks)
 ```
+
+**Note:** No hour estimates. Use T-shirt sizes (XS/S/M/L/XL) for relative complexity.
 
 ## Epic Sizing
 

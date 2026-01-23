@@ -84,8 +84,8 @@ S01 ──► S02 ──► S03 ──► S04
 ### Story Decomposition Rules
 
 Each story MUST:
-1. Be completable in 2-5 days
-2. Have 3-6 atomic tasks (4-6h each)
+1. Be completable (not too big, not too small)
+2. Have self-contained tasks with documentation links
 3. Have clear dependencies on other stories
 4. Map to specific Acceptance Criteria
 
@@ -99,15 +99,17 @@ Each story MUST:
 6. **Events** - Domain events, Kafka publishers
 7. **Integration Tests** - End-to-end verification
 
-### Total Effort Breakdown
+### Stories by Layer
 
-| Layer | Stories | Tasks | Hours |
-|-------|---------|-------|-------|
-| Domain | 1 | 4 | 20h |
-| Application | 1 | 4 | 22h |
-| Infrastructure | 2 | 5 | 28h |
-| Testing | 1 | 3 | 15h |
-| **Total** | **5** | **16** | **85h** |
+| Layer | Stories | Tasks | Size |
+|-------|---------|-------|------|
+| Domain | 1 | 4 | M |
+| Application | 2 | 6 | M |
+| Infrastructure | 2 | 5 | L |
+| Testing | 1 | 3 | S |
+| **Total** | **6** | **18** | |
+
+**Note:** No hour estimates. Size = relative complexity (XS/S/M/L/XL).
 
 ---
 

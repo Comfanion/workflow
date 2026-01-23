@@ -92,10 +92,12 @@ Use template at: `@.opencode/templates/story-template.md`
 
 **Story ID:** [MODULE]-S[EPIC]-[NN]
 **Epic:** [MODULE]-E[EPIC] - [Epic Title]
-**Status:** TODO | IN_PROGRESS | REVIEW | DONE
+**Status:** draft | ready-for-dev | in-progress | review | done
 **Priority:** P0 | P1 | P2
-**Estimate:** XS | S | M | L | XL
+**Size:** XS | S | M | L | XL
 ```
+
+**Note:** Size is relative complexity (T-shirt sizing). NO hour estimates for tasks.
 
 ### User Story Format (MANDATORY)
 
@@ -187,19 +189,23 @@ Each story should have:
 - **Authorization** - Permission checks
 - **Edge cases** - Boundary conditions
 
-## Atomic Tasks (4-6 hours each)
+## Self-Contained Tasks (NO ESTIMATES)
+
+### Task Philosophy
+
+**CRITICAL:** Tasks must be **SELF-CONTAINED** - an AI agent or developer can take ANY task and execute it independently without asking questions.
+
+**NO ESTIMATES** - Don't estimate time. Focus on clear scope and outcomes.
 
 ### Task Decomposition Rules
 
-**MANDATORY**: Every story MUST be broken into atomic tasks:
-
 | Rule | Description |
 |------|-------------|
-| **4-6 hours** | Each task should be 4-6 hours of focused work |
-| **Single responsibility** | One clear deliverable per task |
-| **Explicit dependencies** | Every task declares what it depends on |
-| **Parallel opportunities** | Independent tasks can run in parallel |
-| **Red-Green-Refactor** | Follow TDD cycle in task types |
+| **Self-contained** | Task has ALL information needed to execute |
+| **Documentation links** | Every task links to relevant docs, schemas, examples |
+| **Clear input/output** | What exists before, what must exist after |
+| **Testable outcome** | How to verify task is complete |
+| **Independent execution** | Can be picked up without context from other tasks |
 
 ## Development Methodologies
 
@@ -235,203 +241,137 @@ Interface → Stub Implementation → Tests → Real Implementation
 
 **Best for:** Exploratory work, unclear requirements, rapid prototyping
 
-### Task Structure by Methodology
+### Task Structure (MANDATORY FORMAT)
 
-**TDD Task:**
-```markdown
-### T2: Implement {{Entity}} Aggregate + Tests
-- **Estimate:** 5h
-- **Depends on:** T1
-- **Methodology:** TDD
-- **Deliverables:**
-  - [ ] Aggregate: `domain/aggregate/entity.go`
-  - [ ] Value objects: `domain/valueobject/*.go`
-- **Validation Test:** `domain/aggregate/entity_test.go`
-  - [ ] Test creation happy path
-  - [ ] Test validation errors
-  - [ ] Test business rules
-  - [ ] **⚠️ ALL TESTS MUST PASS**
-```
-
-**STUB Task:**
-```markdown
-### T2: Implement Repository (Stub → Real) + Tests
-- **Estimate:** 6h
-- **Depends on:** T1
-- **Methodology:** STUB
-- **Deliverables:**
-  - [ ] Stub: `infrastructure/repo/entity_memory_repo.go`
-  - [ ] Real: `infrastructure/repo/entity_postgres_repo.go`
-- **Validation Test:** `infrastructure/repo/entity_repo_test.go`
-  - [ ] Test Save, FindByID, List
-  - [ ] Test with stub first
-  - [ ] Replace stub with real
-  - [ ] **⚠️ ALL TESTS MUST PASS**
-```
-
----
-
-### Task Types
-
-| Type | Icon | Description |
-|------|------|-------------|
-| INTERFACE | 📐 | Define interface/contract |
-| RED | 🔴 | Write failing test first (TDD) |
-| GREEN | 🟢 | Implement to pass tests |
-| STUB | 🧪 | Stub implementation (STUB methodology) |
-| REFACTOR | 🔵 | Clean up, no new functionality |
-| INTEGRATION | 🔗 | E2E integration test |
-| DOCS | 📝 | Documentation only |
-
-### Task Structure
+Each task MUST have this structure to be self-contained:
 
 ```markdown
-### T{N}: {Task Name}
-- **Estimate:** 4h | 5h | 6h
-- **Depends on:** T1, T2 | - (none)
-- **Blocks:** T5, T6 | - (none)
-- **Type:** 🔴 RED | 🟢 GREEN | 🔵 REFACTOR | 📝 DOCS
-- **Files:** `path/to/file.go`
-- **Definition of Done:**
-  - [ ] Specific deliverable 1
-  - [ ] Specific deliverable 2
-- **Notes:** Implementation hints
+### T{N}: {Clear Task Name}
+
+**Goal:** One sentence describing what this task achieves.
+
+**Documentation:**
+- [AGENTS.md#section](../../../AGENTS.md#section) - Relevant coding patterns
+- [data-model.md#table](../docs/data-model.md#table) - Database schema
+- [example.go](../src/path/example.go) - Pattern to follow
+
+**Input (Prerequisites):**
+- T{N-1} completed (if dependent)
+- Existing file: `path/to/existing.go` - what it provides
+- Repository interface defined in: `path/to/interface.go`
+
+**Output (Deliverables):**
+- `path/to/new_file.go` - Description of what this file does
+- `path/to/new_file_test.go` - Tests covering X, Y, Z
+
+**Implementation Steps:**
+1. Read documentation links above
+2. Create file structure following pattern from [example.go]
+3. Implement X following AGENTS.md conventions
+4. Write tests covering: happy path, validation errors, edge cases
+5. Run tests, ensure all pass
+
+**Acceptance Criteria:**
+- [ ] File created at correct path
+- [ ] Follows naming conventions from AGENTS.md
+- [ ] All tests pass: `go test ./path/to/...`
+- [ ] No linting errors: `golangci-lint run`
+
+**Notes:** Additional hints, gotchas, or context
 ```
 
-### Dependency Graph (ASCII)
+### Why This Structure?
 
-Visualize task dependencies:
+| Section | Purpose |
+|---------|---------|
+| **Goal** | Agent knows the "why" |
+| **Documentation** | Agent can read all needed context |
+| **Input** | Agent knows what must exist before starting |
+| **Output** | Agent knows exactly what to create |
+| **Implementation Steps** | Agent has step-by-step guidance |
+| **Acceptance Criteria** | Agent can verify completion |
 
-```
-T1 ──┬──► T2 ──► T4
-     │           │
-     └──► T3 ────┴──► T5 ──► T6
-```
-
-- `──►` = depends on (must complete before)
-- `┬` = fork (parallel branches)
-- `┴` = join (waits for all)
-
-### Summary Table (MANDATORY)
+### Tasks Summary Table
 
 ```markdown
-| ID | Task | Est | Depends On | Status |
-|----|------|-----|------------|--------|
-| T1 | Domain layer (aggregates, value objects, tests) | 6h | - | ⬜ |
-| T2 | Repository interface + use case tests | 5h | T1 | ⬜ |
-| T3 | Use case implementation | 5h | T2 | ⬜ |
-| T4 | Repository implementation (PostgreSQL) | 6h | T2 | ⬜ |
-| T5 | HTTP handlers + tests | 5h | T3 | ⬜ |
-| T6 | Integration tests + refactor | 5h | T4, T5 | ⬜ |
+| ID | Task | Deps | Status |
+|----|------|------|--------|
+| T1 | MerchantProduct Aggregate + Value Objects | - | ⬜ |
+| T2 | Repository Interface | T1 | ⬜ |
+| T3 | CreateProduct Use Case | T2 | ⬜ |
+| T4 | PostgreSQL Repository Implementation | T2 | ⬜ |
+| T5 | HTTP Handler + Routes | T3, T4 | ⬜ |
 ```
 
 **Status:** ⬜ TODO | 🔄 IN_PROGRESS | ✅ DONE | ⏸️ BLOCKED
 
-### Execution Phases
+### Dependency Graph (Optional)
 
-Group tasks by parallel execution opportunity:
-
-```markdown
-### Execution Order
-
-Phase 1: T1 (no deps)
-Phase 2: T2, T3 (parallel - both depend only on T1)
-Phase 3: T4, T6 (parallel - independent branches)
-Phase 4: T5 (waits for T3, T4)
-Phase 5: T7 (waits for T5)
-Phase 6: T8, T6-continued (parallel)
-Phase 7: T9 (waits for T6, T8)
-Phase 8: T10 (final)
-
-**Critical Path:** T1 → T2 → T4 → T5 → T7 → T8 → T9 → T10
-**Total Estimate:** 32h (4 days)
-**Parallel Savings:** ~3h (25%)
+```
+T1 ──► T2 ──┬──► T3 ──┬──► T5
+            │         │
+            └──► T4 ──┘
 ```
 
-### Example: CreateProduct Story Tasks
+---
+
+## Full Task Example
+
+Here's a complete example of a self-contained task:
 
 ```markdown
-| ID | Task | Est | Depends On | Type |
-|----|------|-----|------------|------|
-| T1 | Domain layer: Product aggregate + value objects + tests | 6h | - | 🔴🟢 |
-| T2 | Repository interface + CreateProduct use case tests | 5h | T1 | 🔴 |
-| T3 | CreateProduct use case implementation | 5h | T2 | 🟢 |
-| T4 | PostgreSQL repository implementation + tests | 6h | T2 | 🟢 |
-| T5 | HTTP handler + tests | 5h | T3 | 🔴🟢 |
-| T6 | Integration tests + refactor + documentation | 5h | T4, T5 | 🔵 |
+### T1: MerchantProduct Aggregate + Value Objects
 
-**Graph:**
-T1 ──► T2 ──┬──► T4 ──► T5 ──► T7 ──► T8 ──┬──► T9 ──► T10
-            │                               │
-T3 ─────────┴───────────► T6 ───────────────┘
+**Goal:** Create the MerchantProduct aggregate with all value objects and domain validation.
+
+**Documentation:**
+- [AGENTS.md#type-safety](../../../AGENTS.md#type-safety) - Value object patterns
+- [AGENTS.md#naming-conventions](../../../AGENTS.md#naming-conventions) - File/package naming
+- [catalog-data-model.md#merchant_products](../docs/catalog-data-model.md#31-merchant-products) - Database schema
+- [modules/catalog/domain/entity/marketplace_category.go](../src/services/catalog/modules/catalog/domain/entity/marketplace_category.go) - Example entity pattern
+
+**Input (Prerequisites):**
+- None (first task in story)
+- Existing patterns in `modules/catalog/domain/` to follow
+
+**Output (Deliverables):**
+- `modules/catalog/domain/valueobject/merchant_id.go` - UUID wrapper with validation
+- `modules/catalog/domain/valueobject/product_id.go` - UUID wrapper
+- `modules/catalog/domain/valueobject/merchant_sku.go` - String with max length validation
+- `modules/catalog/domain/valueobject/ean.go` - GTIN-13 checksum validation
+- `modules/catalog/domain/valueobject/product_status.go` - Enum (pending, active, etc.)
+- `modules/catalog/domain/entity/merchant_product.go` - Aggregate with private fields + getters
+- `modules/catalog/domain/entity/merchant_product_test.go` - All tests
+
+**Implementation Steps:**
+1. Read AGENTS.md sections on value objects and naming
+2. Look at existing `marketplace_category.go` for entity pattern
+3. Create value objects with `New*()` factory functions that validate
+4. Create aggregate with private fields, public getters, factory method
+5. Write tests: creation happy path, validation errors, status transitions
+6. Run `go test ./modules/catalog/domain/...`
+
+**Acceptance Criteria:**
+- [ ] All files created at correct paths
+- [ ] Value objects validate on construction (not setters)
+- [ ] EAN validates GTIN-13 checksum
+- [ ] Aggregate uses private fields with getters
+- [ ] Tests cover: valid creation, invalid data rejection, status transitions
+- [ ] `go test ./modules/catalog/domain/...` passes
+- [ ] `golangci-lint run ./modules/catalog/domain/...` passes
+
+**Notes:** 
+- EAN checksum algorithm: sum odd positions × 1, even × 3, check digit makes sum divisible by 10
+- Status enum values from PRD: pending, pending_category, pending_dedup, pending_pim, active, declined
 ```
 
-### Splitting Large Tasks
+### What Makes This Task Self-Contained?
 
-If a task exceeds 6h, consider splitting it. **Each task MUST have validation test.**
-
-| Original (8h+) | Split Into (with tests) |
-|----------------|------------------------|
-| "Full domain layer" (10h) | **T1:** Value objects + tests (4h)<br>**T2:** Aggregate + business rules + tests (6h) |
-| "Full repository" (10h) | **T1:** Interface + Save/FindByID + tests (5h)<br>**T2:** List/Search + advanced queries + tests (5h) |
-
-### Task Template with Validation
-
-```markdown
-### T{N}: {Task Name}
-- **Estimate:** 5h
-- **Depends on:** T{N-1}
-- **Methodology:** TDD | STUB
-- **Deliverables:**
-  - [ ] File: `path/to/implementation.go`
-  - [ ] File: `path/to/implementation2.go`
-- **Validation Test:** `path/to/implementation_test.go`
-  - [ ] Test case 1: happy path
-  - [ ] Test case 2: error handling
-  - [ ] Test case 3: edge case
-  - [ ] **⚠️ ALL TESTS MUST PASS** ← MANDATORY
-- **Notes:** Implementation hints
-```
-
-### Validation Test Requirements
-
-**Every task MUST have:**
-
-| Test Type | Required | Description |
-|-----------|----------|-------------|
-| Happy path | ✅ Yes | Normal success case |
-| Error handling | ✅ Yes | Expected failures |
-| Edge cases | Recommended | Boundary conditions |
-| **Pass gate** | ✅ MANDATORY | `⚠️ ALL TESTS MUST PASS` |
-
-### TDD vs STUB Task Examples
-
-**TDD Example:**
-```markdown
-### T2: Implement Product Aggregate
-- **Methodology:** TDD
-- **Deliverables:**
-  - [ ] `domain/aggregate/product.go`
-- **Validation Test:** `domain/aggregate/product_test.go`
-  - [ ] 🔴 Write test first (should FAIL)
-  - [ ] 🟢 Implement until test PASSES
-  - [ ] 🔵 Refactor, tests still PASS
-  - [ ] **⚠️ ALL TESTS MUST PASS**
-```
-
-**STUB Example:**
-```markdown
-### T4: Implement Repository
-- **Methodology:** STUB
-- **Deliverables:**
-  - [ ] Stub: `infrastructure/repo/product_memory_repo.go`
-  - [ ] Real: `infrastructure/repo/product_postgres_repo.go`
-- **Validation Test:** `infrastructure/repo/product_repo_test.go`
-  - [ ] 🧪 Write stub (mock data)
-  - [ ] ✅ Write tests against stub
-  - [ ] 🟢 Replace with real impl
-  - [ ] **⚠️ ALL TESTS MUST PASS**
-```
+1. **Agent can start immediately** - all documentation links provided
+2. **No guessing** - exact file paths specified  
+3. **Pattern to follow** - links to existing code examples
+4. **Clear verification** - specific test commands and criteria
+5. **Context included** - notes explain non-obvious details (EAN algorithm)
 
 ## Definition of Done
 

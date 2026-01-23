@@ -10,7 +10,7 @@ workflowType: 'story'
 **Epic:** {{module}}-E{{epic_number}} - {{epic_title}}
 **Status:** draft | ready-for-dev | in-progress | review | done | blocked
 **Priority:** P0 | P1 | P2
-**Estimate:** XS | S | M | L | XL
+**Size:** XS | S | M | L | XL
 **Created:** {{date}}
 **Last Updated:** {{date}}
 
@@ -47,170 +47,112 @@ workflowType: 'story'
 
 ---
 
-## Atomic Tasks
+## Self-Contained Tasks
 
 <!-- 
-METHODOLOGY: {{methodology}} (tdd | stub)
-- TDD:  Interface → Test (failing) → Implementation → Refactor
-- STUB: Interface → Stub → Test → Full Implementation
-
-RULES:
-- Each task is 4-6 hours of focused work
-- Each task includes TEST as validation gate
-- Tasks have explicit dependencies
-- Dev agent respects dependency order
+Each task MUST be self-contained:
+- Agent can execute WITHOUT asking questions
+- All documentation links provided
+- Clear input/output/acceptance criteria
 -->
-
-### Development Methodology: **{{methodology}}**
-
-```
-{{#if methodology == "tdd"}}
-TDD Flow per Task:
-  1. Define Interface/Contract
-  2. Write Failing Test (RED)
-  3. Implement Minimal Code (GREEN)
-  4. Refactor
-  5. Validate: Test MUST pass
-{{/if}}
-{{#if methodology == "stub"}}
-STUB Flow per Task:
-  1. Define Interface/Contract
-  2. Write Stub Implementation (returns mock data)
-  3. Write Tests against Stub
-  4. Replace Stub with Real Implementation
-  5. Validate: Test MUST pass
-{{/if}}
-```
-
----
-
-### Task Dependency Graph
-
-```
-T1 ──┬──► T2 ──► T3
-     │
-     └──► T4 ──► T5
-                  │
-T3 ───────────────┴──► T6
-```
 
 ### Tasks Summary
 
-| ID | Task | Est | Deps | Test | Status |
-|----|------|-----|------|------|--------|
-| T1 | {{task_1}} | 5h | - | unit | ⬜ |
-| T2 | {{task_2}} | 6h | T1 | unit | ⬜ |
-| T3 | {{task_3}} | 5h | T2 | unit | ⬜ |
-| T4 | {{task_4}} | 5h | T1 | unit | ⬜ |
-| T5 | {{task_5}} | 5h | T3,T4 | integration | ⬜ |
+| ID | Task | Deps | Status |
+|----|------|------|--------|
+| T1 | {{task_1_name}} | - | ⬜ |
+| T2 | {{task_2_name}} | T1 | ⬜ |
+| T3 | {{task_3_name}} | T2 | ⬜ |
 
-**Status:** ⬜ TODO | 🔄 IN_PROGRESS | ✅ DONE | ⏸️ BLOCKED | ❌ FAILED
+**Status:** ⬜ TODO | 🔄 IN_PROGRESS | ✅ DONE | ⏸️ BLOCKED
 
 ---
 
-### T1: Domain Layer (Aggregates, Value Objects)
-- **Estimate:** 6h
-- **Depends on:** -
-- **Blocks:** T2
-- **Deliverables:**
-  - [ ] Interface/contract defined
-  - [ ] Value objects with validation
-  - [ ] Aggregate with business rules
-  - [ ] Factory methods
-- **Validation Test:** 
-  - [ ] Value object tests (validation, equality)
-  - [ ] Aggregate creation tests
-  - [ ] Business rules tests
-  - [ ] **⚠️ ALL TESTS MUST PASS**
-- **Notes:** {{implementation_hint}}
+### T1: {{task_1_name}}
+
+**Goal:** {{what_this_task_achieves}}
+
+**Documentation:**
+- [AGENTS.md#section](../../../AGENTS.md#section) - {{what_pattern}}
+- [data-model.md#table](../../../docs/data-model.md#section) - {{schema_info}}
+- [existing_example.go](../path/to/example.go) - Pattern to follow
+
+**Input (Prerequisites):**
+- {{what_must_exist_before_starting}}
+- Existing file: `path/to/dependency.go` - provides {{what}}
+
+**Output (Deliverables):**
+- `path/to/new_file.go` - {{description}}
+- `path/to/new_file_test.go` - Tests for {{what}}
+
+**Implementation Steps:**
+1. Read documentation links above
+2. {{step_2}}
+3. {{step_3}}
+4. Write tests covering: happy path, errors, edge cases
+5. Run: `go test ./path/to/...`
+
+**Acceptance Criteria:**
+- [ ] Files created at specified paths
+- [ ] Follows patterns from AGENTS.md
+- [ ] Tests pass: `go test ./path/to/...`
+- [ ] Lint passes: `golangci-lint run`
+
+**Notes:** {{additional_context_or_gotchas}}
 
 ---
 
-### T2: Repository Interface + Use Case Tests
-- **Estimate:** 5h
-- **Depends on:** T1
-- **Blocks:** T3, T4
-- **Deliverables:**
-  - [ ] Repository interface (ports)
-  - [ ] Use case interface
-  - [ ] Use case DTOs (input/output)
-  - [ ] Use case tests (with mock repository)
-- **Validation Test:**
-  - [ ] Use case happy path test
-  - [ ] Use case error handling tests
-  - [ ] **⚠️ ALL TESTS MUST PASS**
-- **Notes:** {{implementation_hint}}
+### T2: {{task_2_name}}
+
+**Goal:** {{what_this_task_achieves}}
+
+**Documentation:**
+- [AGENTS.md#section](link) - {{pattern}}
+- [T1 output](../path/from/T1) - Uses types from T1
+
+**Input (Prerequisites):**
+- T1 completed
+- Files from T1: `path/to/aggregate.go`
+
+**Output (Deliverables):**
+- `path/to/file.go` - {{description}}
+- `path/to/file_test.go` - Tests
+
+**Implementation Steps:**
+1. {{step}}
+2. {{step}}
+
+**Acceptance Criteria:**
+- [ ] {{criterion}}
+- [ ] Tests pass
+
+**Notes:** {{notes}}
 
 ---
 
-### T3: Use Case Implementation
-- **Estimate:** 5h
-- **Depends on:** T2
-- **Blocks:** T5
-- **Deliverables:**
-  - [ ] Use case handler implementation
-  - [ ] Mappers (entity ↔ DTO)
-  - [ ] Error handling
-- **Validation Test:**
-  - [ ] All use case tests pass
-  - [ ] Edge cases covered
-  - [ ] **⚠️ ALL TESTS MUST PASS**
-- **Notes:** {{implementation_hint}}
+### T3: {{task_3_name}}
 
----
+**Goal:** {{goal}}
 
-### T4: Repository Implementation
-- **Estimate:** 6h
-- **Depends on:** T2
-- **Blocks:** T5
-- **Deliverables (TDD):**
-  - [ ] Write repository tests first
-  - [ ] PostgreSQL repository implementation
-- **Deliverables (STUB):**
-  - [ ] In-memory stub first
-  - [ ] PostgreSQL implementation
-- **Validation Test:**
-  - [ ] Test Save
-  - [ ] Test FindByID (found/not found)
-  - [ ] Test List with filters
-  - [ ] **⚠️ ALL TESTS MUST PASS**
-- **Notes:** {{implementation_hint}}
+**Documentation:**
+- {{links}}
 
----
+**Input (Prerequisites):**
+- T2 completed
+- {{dependencies}}
 
-### T5: HTTP Handlers + Integration Tests
-- **Estimate:** 5h
-- **Depends on:** T3, T4
-- **Blocks:** -
-- **Deliverables:**
-  - [ ] HTTP handler/controller
-  - [ ] Routes registered
-  - [ ] Request/response validation
-  - [ ] Integration tests
-  - [ ] Documentation updated
-- **Validation Test:**
-  - [ ] Test 201 Created
-  - [ ] Test 400 Bad Request (validation)
-  - [ ] Test 404 Not Found
-  - [ ] E2E: API → Service → Repo → DB
-  - [ ] **⚠️ ALL TESTS MUST PASS**
-  - [ ] **⚠️ NO REGRESSIONS**
-- **Notes:** {{implementation_hint}}
+**Output (Deliverables):**
+- {{files}}
 
----
+**Implementation Steps:**
+1. {{steps}}
 
-### Execution Phases
+**Acceptance Criteria:**
+- [ ] {{criteria}}
+- [ ] All tests pass
+- [ ] **⚠️ NO REGRESSIONS** (run full test suite)
 
-| Phase | Tasks (Parallel) | Duration | Tests Required |
-|-------|-----------------|----------|----------------|
-| 1 | T1 | 6h | Domain layer tests |
-| 2 | T2 | 5h | Use case tests |
-| 3 | T3, T4 | 6h | Implementation tests |
-| 4 | T5 | 5h | Integration tests |
-| **Total** | | **22h** | **All green** |
-
-**Critical Path:** T1 → T2 → T3 → T5 = 21h (~3 days)
-**With Parallelism (T3 || T4):** ~2.5 days
+**Notes:** {{notes}}
 
 ---
 
