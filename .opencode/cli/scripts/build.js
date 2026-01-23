@@ -68,21 +68,21 @@ async function build() {
 
   // Copy repo-structure templates
   console.log('\n  Copying repo-structure templates...');
-  const repoStructureSrc = path.join(OPENCODE_SRC, 'templates', 'repo-structure');
+  const repoStructureSrc = path.join(OPENCODE_SRC, 'skills', 'coding-standards', 'repo-structure');
   const repoStructureDest = path.join(DIST_DIR, 'repo-structure');
   
   if (await fs.pathExists(repoStructureSrc)) {
     await fs.copy(repoStructureSrc, repoStructureDest);
-    console.log('    ✅ templates/repo-structure');
+    console.log('    ✅ skills/coding-standards/repo-structure');
   } else {
-    console.log('    ⚠️  templates/repo-structure (not found)');
+    console.log('    ⚠️  skills/coding-standards/repo-structure (not found)');
   }
 
-  // Remove internal templates from opencode copy (they're in repo-structure)
-  const internalRepoStructure = path.join(opencodeDir, 'templates', 'repo-structure');
+  // Remove internal repo-structure from opencode copy (it's in dist/repo-structure)
+  const internalRepoStructure = path.join(opencodeDir, 'skills', 'coding-standards', 'repo-structure');
   if (await fs.pathExists(internalRepoStructure)) {
     await fs.remove(internalRepoStructure);
-    console.log('    ✅ Removed duplicate repo-structure from templates/');
+    console.log('    ✅ Removed duplicate repo-structure from skills/');
   }
 
   // Create package info
@@ -104,8 +104,7 @@ async function build() {
   console.log('  │   ├── config.yaml');
   console.log('  │   ├── FLOW.yaml');
   console.log('  │   ├── agents/');
-  console.log('  │   ├── skills/');
-  console.log('  │   ├── templates/');
+  console.log('  │   ├── skills/       # With co-located templates');
   console.log('  │   ├── workflows/');
   console.log('  │   ├── checklists/');
   console.log('  │   └── commands/');

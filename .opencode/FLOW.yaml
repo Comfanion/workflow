@@ -99,7 +99,7 @@ pipeline:
       qa:
         artifact: docs/prd-acceptance-criteria.md
         description: Acceptance criteria for all FRs
-        template: templates/prd-acceptance-criteria-template.md
+        template: skills/acceptance-criteria/template.md
         mandatory: true
       next: coding-standards
 
@@ -143,7 +143,7 @@ pipeline:
       qa:
         artifact: docs/architecture-integration-tests.md
         description: Integration test specifications
-        template: templates/integration-tests-template.md
+        template: skills/test-design/template-integration.md
         mandatory: true
       next: module-docs
 
@@ -777,41 +777,41 @@ commands:
 artifacts:
   requirements:
     path: docs/requirements/requirements.md
-    template: templates/requirements-template.md
+    template: skills/requirements-gathering/template.md
 
   prd:
     path: docs/prd.md
-    template: templates/prd-template.md
+    template: skills/prd-writing/template.md
 
   prd-qa:
     path: docs/prd-acceptance-criteria.md
-    template: templates/prd-acceptance-criteria-template.md
+    template: skills/acceptance-criteria/template.md
     mandatory: true
 
   architecture:
     path: docs/architecture.md
-    template: templates/architecture-template.md
+    template: skills/architecture-design/template.md
 
   architecture-qa:
     path: docs/architecture-integration-tests.md
-    template: templates/integration-tests-template.md
+    template: skills/test-design/template-integration.md
     mandatory: true
 
   epic:
     path: docs/sprint-artifacts/*/epic-*.md
-    template: templates/epic-template.md
+    template: skills/epic-writing/template.md
     naming: "epic-{NN}-{module}-{description}.md"
     id_format: "{MODULE}-E{NN}"
 
   story:
     path: docs/sprint-artifacts/*/stories/story-*.md
-    template: templates/story-template.md
+    template: skills/story-writing/template.md
     naming: "story-{EPIC}-{NN}-{description}.md"
     id_format: "{MODULE}-S{EPIC}-{NN}"
 
   sprint-status:
     path: docs/sprint-artifacts/sprint-status.yaml
-    template: templates/sprint-status-template.yaml
+    template: skills/sprint-planning/template.yaml
     format: yaml
 
 # =============================================================================

@@ -19,7 +19,7 @@ Use this skill when you need to:
 
 ## Template
 
-Use the template at: `@.opencode/templates/prd-template.md`
+Use the template at: `@.opencode/skills/prd-writing/template.md`
 
 ## PRD Structure (v2)
 

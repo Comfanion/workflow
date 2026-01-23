@@ -26,7 +26,7 @@ Always check project standards: `@CLAUDE.md`
 
 ## Template
 
-Use template at: `@.opencode/templates/architecture-template.md`
+Use template at: `@.opencode/skills/architecture-design/template.md`
 
 ## Architecture Document Structure (v2)
 
@@ -116,7 +116,7 @@ External systems table + internal communication table.
 
 For each module/domain/entity, create separate Unit document.
 
-Use: `@.opencode/templates/unit-template.md`
+Use: `@.opencode/skills/unit-writing/template.md`
 
 Reference in architecture:
 ```

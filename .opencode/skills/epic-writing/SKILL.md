@@ -20,7 +20,7 @@ Use this skill when you need to:
 
 ## Template
 
-Use template at: `@.opencode/templates/epic-template.md`
+Use template at: `@.opencode/skills/epic-writing/template.md`
 
 ## Epic Structure (v2)
 

@@ -96,8 +96,7 @@ npx @comfanion/workflow config
 ├── config.yaml          # Your configuration
 ├── FLOW.yaml            # Workflow definition (v3.0)
 ├── agents/              # Agent personas
-├── skills/              # Knowledge modules (25+)
-├── templates/           # Document templates
+├── skills/              # Knowledge modules with templates (25+)
 ├── workflows/           # Workflow instructions
 ├── checklists/          # Validation checklists
 └── commands/            # Slash commands

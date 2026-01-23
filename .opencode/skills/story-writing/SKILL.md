@@ -20,7 +20,7 @@ Use this skill when you need to:
 
 ## Template
 
-Use template at: `@.opencode/templates/story-template.md`
+Use template at: `@.opencode/skills/story-writing/template.md`
 
 ## MANDATORY: Read Before Writing
 

@@ -259,7 +259,7 @@ program
       // Create CHANGELOG.md if not exists
       const changelogPath = path.join(process.cwd(), 'CHANGELOG.md');
       if (!await fs.pathExists(changelogPath)) {
-        const changelogTemplate = path.join(targetDir, 'templates/CHANGELOG.md');
+        const changelogTemplate = path.join(targetDir, 'skills/changelog/template.md');
         if (await fs.pathExists(changelogTemplate)) {
           await fs.copy(changelogTemplate, changelogPath);
         }
@@ -274,8 +274,7 @@ program
   ├── config.yaml          # Your configuration
   ├── FLOW.yaml            # Workflow definition
   ├── agents/              # Agent personas (analyst, pm, architect, sm, dev)
-  ├── skills/              # Knowledge modules
-  ├── templates/           # Document templates
+  ├── skills/              # Knowledge modules (with templates)
   ├── workflows/           # Workflow instructions
   └── checklists/          # Validation checklists
   
@@ -400,7 +399,6 @@ program
       { name: 'FLOW.yaml', path: '.opencode/FLOW.yaml', required: true },
       { name: 'agents/', path: '.opencode/agents', required: true },
       { name: 'skills/', path: '.opencode/skills', required: true },
-      { name: 'templates/', path: '.opencode/templates', required: true },
       { name: 'docs/', path: 'docs', required: true },
       { name: 'docs/sprint-artifacts/', path: 'docs/sprint-artifacts', required: true },
       { name: 'docs/requirements/', path: 'docs/requirements', required: true },

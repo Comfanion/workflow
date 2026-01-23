@@ -141,7 +141,7 @@ After fixing issues:
 ### Action Required
 
 Create the QA artifact using template:
-`@.opencode/templates/prd-acceptance-criteria-template.md`
+`@.opencode/skills/acceptance-criteria/template.md`
 
 This artifact is MANDATORY before proceeding to architecture.
 

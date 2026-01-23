@@ -61,7 +61,7 @@ $ARGUMENTS
 After architecture is complete, create QA artifact:
 `docs/architecture-integration-tests.md`
 
-Use template: `@.opencode/templates/integration-tests-template.md`
+Use template: `@.opencode/skills/test-design/template-integration.md`
 
 ## Next Step
 

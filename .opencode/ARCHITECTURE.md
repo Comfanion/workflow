@@ -186,12 +186,13 @@ prd-writing:
 │   └── integration-testing/
 │       └── SKILL.md
 │
-└── templates/                   # Referenced by skills
-    ├── requirements-template.md
-    ├── prd-template.md
-    ├── architecture-template.md
-    ├── epic-template.md
-    ├── story-template.md
+└── skills/                      # Skills with co-located templates
+    ├── prd-writing/
+    │   ├── SKILL.md
+    │   └── template.md
+    ├── architecture-design/
+    │   ├── SKILL.md
+    │   └── template.md
     └── ...
 ```
 

@@ -49,7 +49,7 @@ mkdir -p docs/confluence
 
 # Create CHANGELOG.md if not exists
 if [ ! -f "CHANGELOG.md" ]; then
-    cp "$TARGET_DIR/templates/CHANGELOG.md" ./CHANGELOG.md 2>/dev/null || true
+    cp "$TARGET_DIR/skills/changelog/template.md" ./CHANGELOG.md 2>/dev/null || true
 fi
 
 echo ""

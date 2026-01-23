@@ -21,7 +21,7 @@ Use this skill when you need to document any logical piece of the system:
 
 ## Template
 
-Use template at: `@.opencode/templates/unit-template.md`
+Use template at: `@.opencode/skills/unit-writing/template.md`
 
 ## Unit Document Structure
 

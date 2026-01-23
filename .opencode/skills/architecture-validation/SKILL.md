@@ -184,7 +184,7 @@ After validation:
 ### Action Required
 
 Create the QA artifact using template:
-`@.opencode/templates/integration-tests-template.md`
+`@.opencode/skills/test-design/template-integration.md`
 
 This artifact is MANDATORY before proceeding to epics.
 ```

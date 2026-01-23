@@ -56,7 +56,7 @@ Save to: `docs/prd.md`
 After PRD is complete, create QA artifact:
 `docs/prd-acceptance-criteria.md`
 
-Use template: `@.opencode/templates/prd-acceptance-criteria-template.md`
+Use template: `@.opencode/skills/acceptance-criteria/template.md`
 
 ## Next Step
 

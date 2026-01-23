@@ -19,7 +19,7 @@ This folder contains requirements gathered from stakeholders.
 
 ## Template
 
-See `.opencode/templates/requirements-template.md`
+See `.opencode/skills/requirements-gathering/template.md`
 
 ## Next Steps
 

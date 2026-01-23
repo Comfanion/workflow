@@ -19,7 +19,7 @@ Use this skill when you need to:
 
 ## Template
 
-Use template at: `@.opencode/templates/requirements-template.md`
+Use template at: `@.opencode/skills/requirements-gathering/template.md`
 
 ## Requirements Document Structure (v2)
 

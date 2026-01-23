@@ -47,11 +47,11 @@ docs/
 
 ## Templates
 
-Templates are in `.opencode/templates/`:
-- `prd-template.md`
-- `architecture-template.md`
-- `epic-template.md`
-- `story-template.md`
+Templates are co-located with skills in `.opencode/skills/`:
+- `skills/prd-writing/template.md`
+- `skills/architecture-design/template.md`
+- `skills/epic-writing/template.md`
+- `skills/story-writing/template.md`
 
 ## Writing Guidelines
 

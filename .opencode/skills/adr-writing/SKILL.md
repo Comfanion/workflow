@@ -20,7 +20,7 @@ Use this skill when you need to:
 
 ## Template
 
-Use template at: `@.opencode/templates/adr-template.md`
+Use template at: `@.opencode/skills/adr-writing/template.md`
 
 ## ADR Structure (v2)
 
