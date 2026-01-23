@@ -18,7 +18,7 @@ const program = new Command();
 program
   .name('create-opencode-workflow')
   .description('Initialize OpenCode Workflow system for AI-assisted development')
-  .version('3.5.0');
+  .version('3.5.1');
 
 program
   .command('init')
@@ -108,6 +108,7 @@ program
       const targetDir = path.join(process.cwd(), '.opencode');
       
       // Check if already exists
+      let existingConfig = null;
       if (await fs.pathExists(targetDir)) {
         spinner.warn(chalk.yellow('.opencode/ already exists'));
         const { overwrite } = await inquirer.prompt([{
@@ -121,12 +122,24 @@ program
           console.log(chalk.yellow('\nAborted. Use `update` command to update existing installation.\n'));
           process.exit(0);
         }
+        
+        // Create backup and remove old directory
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const backupDir = path.join(process.cwd(), `.opencode.backup-${timestamp}`);
+        
+        spinner.start('Creating backup...');
+        await fs.copy(targetDir, backupDir);
+        
+        spinner.text = 'Removing old .opencode/...';
+        await fs.remove(targetDir);
+        
+        console.log(chalk.yellow(`\n📦 Backup created: ${chalk.cyan(`.opencode.backup-${timestamp}/`)}`));
       }
       
       spinner.start('Copying OpenCode Workflow files...');
       
-      // Copy .opencode structure
-      await fs.copy(OPENCODE_SRC, targetDir, { overwrite: true });
+      // Copy .opencode structure (fresh, no old files)
+      await fs.copy(OPENCODE_SRC, targetDir);
       
       // Update config.yaml with user values
       spinner.text = 'Configuring...';
