@@ -363,9 +363,9 @@ Read from `config.yaml → development.methodology`:
   <output>
     | ID | Task | Est | Depends On | Status |
     |----|------|-----|------------|--------|
-    | T1 | ... | 1h | - | ✅ |
-    | T2 | ... | 1.5h | T1 | 🔄 | ← Current
-    | T3 | ... | 1h | T1 | ⬜ | ← Can run parallel with T2
+    | T1 | ... | 5h | - | ✅ |
+    | T2 | ... | 6h | T1 | 🔄 | ← Current
+    | T3 | ... | 5h | T1 | ⬜ | ← Can run parallel with T2
   </output>
 </step>
 ```

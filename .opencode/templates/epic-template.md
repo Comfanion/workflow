@@ -84,8 +84,8 @@ S01 ──► S02 ──► S03 ──► S04
 ### Story Decomposition Rules
 
 Each story MUST:
-1. Be completable in 1-3 days
-2. Have 4-10 atomic tasks (1-2h each)
+1. Be completable in 2-5 days
+2. Have 3-6 atomic tasks (4-6h each)
 3. Have clear dependencies on other stories
 4. Map to specific Acceptance Criteria
 
@@ -103,11 +103,11 @@ Each story MUST:
 
 | Layer | Stories | Tasks | Hours |
 |-------|---------|-------|-------|
-| Domain | 1 | 6 | 8h |
-| Application | 1 | 8 | 12h |
-| Infrastructure | 2 | 9 | 14h |
-| Testing | 1 | 4 | 6h |
-| **Total** | **5** | **27** | **40h** |
+| Domain | 1 | 4 | 20h |
+| Application | 1 | 4 | 22h |
+| Infrastructure | 2 | 5 | 28h |
+| Testing | 1 | 3 | 15h |
+| **Total** | **5** | **16** | **85h** |
 
 ---
 

@@ -55,7 +55,7 @@ METHODOLOGY: {{methodology}} (tdd | stub)
 - STUB: Interface → Stub → Test → Full Implementation
 
 RULES:
-- Each task is 1-2 hours max
+- Each task is 4-6 hours of focused work
 - Each task includes TEST as validation gate
 - Tasks have explicit dependencies
 - Dev agent respects dependency order
@@ -98,108 +98,101 @@ T3 ───────────────┴──► T6
 
 | ID | Task | Est | Deps | Test | Status |
 |----|------|-----|------|------|--------|
-| T1 | {{task_1}} | 1h | - | unit | ⬜ |
-| T2 | {{task_2}} | 1.5h | T1 | unit | ⬜ |
-| T3 | {{task_3}} | 1h | T2 | unit | ⬜ |
-| T4 | {{task_4}} | 1.5h | T1 | unit | ⬜ |
-| T5 | {{task_5}} | 1h | T4 | unit | ⬜ |
-| T6 | {{task_6}} | 1.5h | T3,T5 | integration | ⬜ |
+| T1 | {{task_1}} | 5h | - | unit | ⬜ |
+| T2 | {{task_2}} | 6h | T1 | unit | ⬜ |
+| T3 | {{task_3}} | 5h | T2 | unit | ⬜ |
+| T4 | {{task_4}} | 5h | T1 | unit | ⬜ |
+| T5 | {{task_5}} | 5h | T3,T4 | integration | ⬜ |
 
 **Status:** ⬜ TODO | 🔄 IN_PROGRESS | ✅ DONE | ⏸️ BLOCKED | ❌ FAILED
 
 ---
 
-### T1: Define {{entity}} Interface
-- **Estimate:** 1h
+### T1: Domain Layer (Aggregates, Value Objects)
+- **Estimate:** 6h
 - **Depends on:** -
-- **Blocks:** T2, T4
+- **Blocks:** T2
 - **Deliverables:**
   - [ ] Interface/contract defined
-  - [ ] Value objects defined (if needed)
+  - [ ] Value objects with validation
+  - [ ] Aggregate with business rules
+  - [ ] Factory methods
 - **Validation Test:** 
-  - [ ] Contract test (compile/type check)
-- **Notes:** {{implementation_hint}}
-
----
-
-### T2: Implement {{entity}} Entity/Model
-- **Estimate:** 1.5h
-- **Depends on:** T1
-- **Blocks:** T3
-- **Deliverables:**
-  - [ ] Entity/model with business logic
-  - [ ] Factory method with validation
-- **Validation Test:**
-  - [ ] Test creation happy path
-  - [ ] Test validation errors
-  - [ ] Test business rules
+  - [ ] Value object tests (validation, equality)
+  - [ ] Aggregate creation tests
+  - [ ] Business rules tests
   - [ ] **⚠️ ALL TESTS MUST PASS**
 - **Notes:** {{implementation_hint}}
 
 ---
 
-### T3: Implement Use Case / Service
-- **Estimate:** 1h
+### T2: Repository Interface + Use Case Tests
+- **Estimate:** 5h
+- **Depends on:** T1
+- **Blocks:** T3, T4
+- **Deliverables:**
+  - [ ] Repository interface (ports)
+  - [ ] Use case interface
+  - [ ] Use case DTOs (input/output)
+  - [ ] Use case tests (with mock repository)
+- **Validation Test:**
+  - [ ] Use case happy path test
+  - [ ] Use case error handling tests
+  - [ ] **⚠️ ALL TESTS MUST PASS**
+- **Notes:** {{implementation_hint}}
+
+---
+
+### T3: Use Case Implementation
+- **Estimate:** 5h
 - **Depends on:** T2
-- **Blocks:** T6
+- **Blocks:** T5
 - **Deliverables:**
-  - [ ] Use case handler/service
-  - [ ] Input/Output DTOs
+  - [ ] Use case handler implementation
   - [ ] Mappers (entity ↔ DTO)
+  - [ ] Error handling
 - **Validation Test:**
-  - [ ] Test happy path (mock repository)
-  - [ ] Test validation errors
+  - [ ] All use case tests pass
+  - [ ] Edge cases covered
   - [ ] **⚠️ ALL TESTS MUST PASS**
 - **Notes:** {{implementation_hint}}
 
 ---
 
-### T4: Implement Repository / Data Access
-- **Estimate:** 1.5h
-- **Depends on:** T1
+### T4: Repository Implementation
+- **Estimate:** 6h
+- **Depends on:** T2
 - **Blocks:** T5
 - **Deliverables (TDD):**
-  - [ ] Write test first
-  - [ ] Implement repository
+  - [ ] Write repository tests first
+  - [ ] PostgreSQL repository implementation
 - **Deliverables (STUB):**
   - [ ] In-memory stub first
-  - [ ] Real implementation
+  - [ ] PostgreSQL implementation
 - **Validation Test:**
   - [ ] Test Save
-  - [ ] Test FindByID
-  - [ ] Test FindByID not found
+  - [ ] Test FindByID (found/not found)
+  - [ ] Test List with filters
   - [ ] **⚠️ ALL TESTS MUST PASS**
 - **Notes:** {{implementation_hint}}
 
 ---
 
-### T5: Implement API Handler
-- **Estimate:** 1h
-- **Depends on:** T4
-- **Blocks:** T6
-- **Deliverables:**
-  - [ ] API handler/controller
-  - [ ] Routes registered
-- **Validation Test:**
-  - [ ] Test 201 Created
-  - [ ] Test 400 Bad Request
-  - [ ] Test 403 Forbidden
-  - [ ] **⚠️ ALL TESTS MUST PASS**
-- **Notes:** {{implementation_hint}}
-
----
-
-### T6: Integration Test & Refactor
-- **Estimate:** 1.5h
-- **Depends on:** T3, T5
+### T5: HTTP Handlers + Integration Tests
+- **Estimate:** 5h
+- **Depends on:** T3, T4
 - **Blocks:** -
 - **Deliverables:**
-  - [ ] Integration test
-  - [ ] Code refactored, no smells
+  - [ ] HTTP handler/controller
+  - [ ] Routes registered
+  - [ ] Request/response validation
+  - [ ] Integration tests
   - [ ] Documentation updated
 - **Validation Test:**
+  - [ ] Test 201 Created
+  - [ ] Test 400 Bad Request (validation)
+  - [ ] Test 404 Not Found
   - [ ] E2E: API → Service → Repo → DB
-  - [ ] Event published (if applicable)
   - [ ] **⚠️ ALL TESTS MUST PASS**
   - [ ] **⚠️ NO REGRESSIONS**
 - **Notes:** {{implementation_hint}}
@@ -210,14 +203,14 @@ T3 ───────────────┴──► T6
 
 | Phase | Tasks (Parallel) | Duration | Tests Required |
 |-------|-----------------|----------|----------------|
-| 1 | T1 | 1h | Interface contract |
-| 2 | T2, T4 | 1.5h | Unit tests |
-| 3 | T3, T5 | 1h | Unit tests |
-| 4 | T6 | 1.5h | Integration tests |
-| **Total** | | **5h** | **All green** |
+| 1 | T1 | 6h | Domain layer tests |
+| 2 | T2 | 5h | Use case tests |
+| 3 | T3, T4 | 6h | Implementation tests |
+| 4 | T5 | 5h | Integration tests |
+| **Total** | | **22h** | **All green** |
 
-**Critical Path:** T1 → T2 → T3 → T6 = 5h
-**With Parallelism:** ~4h
+**Critical Path:** T1 → T2 → T3 → T5 = 21h (~3 days)
+**With Parallelism (T3 || T4):** ~2.5 days
 
 ---
 

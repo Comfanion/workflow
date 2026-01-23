@@ -187,7 +187,7 @@ Each story should have:
 - **Authorization** - Permission checks
 - **Edge cases** - Boundary conditions
 
-## Atomic Tasks (1-2 hours each)
+## Atomic Tasks (4-6 hours each)
 
 ### Task Decomposition Rules
 
@@ -195,7 +195,7 @@ Each story should have:
 
 | Rule | Description |
 |------|-------------|
-| **Max 2 hours** | No task should exceed 2 hours of work |
+| **4-6 hours** | Each task should be 4-6 hours of focused work |
 | **Single responsibility** | One clear deliverable per task |
 | **Explicit dependencies** | Every task declares what it depends on |
 | **Parallel opportunities** | Independent tasks can run in parallel |
@@ -239,28 +239,31 @@ Interface → Stub Implementation → Tests → Real Implementation
 
 **TDD Task:**
 ```markdown
-### T2: Implement {{Entity}} Aggregate
-- **Estimate:** 1.5h
+### T2: Implement {{Entity}} Aggregate + Tests
+- **Estimate:** 5h
 - **Depends on:** T1
 - **Methodology:** TDD
 - **Deliverables:**
   - [ ] Aggregate: `domain/aggregate/entity.go`
+  - [ ] Value objects: `domain/valueobject/*.go`
 - **Validation Test:** `domain/aggregate/entity_test.go`
   - [ ] Test creation happy path
-  - [ ] Test validation errors  
+  - [ ] Test validation errors
+  - [ ] Test business rules
   - [ ] **⚠️ ALL TESTS MUST PASS**
 ```
 
 **STUB Task:**
 ```markdown
-### T2: Implement Repository (Stub → Real)
-- **Estimate:** 1.5h
+### T2: Implement Repository (Stub → Real) + Tests
+- **Estimate:** 6h
 - **Depends on:** T1
 - **Methodology:** STUB
 - **Deliverables:**
   - [ ] Stub: `infrastructure/repo/entity_memory_repo.go`
   - [ ] Real: `infrastructure/repo/entity_postgres_repo.go`
 - **Validation Test:** `infrastructure/repo/entity_repo_test.go`
+  - [ ] Test Save, FindByID, List
   - [ ] Test with stub first
   - [ ] Replace stub with real
   - [ ] **⚠️ ALL TESTS MUST PASS**
@@ -284,7 +287,7 @@ Interface → Stub Implementation → Tests → Real Implementation
 
 ```markdown
 ### T{N}: {Task Name}
-- **Estimate:** 1h | 1.5h | 2h
+- **Estimate:** 4h | 5h | 6h
 - **Depends on:** T1, T2 | - (none)
 - **Blocks:** T5, T6 | - (none)
 - **Type:** 🔴 RED | 🟢 GREEN | 🔵 REFACTOR | 📝 DOCS
@@ -314,16 +317,12 @@ T1 ──┬──► T2 ──► T4
 ```markdown
 | ID | Task | Est | Depends On | Status |
 |----|------|-----|------------|--------|
-| T1 | Write aggregate test | 1h | - | ⬜ |
-| T2 | Implement aggregate | 1.5h | T1 | ⬜ |
-| T3 | Write repository interface | 0.5h | T1 | ⬜ |
-| T4 | Write use case test | 1h | T2 | ⬜ |
-| T5 | Implement use case | 1.5h | T3, T4 | ⬜ |
-| T6 | Implement repository | 1.5h | T3 | ⬜ |
-| T7 | Write HTTP handler test | 1h | T5 | ⬜ |
-| T8 | Implement HTTP handler | 1h | T7 | ⬜ |
-| T9 | Integration tests | 1.5h | T6, T8 | ⬜ |
-| T10 | Refactor & docs | 1h | T9 | ⬜ |
+| T1 | Domain layer (aggregates, value objects, tests) | 6h | - | ⬜ |
+| T2 | Repository interface + use case tests | 5h | T1 | ⬜ |
+| T3 | Use case implementation | 5h | T2 | ⬜ |
+| T4 | Repository implementation (PostgreSQL) | 6h | T2 | ⬜ |
+| T5 | HTTP handlers + tests | 5h | T3 | ⬜ |
+| T6 | Integration tests + refactor | 5h | T4, T5 | ⬜ |
 ```
 
 **Status:** ⬜ TODO | 🔄 IN_PROGRESS | ✅ DONE | ⏸️ BLOCKED
@@ -345,7 +344,7 @@ Phase 7: T9 (waits for T6, T8)
 Phase 8: T10 (final)
 
 **Critical Path:** T1 → T2 → T4 → T5 → T7 → T8 → T9 → T10
-**Total Estimate:** 12h
+**Total Estimate:** 32h (4 days)
 **Parallel Savings:** ~3h (25%)
 ```
 
@@ -354,16 +353,12 @@ Phase 8: T10 (final)
 ```markdown
 | ID | Task | Est | Depends On | Type |
 |----|------|-----|------------|------|
-| T1 | Write Product aggregate test | 1h | - | 🔴 |
-| T2 | Implement Product aggregate | 1.5h | T1 | 🟢 |
-| T3 | Write ProductRepository interface | 0.5h | - | 📝 |
-| T4 | Write CreateProduct use case test | 1h | T2, T3 | 🔴 |
-| T5 | Implement CreateProduct handler | 1.5h | T4 | 🟢 |
-| T6 | Implement PostgreSQL repository | 1.5h | T3 | 🟢 |
-| T7 | Write HTTP handler test | 1h | T5 | 🔴 |
-| T8 | Implement HTTP handler | 1h | T7 | 🟢 |
-| T9 | Write integration tests | 1.5h | T6, T8 | 🔴 |
-| T10 | Refactor & documentation | 1h | T9 | 🔵 |
+| T1 | Domain layer: Product aggregate + value objects + tests | 6h | - | 🔴🟢 |
+| T2 | Repository interface + CreateProduct use case tests | 5h | T1 | 🔴 |
+| T3 | CreateProduct use case implementation | 5h | T2 | 🟢 |
+| T4 | PostgreSQL repository implementation + tests | 6h | T2 | 🟢 |
+| T5 | HTTP handler + tests | 5h | T3 | 🔴🟢 |
+| T6 | Integration tests + refactor + documentation | 5h | T4, T5 | 🔵 |
 
 **Graph:**
 T1 ──► T2 ──┬──► T4 ──► T5 ──► T7 ──► T8 ──┬──► T9 ──► T10
@@ -373,18 +368,18 @@ T3 ─────────┴───────────► T6 ──�
 
 ### Splitting Large Tasks
 
-If a task exceeds 2h, split it. **Each split task MUST have validation test.**
+If a task exceeds 6h, consider splitting it. **Each task MUST have validation test.**
 
-| Original (4h) | Split Into (with tests) |
-|---------------|------------------------|
-| "Implement repository" | **T1:** Interface + contract test (0.5h)<br>**T2:** Save method + test (1h)<br>**T3:** FindByID + test (1h)<br>**T4:** List + test (1.5h) |
-| "Write aggregate" | **T1:** Value objects + tests (1h)<br>**T2:** Aggregate + creation test (1h)<br>**T3:** Business rules + tests (1h) |
+| Original (8h+) | Split Into (with tests) |
+|----------------|------------------------|
+| "Full domain layer" (10h) | **T1:** Value objects + tests (4h)<br>**T2:** Aggregate + business rules + tests (6h) |
+| "Full repository" (10h) | **T1:** Interface + Save/FindByID + tests (5h)<br>**T2:** List/Search + advanced queries + tests (5h) |
 
 ### Task Template with Validation
 
 ```markdown
 ### T{N}: {Task Name}
-- **Estimate:** 1.5h
+- **Estimate:** 5h
 - **Depends on:** T{N-1}
 - **Methodology:** TDD | STUB
 - **Deliverables:**

@@ -168,15 +168,15 @@ Track which FRs are covered:
 
 ```
 EPIC (1-2 weeks)
-  └── STORY (1-3 days)
-        └── TASK (1-2 hours)
+  └── STORY (2-5 days)
+        └── TASK (4-6 hours)
 ```
 
 | Level | Duration | Count | Deliverable |
 |-------|----------|-------|-------------|
 | **Epic** | 1-2 weeks | 1 | Complete feature |
-| **Story** | 1-3 days | 3-8 per epic | User-facing capability |
-| **Task** | 1-2 hours | 4-10 per story | Atomic code change |
+| **Story** | 2-5 days | 3-8 per epic | User-facing capability |
+| **Task** | 4-6 hours | 3-6 per story | Atomic code change with tests |
 
 ### Story Decomposition Pattern
 
@@ -213,17 +213,17 @@ S01 (Domain) ──┬──► S02 (Repo Interface) ──► S04 (Repo Impl)
 
 | Story | Tasks | Hours | Days |
 |-------|-------|-------|------|
-| S01 | 6 | 8h | 1d |
-| S02 | 3 | 4h | 0.5d |
-| S03 | 8 | 12h | 1.5d |
-| S04 | 6 | 9h | 1d |
-| S05 | 5 | 7h | 1d |
-| S06 | 4 | 5h | 0.5d |
-| S07 | 4 | 6h | 1d |
-| **Total** | **36** | **51h** | **6.5d** |
+| S01 | 4 | 20h | 2.5d |
+| S02 | 3 | 15h | 2d |
+| S03 | 5 | 26h | 3d |
+| S04 | 4 | 22h | 3d |
+| S05 | 3 | 16h | 2d |
+| S06 | 3 | 15h | 2d |
+| S07 | 3 | 15h | 2d |
+| **Total** | **25** | **129h** | **~16d** |
 
 **Parallel Opportunities:** S02+S03, S04+S05
-**With Parallelism:** ~5 days
+**With Parallelism:** ~10 days (2 weeks)
 ```
 
 ## Epic Sizing
@@ -232,14 +232,14 @@ S01 (Domain) ──┬──► S02 (Repo Interface) ──► S04 (Repo Impl)
 
 - **Duration:** 1-2 weeks of work
 - **Stories:** 3-8 stories per epic
-- **Tasks:** 25-60 tasks per epic (total across stories)
+- **Tasks:** 15-35 tasks per epic (total across stories)
 - **Scope:** One logical feature/capability
 
 ### Too Big? Split it!
 
 Signs an epic is too big:
 - More than 10 stories
-- More than 80 tasks total
+- More than 40 tasks total
 - Spans multiple sprints
 - Multiple unrelated features
 - Different team members for different parts
@@ -248,8 +248,8 @@ Signs an epic is too big:
 
 Signs an epic is too small:
 - Only 1-2 stories
-- Less than 15 tasks
-- Can be done in 2-3 days
+- Less than 8 tasks
+- Can be done in 3-4 days
 - Part of a larger feature
 
 ### Parallel Execution Opportunities
@@ -261,11 +261,11 @@ Identify which stories can run in parallel:
 
 | Phase | Stories (Parallel) | Duration |
 |-------|-------------------|----------|
-| 1 | S01 | 1d |
-| 2 | S02, S03 | 1.5d |
-| 3 | S04, S05 | 1d |
-| 4 | S06 | 0.5d |
-| 5 | S07 | 1d |
+| 1 | S01 | 2.5d |
+| 2 | S02, S03 | 3d |
+| 3 | S04, S05 | 3d |
+| 4 | S06 | 2d |
+| 5 | S07 | 2d |
 | **Total** | | **5d** |
 
 **Sequential would be:** 6.5d
