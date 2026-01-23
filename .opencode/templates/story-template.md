@@ -8,55 +8,39 @@ workflowType: 'story'
 
 **Story ID:** {{module}}-S{{epic_number}}-{{story_number}}
 **Epic:** {{module}}-E{{epic_number}} - {{epic_title}}
-**Status:** draft | ready-for-dev | in-progress | review | done | blocked
-**Priority:** P0 | P1 | P2
+**Status:** draft | ready-for-dev | in-progress | review | done
 **Size:** XS | S | M | L | XL
-**Created:** {{date}}
-**Last Updated:** {{date}}
 
 ---
 
-## User Story
+## Prerequisites (PM reads before writing tasks)
 
-**As a** {{user_type}},
-**I want** {{capability}},
-**So that** {{benefit}}.
+<!-- ⚠️ MANDATORY: Read these docs before writing tasks! -->
+
+- [ ] `AGENTS.md` / `CLAUDE.md` - coding patterns, naming, error handling
+- [ ] `docs/coding-standards/` - detailed coding standards
+- [ ] `docs/architecture/{{module}}/` - module architecture, data model
+- [ ] Existing code in `src/services/{{module}}/` - patterns to follow
+
+---
+
+## Goal
+
+{{Short description - 1-2 sentences. What this story achieves. Same as in epic's stories table.}}
 
 ---
 
 ## Acceptance Criteria
 
-### AC1: {{criterion_name}}
-
-**Given** {{precondition}}
-**When** {{action}}
-**Then** {{expected_result}}
-**And** {{additional_check}}
-
-### AC2: {{criterion_name}}
-
-**Given** {{precondition}}
-**When** {{action}}
-**Then** {{expected_result}}
-
-### AC3: {{criterion_name}}
-
-**Given** {{precondition}}
-**When** {{action}}
-**Then** {{expected_result}}
+- [ ] {{criterion_1}}
+- [ ] {{criterion_2}}
+- [ ] {{criterion_3}}
+- [ ] All tests pass
+- [ ] No linting errors
 
 ---
 
-## Self-Contained Tasks
-
-<!-- 
-Each task MUST be self-contained:
-- Agent can execute WITHOUT asking questions
-- All documentation links provided
-- Clear input/output/acceptance criteria
--->
-
-### Tasks Summary
+## Tasks
 
 | ID | Task | Deps | Status |
 |----|------|------|--------|
@@ -156,227 +140,35 @@ Each task MUST be self-contained:
 
 ---
 
-## TODO Placeholders
+## Notes
 
-<!-- 
-When implementing, leave TODO comments for:
-- Next tasks in this story
-- Future stories/epics
-- Technical debt
-- Planned improvements
-
-Format: TODO({TYPE}:{ID}): {description}
--->
-
-### TODOs to Create During Implementation
-
-| Location | TODO | Type | Reference |
-|----------|------|------|-----------|
-| `src/domain/{{entity}}` | Add validation for X | TASK | T3 |
-| `src/application/{{usecase}}` | Add caching | STORY | S{{epic}}-04 |
-| `src/infrastructure/repo/` | Add batch operations | EPIC | E{{next_epic}} |
-| `src/api/` | Add rate limiting | BACKLOG | - |
-
-### TODO Format Reference (IDE-compatible)
-
-```go
-// TODO(TASK:T3): Implement validation logic here
-//   Called from: T2 implementation
-//   Blocked until: T3 starts
-
-// TODO(STORY:{{module}}-S05-04): Add pagination support
-//   This story implements basic list, pagination in next story
-//   See: docs/sprint-artifacts/sprint-1/stories/story-05-04.md
-
-// TODO(EPIC:{{module}}-E06): Replace with event-driven approach
-//   Current sync implementation, async in Epic 6
-//   See: docs/sprint-artifacts/backlog/epic-06.md
-
-// TODO(SPRINT:SP3): Performance optimization needed
-//   Current O(n²), optimize in Sprint 3
-
-// TODO(BACKLOG): Consider adding retry logic
-//   Not planned yet, but would improve reliability
-
-// TODO(TECH_DEBT): Refactor this duplication
-//   Copy-pasted from X, extract common logic
-
-// FIXME(BUG:GH-123): Fix null pointer exception
-//   Occurs when input is empty
-//   Ticket: https://github.com/org/repo/issues/123
-
-// HACK: Temporary workaround for API limitation
-//   Remove when: STORY:{{module}}-S05-08 implemented
-```
-
-**GoLand/IntelliJ Setup:**
-```
-Settings → Editor → TODO → Add Pattern:
-  \bTODO\(.*\):.*
-  \bFIXME\(.*\):.*
-  \bHACK:.*
-```
-
-### Related Future Work
-
-| ID | Type | Description | Blocks This? |
-|----|------|-------------|--------------|
-| T3 | Task | Validation logic | No |
-| S{{epic}}-04 | Story | Pagination | No |
-| E{{next_epic}} | Epic | Event-driven | No |
+<!-- Optional: additional context, learnings, blockers -->
 
 ---
 
-## Dev Notes
+## Definition of Done
 
-<!-- Context for the developer implementing this story -->
-
-### Coding Standards Applied (MANDATORY)
-
-**Standards documents used for this story:**
-- [ ] `CLAUDE.md` - Project patterns, file structure, conventions
-- [ ] `docs/coding-standards/` - Detailed coding standards
-  - [ ] Naming conventions
-  - [ ] Error handling patterns
-  - [ ] Testing patterns
-- [ ] `docs/architecture/{{module}}/architecture.md` - Module-specific patterns
-
-**Key patterns from CLAUDE.md:**
-- File naming: `{{file_naming_pattern}}`
-- Package structure: `{{package_structure}}`
-- Error handling: `{{error_handling_pattern}}`
-- Test file naming: `{{test_naming_pattern}}`
-
-### Architecture Requirements
-- Follow hexagonal architecture patterns
-- Domain layer must not import infrastructure
-- Use value objects for domain concepts
-
-### Technical Specifications
-- {{technical_specs}}
-
-### Dependencies
-- Depends on: {{dependencies}}
-- Blocked by: {{blockers}}
-
-### Previous Learnings
-- {{learnings_from_similar_work}}
-
-### Reference Files
-- `src/path/to/related/file` - [why relevant]
-- `docs/architecture.md#section` - [architecture guidance]
-- `CLAUDE.md#section` - [coding patterns]
-
-### Patterns to Follow
-- **MANDATORY:** Follow patterns from `CLAUDE.md`
-- **MANDATORY:** Follow `docs/coding-standards/`
-- Match existing code style in module
-
-### API/Interface
-```
-// Expected interface or function signature
-// (language-specific syntax)
-```
-
----
-
-## Test Scenarios
-
-### Unit Tests
-1. {{test_scenario_1}}
-2. {{test_scenario_2}}
-3. {{edge_case_1}}
-
-### Integration Tests
-1. {{integration_scenario_1}}
-2. {{integration_scenario_2}}
-
----
-
-## Dev Agent Record
-
-<!-- Automatically updated by Dev agent during implementation -->
-
-### Implementation Plan
-<!-- Dev agent documents approach here -->
-
-### Debug Log
-<!-- Dev agent logs debugging notes here -->
-
-### Completion Notes
-<!-- Dev agent summarizes what was implemented -->
-
----
-
-## File List
-
-<!-- Dev agent updates with all changed files -->
-
-### Created Files
-- 
-
-### Modified Files
-- 
-
-### Deleted Files
-- 
+- [ ] All acceptance criteria met
+- [ ] All tasks completed
+- [ ] Tests passing (>80% coverage)
+- [ ] Code follows AGENTS.md patterns
+- [ ] No linting errors
+- [ ] PR merged to epic branch
 
 ---
 
 ## Changelog
 
-<!-- UPDATE AT END OF SESSION -->
-
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 0.1 | {{date}} | @sm | Story created |
+| 0.1 | {{date}} | @pm | Story created |
 
 <!-- 
 Changelog Guidelines:
 - Update at END of work session
 - Dev: summarize what was implemented
 - Version: 0.x=draft, 1.0=ready-for-dev, 1.x=in-progress, 2.0=done
-
-Example session entries:
-| 2.0 | 2024-01-25 | @dev | Complete: T1-T7 done; All tests pass; Ready for review |
-| 1.1 | 2024-01-23 | @dev | Progress: T1-T4 complete; T5 blocked by API issue |
-| 1.0 | 2024-01-20 | @sm | Ready for dev: 7 tasks defined; AC reviewed |
 -->
-
----
-
-## Definition of Done
-
-- [ ] All acceptance criteria implemented and verified
-- [ ] All tasks/subtasks marked complete [x]
-- [ ] Unit tests written and passing (>80% coverage)
-- [ ] Integration tests written and passing
-- [ ] Code follows CLAUDE.md patterns
-- [ ] Code reviewed and approved
-- [ ] No linting errors
-- [ ] No failing tests (full suite)
-- [ ] File List complete
-- [ ] Change Log updated
-- [ ] PR merged to epic branch
-
----
-
-## Senior Developer Review (AI)
-
-<!-- Added after code-review workflow runs -->
-
-### Review Date
-<!-- Date of review -->
-
-### Review Outcome
-<!-- Approve | Changes Requested | Blocked -->
-
-### Action Items
-- [ ] {{action_item_1}}
-- [ ] {{action_item_2}}
-
-### Review Follow-ups (AI)
-<!-- Tasks added based on review findings -->
 
 ---
 

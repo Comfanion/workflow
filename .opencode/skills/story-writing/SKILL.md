@@ -1,6 +1,6 @@
 ---
 name: story-writing
-description: How to write user stories with proper format, acceptance criteria in Given/When/Then, and technical tasks
+description: How to write stories as execution plans with self-contained tasks
 license: MIT
 compatibility: opencode
 metadata:
@@ -85,7 +85,9 @@ Use template at: `@.opencode/templates/story-template.md`
 
 ## Story Structure
 
-### Header
+**Philosophy:** Story = execution plan. Tasks are the main content, not ceremony.
+
+### Header (Minimal)
 
 ```markdown
 # Story N.M: [Title]
@@ -93,31 +95,44 @@ Use template at: `@.opencode/templates/story-template.md`
 **Story ID:** [MODULE]-S[EPIC]-[NN]
 **Epic:** [MODULE]-E[EPIC] - [Epic Title]
 **Status:** draft | ready-for-dev | in-progress | review | done
-**Priority:** P0 | P1 | P2
 **Size:** XS | S | M | L | XL
 ```
 
-**Note:** Size is relative complexity (T-shirt sizing). NO hour estimates for tasks.
-
-### User Story Format (MANDATORY)
+### Goal (1-2 sentences)
 
 ```markdown
-## User Story
+## Goal
 
-**As a** [user type],
-**I want** [capability/action],
-**So that** [benefit/value].
+Implement CRUD use cases for merchant products with validation and event publishing.
 ```
 
-### Sections
+**NOT** the verbose "As a... I want... So that..." format. Just state what the story achieves.
 
-1. **User Story** - As a... I want... So that...
-2. **Acceptance Criteria** - Given/When/Then (MANDATORY)
-3. **Technical Tasks** - Implementation checklist
-4. **Definition of Done** - Quality gates
-5. **Technical Context** - Related files, patterns
-6. **Test Scenarios** - Unit and integration tests
-7. **Notes** - Additional context
+### Acceptance Criteria (Brief List)
+
+```markdown
+## Acceptance Criteria
+
+- [ ] Products can be created with EAN validation
+- [ ] Products can be retrieved by ID
+- [ ] Products can be updated with optimistic locking
+- [ ] Products can be listed with filters and pagination
+- [ ] All operations publish domain events
+```
+
+**NOT** detailed Given/When/Then for each. Just a checklist of what "done" looks like.
+
+### Tasks (MAIN CONTENT - 80% of file)
+
+Self-contained tasks with documentation links. See Task Structure below.
+
+### Sections (Simplified)
+
+1. **Header** - Minimal metadata
+2. **Goal** - 1-2 sentences
+3. **Acceptance Criteria** - Brief checklist
+4. **Tasks** - MAIN CONTENT (80% of file)
+5. **Notes** - Optional additional context
 
 ## Naming Conventions
 
@@ -142,52 +157,6 @@ Examples:
 - CATALOG-S05-02
 - INVENTORY-S10-01
 ```
-
-## Acceptance Criteria (MANDATORY)
-
-Use skill: `acceptance-criteria`
-
-### Format: Given/When/Then
-
-```markdown
-## Acceptance Criteria
-
-### AC1: Create product with valid data
-
-**Given** authenticated merchant with "product:create" permission
-**When** POST /api/v1/products with:
-  - name: "Test Product"
-  - price: 100.00
-  - currency: "UAH"
-**Then** 201 Created returned
-**And** response contains product with generated UUID
-**And** product status is "pending"
-**And** "product.created" event published to Kafka
-
-### AC2: Reject invalid product data
-
-**Given** authenticated merchant
-**When** POST /api/v1/products with missing required field "name"
-**Then** 400 Bad Request returned
-**And** error response contains:
-  - field: "name"
-  - message: "name is required"
-**And** no product is created in database
-
-### AC3: Unauthorized access rejected
-
-**Given** user without "product:create" permission
-**When** POST /api/v1/products
-**Then** 403 Forbidden returned
-```
-
-### AC Coverage
-
-Each story should have:
-- **Happy path** - At least 1 success scenario
-- **Validation errors** - Invalid input handling
-- **Authorization** - Permission checks
-- **Edge cases** - Boundary conditions
 
 ## Self-Contained Tasks (NO ESTIMATES)
 
@@ -550,13 +519,11 @@ Add to each story:
 
 Before completing story:
 - [ ] Story ID is unique
-- [ ] User story follows format
-- [ ] **Acceptance criteria in Given/When/Then** (MANDATORY!)
-- [ ] At least 3 AC (happy path, error, edge case)
-- [ ] Technical tasks are specific
-- [ ] **TODO placeholders defined for future work**
+- [ ] Goal is clear (1-2 sentences)
+- [ ] Acceptance criteria as checklist (what "done" looks like)
+- [ ] Tasks are self-contained with documentation links
+- [ ] Each task has: Goal, Documentation, Input, Output, Steps, AC
 - [ ] Definition of Done is complete
-- [ ] Estimate is reasonable
 - [ ] Links to epic are correct
 
 ## Output
