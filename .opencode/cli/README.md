@@ -1,26 +1,30 @@
-# create-opencode-workflow
+# @comfanion/workflow
 
 Initialize OpenCode Workflow system for AI-assisted development.
+
+[![npm version](https://img.shields.io/npm/v/@comfanion/workflow.svg)](https://www.npmjs.com/package/@comfanion/workflow)
 
 ## Quick Start
 
 ```bash
-npx create-opencode-workflow init
+npx @comfanion/workflow init
 ```
 
 ## Installation
 
-### Option 1: NPX (recommended)
+### NPX (recommended)
 
 ```bash
-npx create-opencode-workflow init
+npx @comfanion/workflow init
 ```
 
-### Option 2: Global Install
+### Global Install
 
 ```bash
-npm install -g create-opencode-workflow
-create-opencode-workflow init
+npm install -g @comfanion/workflow
+comfanion-workflow init
+# or
+opencode-workflow init
 ```
 
 ## Commands
@@ -30,7 +34,7 @@ create-opencode-workflow init
 Initialize `.opencode/` in current project.
 
 ```bash
-npx create-opencode-workflow init
+npx @comfanion/workflow init
 ```
 
 **Interactive prompts:**
@@ -39,16 +43,16 @@ npx create-opencode-workflow init
 2. **Communication language** - Ukrainian or English
 3. **Development methodology** - TDD or STUB
 4. **Jira integration** - Enable/disable
-5. **Repository structure** - Create full repo structure (README, CONTRIBUTING, etc.)
+5. **Repository structure** - Create README, CONTRIBUTING, etc.
 
 **Flags:**
 
 ```bash
 # Skip prompts, use defaults
-npx create-opencode-workflow init -y
+npx @comfanion/workflow init -y
 
 # With specific options
-npx create-opencode-workflow init --tdd --jira --full
+npx @comfanion/workflow init --tdd --jira --full
 ```
 
 | Flag | Description |
@@ -61,10 +65,10 @@ npx create-opencode-workflow init --tdd --jira --full
 
 ### `update`
 
-Update `.opencode/` to latest version while preserving your `config.yaml`.
+Update `.opencode/` to latest version while preserving `config.yaml`.
 
 ```bash
-npx create-opencode-workflow update
+npx @comfanion/workflow update
 ```
 
 ### `doctor`
@@ -72,7 +76,7 @@ npx create-opencode-workflow update
 Check installation health.
 
 ```bash
-npx create-opencode-workflow doctor
+npx @comfanion/workflow doctor
 ```
 
 ### `config`
@@ -80,7 +84,7 @@ npx create-opencode-workflow doctor
 Show current configuration.
 
 ```bash
-npx create-opencode-workflow config
+npx @comfanion/workflow config
 ```
 
 ## What Gets Created
@@ -92,12 +96,7 @@ npx create-opencode-workflow config
 ├── config.yaml          # Your configuration
 ├── FLOW.yaml            # Workflow definition (v3.0)
 ├── agents/              # Agent personas
-│   ├── analyst.md       # Mary - Requirements
-│   ├── pm.md            # John - PRD
-│   ├── architect.md     # Winston - Architecture
-│   ├── sm.md            # Sarah - Sprint Management
-│   └── dev.md           # Amelia - Development
-├── skills/              # Knowledge modules
+├── skills/              # Knowledge modules (25+)
 ├── templates/           # Document templates
 ├── workflows/           # Workflow instructions
 ├── checklists/          # Validation checklists
@@ -109,11 +108,8 @@ npx create-opencode-workflow config
 ```
 docs/
 ├── sprint-artifacts/    # Epics, stories, sprints
-│   └── backlog/
 ├── requirements/        # Requirements documents
-├── architecture/        # Architecture docs
-│   ├── adr/             # Architecture Decision Records
-│   └── diagrams/
+├── architecture/        # Architecture + ADRs
 ├── api/                 # API documentation
 ├── coding-standards/    # Coding standards
 └── confluence/          # Translations (Ukrainian)
@@ -158,27 +154,10 @@ export JIRA_EMAIL="your-email@company.com"
 export JIRA_API_TOKEN="your-api-token"
 ```
 
-## Development
+## Links
 
-### Building
-
-```bash
-cd .opencode/cli
-npm run build
-```
-
-### Testing locally
-
-```bash
-node bin/cli.js init
-```
-
-### Publishing
-
-```bash
-npm run build
-npm publish
-```
+- **npm:** https://www.npmjs.com/package/@comfanion/workflow
+- **GitLab:** https://gitlab.com/comfanion/workflow
 
 ## License
 

@@ -1,10 +1,11 @@
 {
-  "name": "create-opencode-workflow",
+  "name": "@comfanion/workflow",
   "version": "3.0.0",
   "description": "Initialize OpenCode Workflow system for AI-assisted development",
   "type": "module",
   "bin": {
-    "create-opencode-workflow": "./bin/cli.js"
+    "comfanion-workflow": "./bin/cli.js",
+    "opencode-workflow": "./bin/cli.js"
   },
   "files": [
     "bin/",
