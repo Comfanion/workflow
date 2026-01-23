@@ -296,6 +296,22 @@ Settings → Editor → TODO → Add Pattern:
 
 <!-- Context for the developer implementing this story -->
 
+### Coding Standards Applied (MANDATORY)
+
+**Standards documents used for this story:**
+- [ ] `CLAUDE.md` - Project patterns, file structure, conventions
+- [ ] `docs/coding-standards/` - Detailed coding standards
+  - [ ] Naming conventions
+  - [ ] Error handling patterns
+  - [ ] Testing patterns
+- [ ] `docs/architecture/{{module}}/architecture.md` - Module-specific patterns
+
+**Key patterns from CLAUDE.md:**
+- File naming: `{{file_naming_pattern}}`
+- Package structure: `{{package_structure}}`
+- Error handling: `{{error_handling_pattern}}`
+- Test file naming: `{{test_naming_pattern}}`
+
 ### Architecture Requirements
 - Follow hexagonal architecture patterns
 - Domain layer must not import infrastructure
@@ -314,10 +330,12 @@ Settings → Editor → TODO → Add Pattern:
 ### Reference Files
 - `src/path/to/related/file` - [why relevant]
 - `docs/architecture.md#section` - [architecture guidance]
+- `CLAUDE.md#section` - [coding patterns]
 
 ### Patterns to Follow
-- See `CLAUDE.md` or `docs/coding-standards/` for coding standards
-- Follow project architecture patterns
+- **MANDATORY:** Follow patterns from `CLAUDE.md`
+- **MANDATORY:** Follow `docs/coding-standards/`
+- Match existing code style in module
 
 ### API/Interface
 ```

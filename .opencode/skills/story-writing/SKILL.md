@@ -18,6 +18,67 @@ Use this skill when you need to:
 - Define technical implementation tasks
 - Specify test scenarios
 
+## MANDATORY: Load Technical Standards First
+
+**Before writing ANY story with tasks, you MUST read and understand:**
+
+### 1. Coding Standards (REQUIRED)
+```
+Search and read in order:
+1. CLAUDE.md (root) - Project patterns, code style, conventions
+2. docs/coding-standards/ - Detailed coding standards
+3. docs/coding-standards/testing-standards.md - Test patterns
+```
+
+### 2. Module Architecture (REQUIRED)
+```
+For the specific module this story covers:
+1. docs/architecture/[module]/architecture.md - Module design
+2. docs/architecture/[module]/data-model.md - Database schema
+3. Existing code in src/services/[module]/ - Current patterns
+```
+
+### 3. Parent Epic (REQUIRED)
+```
+1. The epic this story belongs to - for context and dependencies
+2. Other stories in the epic - for coordination
+```
+
+### Pre-Story Checklist
+
+Before writing story tasks, confirm you have read:
+- [ ] CLAUDE.md - coding patterns and file structure
+- [ ] Coding standards - naming, error handling, testing
+- [ ] Module architecture - component boundaries
+- [ ] Parent epic - scope and dependencies
+
+**⚠️ DO NOT write technical tasks without reading coding standards!**
+**Tasks MUST follow project conventions and patterns from CLAUDE.md.**
+
+### Task File Paths
+
+When defining tasks, use EXACT paths following project structure:
+```
+src/services/[module]/
+├── cmd/api/main.go
+├── modules/[submodule]/
+│   ├── domain/
+│   │   ├── aggregate/[entity].go      ← Domain entities
+│   │   ├── valueobject/[vo].go        ← Value objects
+│   │   └── repository/[repo].go       ← Repository interfaces
+│   ├── application/
+│   │   └── usecase/[UseCase]/         ← Use case (4 files)
+│   │       ├── inport.go
+│   │       ├── dto.go
+│   │       ├── handler.go
+│   │       └── mappers.go
+│   └── infrastructure/
+│       ├── repo/[entity]_postgres.go  ← Repository impl
+│       └── http/[handler].go          ← HTTP handlers
+```
+
+---
+
 ## Template
 
 Use template at: `@.opencode/templates/story-template.md`

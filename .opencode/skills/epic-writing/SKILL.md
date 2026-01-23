@@ -18,6 +18,47 @@ Use this skill when you need to:
 - Define epic-level acceptance criteria
 - Track PRD coverage
 
+## MANDATORY: Load Technical Context First
+
+**Before writing ANY epic, you MUST read and understand:**
+
+### 1. Project Architecture (REQUIRED)
+```
+Search and read in order:
+1. CLAUDE.md (root) - Project patterns, conventions, tech stack
+2. docs/architecture.md - System architecture, module boundaries
+3. docs/architecture/[module]/ - Module-specific documentation
+```
+
+### 2. Module/Domain Documentation (REQUIRED)
+```
+For the specific module this epic covers:
+1. docs/architecture/[module]/index.md - Module overview
+2. docs/architecture/[module]/architecture.md - Module architecture
+3. docs/architecture/[module]/data-model.md - Database schema
+4. docs/architecture/[module]/api/ - API contracts
+5. docs/architecture/[module]/events/ - Event schemas
+```
+
+### 3. PRD Requirements (REQUIRED)
+```
+1. docs/prd.md - Functional requirements (FR-XXX)
+2. docs/requirements/ - Detailed requirements if exists
+```
+
+### Pre-Epic Checklist
+
+Before writing epic, confirm you have read:
+- [ ] CLAUDE.md - coding patterns and conventions
+- [ ] Architecture document - system design
+- [ ] Module documentation - specific module architecture
+- [ ] PRD - requirements this epic implements
+
+**⚠️ DO NOT proceed without reading technical documentation!**
+**Epic MUST reference architecture sections and follow established patterns.**
+
+---
+
 ## Template
 
 Use template at: `@.opencode/templates/epic-template.md`

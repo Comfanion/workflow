@@ -24,10 +24,23 @@
 **Enables (unlocks these):**
 - [Epic ID]: [brief reason]
 
+### Technical Documentation (MANDATORY)
+
+**Documents used to create this epic:**
+- [ ] `CLAUDE.md` - Project patterns and conventions
+- [ ] `docs/architecture.md` - Section: [specific section]
+- [ ] `docs/architecture/{{module}}/` - Module documentation
+  - [ ] `index.md` - Module overview
+  - [ ] `architecture.md` - Module design
+  - [ ] `data-model.md` - Database schema
+  - [ ] `api/` - API contracts
+  - [ ] `events/` - Event schemas
+
 ### Architecture References
 
-- [Link to architecture section]
-- [Link to data model]
+- [Link to architecture section that this epic implements]
+- [Link to data model section]
+- [Link to API contracts if applicable]
 
 ### PRD Coverage
 
