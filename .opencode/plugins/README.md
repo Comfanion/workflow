@@ -40,7 +40,7 @@ Checks for updates and shows a toast notification if a newer version is availabl
 - Checks npm registry for latest @comfanion/workflow version
 - Compares with locally installed version
 - Shows toast notification if update available
-- Caches check result for 24 hours (avoids spam)
+- Caches check result for 1 hour
 - Supports EN/UK/RU languages
 
 **Toast Example:**

@@ -12,7 +12,7 @@ import https from "https"
  * Configuration in .opencode/config.yaml:
  *   version_check:
  *     enabled: true       # Enable version checking
- *     check_interval: 86400000  # Check once per day (ms)
+ *     check_interval: 3600000  # Check once per hour (ms)
  */
 
 const DEBUG = process.env.DEBUG?.includes('version-check') || process.env.DEBUG === '*'
@@ -118,7 +118,7 @@ async function getLanguage(directory: string): Promise<'en' | 'uk' | 'ru'> {
 }
 
 export const VersionCheckPlugin: Plugin = async ({ directory, client }) => {
-  const CHECK_INTERVAL = 24 * 60 * 60 * 1000 // 24 hours
+  const CHECK_INTERVAL = 60 * 60 * 1000 // 1 hour (you release often! 🚀)
   
   const toast = async (message: string, variant: 'info' | 'success' | 'error' = 'info') => {
     try {
