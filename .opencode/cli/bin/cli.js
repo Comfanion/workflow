@@ -323,13 +323,30 @@ program
         
         // Install dependencies only if vectorizer is enabled
         if (config.vectorizer_enabled) {
-          spinner.text = 'Installing vectorizer...';
+          spinner.text = 'Installing vectorizer dependencies...';
           try {
-            execSync('npm install --silent', { 
+            // Show progress during npm install
+            const steps = [
+              'Installing vectorizer dependencies...',
+              'Downloading @xenova/transformers (~50MB)...',
+              'Installing vectordb...',
+              'Installing glob...',
+              'Finalizing vectorizer setup...'
+            ];
+            let stepIndex = 0;
+            const progressInterval = setInterval(() => {
+              stepIndex = (stepIndex + 1) % steps.length;
+              spinner.text = steps[stepIndex];
+            }, 3000);
+            
+            execSync('npm install', { 
               cwd: newVectorizerDir,
               stdio: 'pipe',
-              timeout: 120000
+              timeout: 180000
             });
+            
+            clearInterval(progressInterval);
+            spinner.text = 'Vectorizer installed!';
           } catch (e) {
             // Non-fatal, will show warning below
           }
@@ -597,13 +614,30 @@ program
         
         // Install dependencies only if vectorizer is enabled
         if (vectorizerEnabled) {
-          spinner.text = 'Installing vectorizer...';
+          spinner.text = 'Installing vectorizer dependencies...';
           try {
-            execSync('npm install --silent', { 
+            // Show progress during npm install
+            const steps = [
+              'Installing vectorizer dependencies...',
+              'Downloading @xenova/transformers (~50MB)...',
+              'Installing vectordb...',
+              'Installing glob...',
+              'Finalizing vectorizer setup...'
+            ];
+            let stepIndex = 0;
+            const progressInterval = setInterval(() => {
+              stepIndex = (stepIndex + 1) % steps.length;
+              spinner.text = steps[stepIndex];
+            }, 3000);
+            
+            execSync('npm install', { 
               cwd: newVectorizerDir,
               stdio: 'pipe',
-              timeout: 120000
+              timeout: 180000
             });
+            
+            clearInterval(progressInterval);
+            spinner.text = 'Vectorizer installed!';
           } catch (e) {
             // Non-fatal, will show warning below
           }
