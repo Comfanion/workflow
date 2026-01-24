@@ -1,3 +1,8 @@
+---
+description: Use when reviewing implemented code for quality, correctness, and adherence to project standards
+agent: dev
+---
+
 # /code-review Command
 
 Review implemented code for quality, correctness, and adherence to standards.
@@ -14,7 +19,7 @@ Review implemented code for quality, correctness, and adherence to standards.
 
 ## Agent
 
-This command invokes the **Dev** agent (Amelia) in review mode.
+This command invokes the **Dev** agent (Rick) in review mode.
 
 ## Process
 

@@ -1,7 +1,6 @@
 ---
-description: Show project workflow status and suggest next steps
-agent: sprint-manager
-model: anthropic/claude-sonnet-4-20250514
+description: Use when checking project workflow status or getting guidance on next steps in the documentation pipeline
+agent: pm
 ---
 
 # Workflow Status

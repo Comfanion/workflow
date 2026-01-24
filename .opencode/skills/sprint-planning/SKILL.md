@@ -1,6 +1,6 @@
 ---
 name: sprint-planning
-description: How to organize epics and stories into sprints, manage sprint-status.yaml, and track progress
+description: Use when organizing epics into sprints, creating sprint-status.yaml, or tracking sprint progress. REQUIRES epics to exist first - run /epics if none
 license: MIT
 compatibility: opencode
 metadata:
@@ -17,6 +17,34 @@ Use this skill when you need to:
 - Create sprint-status.yaml
 - Track sprint progress
 - Plan new sprints
+
+## Prerequisites
+
+**CRITICAL: Epics must exist before sprint planning!**
+
+```
+Check: ls docs/sprint-artifacts/backlog/epic-*.md 2>/dev/null || ls docs/sprint-artifacts/sprint-*/epic-*.md 2>/dev/null
+```
+
+| Check | Action if Missing |
+|-------|-------------------|
+| No epics in backlog or sprints | **STOP** → Run `/epics` first to create epics from PRD |
+| Epics exist but no stories | Epics can be planned, stories created later with `/stories` |
+| PRD missing | **STOP** → Run `/prd` first |
+
+### Dependency Chain
+
+```
+/prd → /architecture → /epics → /sprint-plan
+                          ↑
+                    YOU ARE HERE
+                    (need epics first!)
+```
+
+If user asks for sprint planning without epics:
+1. Inform them epics are required
+2. Offer to create epics first with `/epics`
+3. Only proceed with sprint planning after epics exist
 
 ## Sprint Duration
 

@@ -1,7 +1,6 @@
 ---
-description: Validate project artifacts (requirements, prd, architecture, epics)
+description: Use when validating project artifacts - requirements, PRD, architecture, or epics for completeness and quality
 agent: architect
-model: anthropic/claude-sonnet-4-20250514
 ---
 
 # Artifact Validation

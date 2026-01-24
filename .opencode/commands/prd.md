@@ -1,7 +1,6 @@
 ---
-description: Create or update the Product Requirements Document
+description: Use when creating or updating Product Requirements Document. Defines scope, FRs, NFRs, user journeys
 agent: pm
-model: anthropic/claude-sonnet-4-20250514
 ---
 
 # PRD Creation/Update

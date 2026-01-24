@@ -1,5 +1,5 @@
 ---
-description: Semantic code search - find code by meaning, not just text
+description: Use when searching codebase semantically - find code by meaning, not just text matching
 agent: crawler
 ---
 

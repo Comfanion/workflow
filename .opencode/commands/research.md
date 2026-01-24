@@ -1,5 +1,5 @@
 ---
-description: Conduct technical, market, or domain research with structured documentation
+description: Use when conducting technical, market, or domain research. Creates structured research documentation
 agent: researcher
 ---
 

@@ -1,6 +1,6 @@
 ---
-description: Create technical diagrams (C4, sequence, ER, flowcharts) in Mermaid format
-agent: diagram-creator
+description: Use when creating technical diagrams - C4 architecture, sequence flows, ER data models, flowcharts in Mermaid format
+agent: architect
 ---
 
 # Diagram Creation

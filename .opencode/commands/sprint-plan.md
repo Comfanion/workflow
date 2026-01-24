@@ -1,7 +1,6 @@
 ---
-description: Plan and manage sprints
-agent: sm
-model: anthropic/claude-sonnet-4-20250514
+description: Use when planning sprints, organizing epics into sprints, or tracking sprint progress. REQUIRES epics to exist first
+agent: pm
 ---
 
 # Sprint Planning

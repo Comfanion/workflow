@@ -17,7 +17,7 @@ description: |
 # CONFIGURATION
 # =============================================================================
 config:
-  file: config.yaml
+  file: .opencode/config.yaml
   variables:
     - user_name
     - communication_language

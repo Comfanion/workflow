@@ -1,6 +1,6 @@
 ---
-description: Create or update coding standards documentation (modular, multiple files)
-agent: coding-standards
+description: Use when creating or updating coding standards documentation. Creates modular files for patterns, testing, API conventions
+agent: architect
 ---
 
 # Coding Standards Creation

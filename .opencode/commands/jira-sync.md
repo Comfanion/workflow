@@ -1,7 +1,6 @@
 ---
-description: Synchronize epics and stories with Jira
-agent: sm
-model: anthropic/claude-sonnet-4-20250514
+description: Use when synchronizing epics and stories with Jira. Creates issues, updates status, links branches
+agent: pm
 ---
 
 # Jira Synchronization

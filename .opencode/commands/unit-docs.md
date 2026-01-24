@@ -1,5 +1,5 @@
 ---
-description: Document module/domain/service/entity/feature using Universal Unit format
+description: Use when documenting module/domain/service/entity using Universal Unit format with index.md, data-model.md
 agent: architect
 skills_loaded:
   - unit-writing

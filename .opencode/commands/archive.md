@@ -1,6 +1,6 @@
 ---
-description: Archive outdated documents while preserving history
-agent: archivist
+description: Use when archiving outdated documents or completed sprints while preserving history
+agent: pm
 ---
 
 # Archive Command

@@ -1,6 +1,6 @@
 ---
-description: Structured clarification of requirements before creating PRD/Architecture
-agent: requirements-analyst
+description: Use when clarifying requirements before creating PRD or Architecture. Asks structured questions to uncover gaps
+agent: analyst
 ---
 
 # Clarify Command

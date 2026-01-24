@@ -1,7 +1,6 @@
 ---
-description: Create or update the Architecture document
+description: Use when creating or updating system architecture document. Designs modules, data ownership, integration patterns
 agent: architect
-model: anthropic/claude-sonnet-4-20250514
 ---
 
 # Architecture Creation/Update

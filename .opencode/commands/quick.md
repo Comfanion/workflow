@@ -1,6 +1,6 @@
 ---
-description: Quick mode for small changes - minimal documentation workflow
-agent: workflow-orchestrator
+description: Use when making small changes (bug fixes, minor features) that don't need full documentation workflow
+agent: pm
 ---
 
 # Quick Mode

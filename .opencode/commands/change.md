@@ -1,5 +1,5 @@
 ---
-description: Manage change proposals for modifying existing documentation
+description: Use when managing change proposals for modifying existing documentation. Tracks deltas and impact
 agent: change-manager
 ---
 

@@ -1,7 +1,6 @@
 ---
-description: Create epics from PRD and Architecture
-agent: sm
-model: anthropic/claude-sonnet-4-20250514
+description: Use when creating epics from PRD and Architecture. Breaks PRD requirements into implementable epics aligned with architecture modules
+agent: pm
 ---
 
 # Epic Creation

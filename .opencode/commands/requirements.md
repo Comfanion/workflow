@@ -1,7 +1,6 @@
 ---
-description: Gather and document FR/NFR requirements through stakeholder interview
+description: Use when gathering FR/NFR requirements through stakeholder interviews. First step before PRD
 agent: analyst
-model: anthropic/claude-sonnet-4-20250514
 ---
 
 # Requirements Gathering

@@ -1,6 +1,6 @@
 ---
-description: Create detailed documentation for a module in docs/architecture/[module]/
-agent: module-docs
+description: Use when creating detailed documentation for a module - index.md, data-model.md, API specs, events
+agent: architect
 ---
 
 # Module Documentation

@@ -1,6 +1,6 @@
 ---
-description: Analyze project state and suggest next steps (context-aware guidance)
-agent: workflow-orchestrator
+description: Use when needing guidance on project state, next steps, blockers, or quick wins in the workflow
+agent: pm
 ---
 
 # Help Command

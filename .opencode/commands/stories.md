@@ -1,7 +1,6 @@
 ---
-description: Create stories for a specific epic
-agent: sm
-model: anthropic/claude-sonnet-4-20250514
+description: Use when creating stories for a specific epic. Breaks epic into implementable user stories with Given/When/Then acceptance criteria
+agent: pm
 ---
 
 # Story Creation

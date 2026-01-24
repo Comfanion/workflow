@@ -1,3 +1,8 @@
+---
+description: Use when implementing a story using red-green-refactor TDD cycle. Finds next ready story or uses specified path
+agent: dev
+---
+
 # /dev-story Command
 
 Implement a story using red-green-refactor cycle with TODO tracking.
@@ -14,7 +19,7 @@ Implement a story using red-green-refactor cycle with TODO tracking.
 
 ## Agent
 
-This command invokes the **Dev** agent (Amelia).
+This command invokes the **Dev** agent (Rick).
 
 ## Process
 
