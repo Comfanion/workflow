@@ -274,16 +274,27 @@ program
       const vectorizerDir = path.join(targetDir, 'vectorizer');
       const vectorsDir = path.join(targetDir, 'vectors');
       const tempVectors = path.join(process.cwd(), '.vectors-temp');
+      const tempNodeModules = path.join(process.cwd(), '.vectorizer-nm-temp');
       
       let hadVectors = false;
+      let hadVectorizerModules = false;
+      let oldPkgHash = null;
       let existingConfigContent = null;
       
       if (await fs.pathExists(targetDir)) {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
         const backupDir = path.join(process.cwd(), `.opencode.backup-${timestamp}`);
         
-        // Check what we need to preserve (only vectors, vectorizer will be reinstalled fresh)
+        // Check what we need to preserve
         hadVectors = await fs.pathExists(vectorsDir);
+        hadVectorizerModules = await fs.pathExists(path.join(vectorizerDir, 'node_modules'));
+        
+        // Get old package.json hash
+        const oldPkgPath = path.join(vectorizerDir, 'package.json');
+        if (await fs.pathExists(oldPkgPath)) {
+          const oldPkg = await fs.readFile(oldPkgPath, 'utf8');
+          oldPkgHash = require('crypto').createHash('md5').update(oldPkg).digest('hex');
+        }
         
         // Read existing config.yaml for merge
         const existingConfigPath = path.join(targetDir, 'config.yaml');
@@ -291,10 +302,16 @@ program
           existingConfigContent = await fs.readFile(existingConfigPath, 'utf8');
         }
         
-        // Preserve vector indexes only (not node_modules - will reinstall fresh)
+        // Preserve vector indexes
         if (hadVectors) {
           spinner.text = 'Preserving vector indexes...';
           await fs.move(vectorsDir, tempVectors, { overwrite: true });
+        }
+        
+        // Preserve vectorizer node_modules
+        if (hadVectorizerModules) {
+          spinner.text = 'Preserving vectorizer cache...';
+          await fs.move(path.join(vectorizerDir, 'node_modules'), tempNodeModules, { overwrite: true });
         }
         
         // Create backup (without node_modules and vectors)
@@ -314,41 +331,59 @@ program
       // Copy .opencode structure (fresh, no old files)
       await fs.copy(OPENCODE_SRC, targetDir);
       
-      // Copy vectorizer source files (always copy, install only if enabled)
+      // Copy vectorizer source files
       if (await fs.pathExists(VECTORIZER_SRC)) {
         const newVectorizerDir = path.join(targetDir, 'vectorizer');
         await fs.ensureDir(newVectorizerDir);
         await fs.copy(path.join(VECTORIZER_SRC, 'index.js'), path.join(newVectorizerDir, 'index.js'));
         await fs.copy(path.join(VECTORIZER_SRC, 'package.json'), path.join(newVectorizerDir, 'package.json'));
         
-        // Install dependencies only if vectorizer is enabled
         if (config.vectorizer_enabled) {
-          spinner.text = 'Installing vectorizer dependencies...';
-          try {
-            // Show progress during npm install
-            const steps = [
-              'Installing vectorizer dependencies...',
-              'Downloading @xenova/transformers (~50MB)...',
-              'Installing vectordb...',
-              'Installing glob...',
-              'Finalizing vectorizer setup...'
-            ];
-            let stepIndex = 0;
-            const progressInterval = setInterval(() => {
-              stepIndex = (stepIndex + 1) % steps.length;
-              spinner.text = steps[stepIndex];
-            }, 3000);
-            
-            execSync('npm install', { 
-              cwd: newVectorizerDir,
-              stdio: 'pipe',
-              timeout: 180000
-            });
-            
-            clearInterval(progressInterval);
-            spinner.text = 'Vectorizer installed!';
-          } catch (e) {
-            // Non-fatal, will show warning below
+          // Check if package.json changed
+          const newPkgPath = path.join(newVectorizerDir, 'package.json');
+          const newPkg = await fs.readFile(newPkgPath, 'utf8');
+          const newPkgHash = require('crypto').createHash('md5').update(newPkg).digest('hex');
+          
+          if (hadVectorizerModules && oldPkgHash === newPkgHash) {
+            // Dependencies unchanged - restore cached node_modules
+            spinner.text = 'Restoring vectorizer cache (deps unchanged)...';
+            await fs.move(tempNodeModules, path.join(newVectorizerDir, 'node_modules'), { overwrite: true });
+          } else {
+            // Dependencies changed or new install
+            spinner.text = 'Installing vectorizer dependencies...';
+            if (await fs.pathExists(tempNodeModules)) {
+              await fs.remove(tempNodeModules);
+            }
+            try {
+              const steps = [
+                'Installing vectorizer dependencies...',
+                'Downloading @xenova/transformers (~50MB)...',
+                'Installing vectordb...',
+                'Installing glob...',
+                'Finalizing vectorizer setup...'
+              ];
+              let stepIndex = 0;
+              const progressInterval = setInterval(() => {
+                stepIndex = (stepIndex + 1) % steps.length;
+                spinner.text = steps[stepIndex];
+              }, 3000);
+              
+              execSync('npm install', { 
+                cwd: newVectorizerDir,
+                stdio: 'pipe',
+                timeout: 180000
+              });
+              
+              clearInterval(progressInterval);
+              spinner.text = 'Vectorizer installed!';
+            } catch (e) {
+              // Non-fatal
+            }
+          }
+        } else {
+          // Vectorizer disabled - clean up temp
+          if (await fs.pathExists(tempNodeModules)) {
+            await fs.remove(tempNodeModules);
           }
         }
       }
@@ -576,8 +611,17 @@ program
       spinner.text = 'Reading config.yaml...';
       const configBackup = await fs.readFile(configPath, 'utf8');
       
-      // Check if vectors exist (we preserve only indexes, reinstall vectorizer fresh)
+      // Check what exists
       const hasVectors = await fs.pathExists(vectorsDir);
+      const hasVectorizerModules = await fs.pathExists(path.join(vectorizerDir, 'node_modules'));
+      
+      // Get old package.json hash (to check if deps changed)
+      let oldPkgHash = null;
+      const oldPkgPath = path.join(vectorizerDir, 'package.json');
+      if (await fs.pathExists(oldPkgPath)) {
+        const oldPkg = await fs.readFile(oldPkgPath, 'utf8');
+        oldPkgHash = require('crypto').createHash('md5').update(oldPkg).digest('hex');
+      }
       
       // Create full backup (unless --no-backup)
       if (options.backup !== false) {
@@ -587,11 +631,18 @@ program
         });
       }
       
-      // Preserve only vector indexes (not node_modules - will reinstall fresh)
+      // Preserve vector indexes
       const tempVectors = path.join(process.cwd(), '.vectors-temp');
       if (hasVectors) {
         spinner.text = 'Preserving vector indexes...';
         await fs.move(vectorsDir, tempVectors, { overwrite: true });
+      }
+      
+      // Preserve vectorizer node_modules (will restore if package.json unchanged)
+      const tempNodeModules = path.join(process.cwd(), '.vectorizer-nm-temp');
+      if (hasVectorizerModules) {
+        spinner.text = 'Preserving vectorizer cache...';
+        await fs.move(path.join(vectorizerDir, 'node_modules'), tempNodeModules, { overwrite: true });
       }
       
       // Remove old .opencode directory
@@ -602,7 +653,7 @@ program
       spinner.text = 'Installing new version...';
       await fs.copy(OPENCODE_SRC, targetDir);
       
-      // Copy vectorizer source files (always copy, install only if enabled)
+      // Copy vectorizer source files
       if (await fs.pathExists(VECTORIZER_SRC)) {
         const newVectorizerDir = path.join(targetDir, 'vectorizer');
         await fs.ensureDir(newVectorizerDir);
@@ -612,34 +663,53 @@ program
         // Check if vectorizer is enabled in user's config
         const vectorizerEnabled = /vectorizer:[\s\S]*?enabled:\s*true/i.test(configBackup);
         
-        // Install dependencies only if vectorizer is enabled
         if (vectorizerEnabled) {
-          spinner.text = 'Installing vectorizer dependencies...';
-          try {
-            // Show progress during npm install
-            const steps = [
-              'Installing vectorizer dependencies...',
-              'Downloading @xenova/transformers (~50MB)...',
-              'Installing vectordb...',
-              'Installing glob...',
-              'Finalizing vectorizer setup...'
-            ];
-            let stepIndex = 0;
-            const progressInterval = setInterval(() => {
-              stepIndex = (stepIndex + 1) % steps.length;
-              spinner.text = steps[stepIndex];
-            }, 3000);
-            
-            execSync('npm install', { 
-              cwd: newVectorizerDir,
-              stdio: 'pipe',
-              timeout: 180000
-            });
-            
-            clearInterval(progressInterval);
-            spinner.text = 'Vectorizer installed!';
-          } catch (e) {
-            // Non-fatal, will show warning below
+          // Check if package.json changed
+          const newPkgPath = path.join(newVectorizerDir, 'package.json');
+          const newPkg = await fs.readFile(newPkgPath, 'utf8');
+          const newPkgHash = require('crypto').createHash('md5').update(newPkg).digest('hex');
+          
+          if (hasVectorizerModules && oldPkgHash === newPkgHash) {
+            // Dependencies unchanged - restore cached node_modules
+            spinner.text = 'Restoring vectorizer cache (deps unchanged)...';
+            await fs.move(tempNodeModules, path.join(newVectorizerDir, 'node_modules'), { overwrite: true });
+          } else {
+            // Dependencies changed or new install - run npm install
+            spinner.text = 'Installing vectorizer dependencies...';
+            // Clean up temp if exists
+            if (await fs.pathExists(tempNodeModules)) {
+              await fs.remove(tempNodeModules);
+            }
+            try {
+              const steps = [
+                'Installing vectorizer dependencies...',
+                'Downloading @xenova/transformers (~50MB)...',
+                'Installing vectordb...',
+                'Installing glob...',
+                'Finalizing vectorizer setup...'
+              ];
+              let stepIndex = 0;
+              const progressInterval = setInterval(() => {
+                stepIndex = (stepIndex + 1) % steps.length;
+                spinner.text = steps[stepIndex];
+              }, 3000);
+              
+              execSync('npm install', { 
+                cwd: newVectorizerDir,
+                stdio: 'pipe',
+                timeout: 180000
+              });
+              
+              clearInterval(progressInterval);
+              spinner.text = 'Vectorizer installed!';
+            } catch (e) {
+              // Non-fatal
+            }
+          }
+        } else {
+          // Vectorizer disabled - clean up temp
+          if (await fs.pathExists(tempNodeModules)) {
+            await fs.remove(tempNodeModules);
           }
         }
       }
