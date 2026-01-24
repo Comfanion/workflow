@@ -88,11 +88,14 @@ async function build() {
 
   // Copy vectorizer source files (installed on demand)
   console.log('\n  Copying vectorizer module...');
-  const vectorizerSrc = path.join(CLI_DIR, 'src', 'vectorizer');
+  const vectorizerSrc = path.join(OPENCODE_SRC, 'vectorizer');
   const vectorizerDest = path.join(DIST_DIR, 'vectorizer');
   
   if (await fs.pathExists(vectorizerSrc)) {
-    await fs.copy(vectorizerSrc, vectorizerDest);
+    // Only copy index.js and package.json (not node_modules)
+    await fs.ensureDir(vectorizerDest);
+    await fs.copy(path.join(vectorizerSrc, 'index.js'), path.join(vectorizerDest, 'index.js'));
+    await fs.copy(path.join(vectorizerSrc, 'package.json'), path.join(vectorizerDest, 'package.json'));
     console.log('    ✅ vectorizer/index.js');
     console.log('    ✅ vectorizer/package.json');
   } else {
