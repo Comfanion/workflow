@@ -200,7 +200,7 @@ program
           type: 'confirm',
           name: 'jira_enabled',
           message: 'Enable Jira integration?',
-          default: options.jira || config.jira_enabled
+          default: options.jira === true ? true : (config.jira_enabled || false)
         },
         {
           type: 'input',
