@@ -314,23 +314,25 @@ program
       // Copy .opencode structure (fresh, no old files)
       await fs.copy(OPENCODE_SRC, targetDir);
       
-      // Copy and install vectorizer fresh
+      // Copy vectorizer source files (always copy, install only if enabled)
       if (await fs.pathExists(VECTORIZER_SRC)) {
-        spinner.text = 'Installing vectorizer...';
         const newVectorizerDir = path.join(targetDir, 'vectorizer');
         await fs.ensureDir(newVectorizerDir);
         await fs.copy(path.join(VECTORIZER_SRC, 'index.js'), path.join(newVectorizerDir, 'index.js'));
         await fs.copy(path.join(VECTORIZER_SRC, 'package.json'), path.join(newVectorizerDir, 'package.json'));
         
-        // Always install vectorizer dependencies fresh
-        try {
-          execSync('npm install --silent', { 
-            cwd: newVectorizerDir,
-            stdio: 'pipe',
-            timeout: 120000
-          });
-        } catch (e) {
-          // Non-fatal, will show warning below
+        // Install dependencies only if vectorizer is enabled
+        if (config.vectorizer_enabled) {
+          spinner.text = 'Installing vectorizer...';
+          try {
+            execSync('npm install --silent', { 
+              cwd: newVectorizerDir,
+              stdio: 'pipe',
+              timeout: 120000
+            });
+          } catch (e) {
+            // Non-fatal, will show warning below
+          }
         }
       }
       
@@ -454,8 +456,10 @@ program
       const vectorizerInstalled = await fs.pathExists(path.join(targetDir, 'vectorizer', 'node_modules'));
       if (vectorizerInstalled) {
         console.log(chalk.green('✅ Vectorizer installed (fresh dependencies)'));
-      } else {
+      } else if (config.vectorizer_enabled) {
         console.log(chalk.yellow('⚠️  Vectorizer: run `npx @comfanion/workflow vectorizer install`'));
+      } else {
+        console.log(chalk.gray('ℹ️  Vectorizer disabled (enable in config.yaml to use semantic search)'));
       }
       if (hadVectors) {
         console.log(chalk.green('✅ Vector indexes preserved'));
@@ -581,23 +585,28 @@ program
       spinner.text = 'Installing new version...';
       await fs.copy(OPENCODE_SRC, targetDir);
       
-      // Copy new vectorizer source files
+      // Copy vectorizer source files (always copy, install only if enabled)
       if (await fs.pathExists(VECTORIZER_SRC)) {
-        spinner.text = 'Installing vectorizer...';
         const newVectorizerDir = path.join(targetDir, 'vectorizer');
         await fs.ensureDir(newVectorizerDir);
         await fs.copy(path.join(VECTORIZER_SRC, 'index.js'), path.join(newVectorizerDir, 'index.js'));
         await fs.copy(path.join(VECTORIZER_SRC, 'package.json'), path.join(newVectorizerDir, 'package.json'));
         
-        // Always install vectorizer dependencies fresh
-        try {
-          execSync('npm install --silent', { 
-            cwd: newVectorizerDir,
-            stdio: 'pipe',
-            timeout: 120000
-          });
-        } catch (e) {
-          // Non-fatal, will show warning below
+        // Check if vectorizer is enabled in user's config
+        const vectorizerEnabled = /vectorizer:[\s\S]*?enabled:\s*true/i.test(configBackup);
+        
+        // Install dependencies only if vectorizer is enabled
+        if (vectorizerEnabled) {
+          spinner.text = 'Installing vectorizer...';
+          try {
+            execSync('npm install --silent', { 
+              cwd: newVectorizerDir,
+              stdio: 'pipe',
+              timeout: 120000
+            });
+          } catch (e) {
+            // Non-fatal, will show warning below
+          }
         }
       }
       
@@ -668,10 +677,13 @@ program
         console.log(chalk.yellow('⚠️  Plugin deps: run `cd .opencode && bun install`'));
       }
       const vectorizerInstalled = await fs.pathExists(path.join(targetDir, 'vectorizer', 'node_modules'));
+      const vectorizerEnabled = /vectorizer:[\s\S]*?enabled:\s*true/i.test(configBackup);
       if (vectorizerInstalled) {
         console.log(chalk.green('✅ Vectorizer reinstalled (fresh dependencies).'));
-      } else {
+      } else if (vectorizerEnabled) {
         console.log(chalk.yellow('⚠️  Vectorizer: run `npx @comfanion/workflow vectorizer install`'));
+      } else {
+        console.log(chalk.gray('ℹ️  Vectorizer disabled (enable in config.yaml to use semantic search)'));
       }
       if (hasVectors) {
         console.log(chalk.green('✅ Vector indexes were preserved.'));
