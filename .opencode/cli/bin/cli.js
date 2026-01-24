@@ -262,11 +262,12 @@ program
           message: 'Select MCP servers to enable (writes to opencode.json):',
           choices: [
             { name: 'context7 - Library docs for npm, Go, Python (recommended)', value: 'context7', checked: true },
-            { name: 'grep - Search code examples from GitHub', value: 'grep', checked: false },
-            { name: 'sequential-thinking - Enhanced reasoning for complex tasks', value: 'sequential-thinking', checked: false },
+            { name: 'sequential-thinking - Enhanced reasoning (recommended)', value: 'sequential-thinking', checked: true },
+            { name: 'chrome-devtools - Chrome debugging, DOM, network', value: 'chrome-devtools', checked: false },
             { name: 'playwright - Browser automation and testing', value: 'playwright', checked: false },
-            { name: 'github - GitHub repos, issues, PRs (needs GITHUB_TOKEN)', value: 'github', checked: false },
-            { name: 'sentry - Query Sentry issues and errors (OAuth)', value: 'sentry', checked: false },
+            { name: 'grep - Search code examples from GitHub', value: 'grep', checked: false },
+            { name: 'github - GitHub repos, issues, PRs', value: 'github', checked: false },
+            { name: 'sentry - Query Sentry issues (OAuth)', value: 'sentry', checked: false },
             { name: 'postgres - PostgreSQL database queries', value: 'postgres', checked: false }
           ]
         }
@@ -515,6 +516,7 @@ program
           'grep': { type: 'remote', url: 'https://mcp.grep.app' },
           'sentry': { type: 'remote', url: 'https://mcp.sentry.dev/mcp', oauth: {} },
           'sequential-thinking': { type: 'local', command: ['npx', '-y', '@anthropic/mcp-sequential-thinking'] },
+          'chrome-devtools': { type: 'local', command: ['npx', '-y', 'chrome-devtools-mcp@latest'] },
           'playwright': { type: 'local', command: ['npx', '-y', '@anthropic/mcp-playwright'] },
           'github': { type: 'local', command: ['npx', '-y', '@anthropic/mcp-github'] },
           'postgres': { type: 'local', command: ['npx', '-y', '@anthropic/mcp-postgres'] }
