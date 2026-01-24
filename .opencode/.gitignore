@@ -17,3 +17,6 @@ cli-alias/
 # Vectorizer cache
 vectors/
 vectorizer/node_modules/
+
+# MCP user config (personal selections)
+mcp/enabled.yaml

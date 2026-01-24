@@ -1,0 +1,230 @@
+# MCP Server Catalog
+# Curated list of recommended MCP servers for AI-assisted development
+# 
+# This file is updated by `npx @comfanion/workflow update`
+# Your selections are stored in `enabled.yaml` (not touched by updates)
+#
+# Usage:
+#   npx @comfanion/workflow mcp list      # Show available MCP servers
+#   npx @comfanion/workflow mcp enable    # Interactive selection
+#   npx @comfanion/workflow mcp add <id>  # Add specific MCP
+#
+# Version: 1.0.0
+# Last updated: 2026-01-24
+
+servers:
+  # ==========================================================================
+  # DOCUMENTATION & RESEARCH
+  # ==========================================================================
+  
+  context7:
+    name: "Context7"
+    description: "Library documentation for npm, Go, Python packages"
+    category: documentation
+    recommended: true
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-context7"]
+    tags: [docs, npm, go, python, research]
+    
+  # ==========================================================================
+  # THINKING & REASONING
+  # ==========================================================================
+    
+  sequential-thinking:
+    name: "Sequential Thinking"
+    description: "Enhanced reasoning for complex multi-step problems"
+    category: thinking
+    recommended: true
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-sequential-thinking"]
+    tags: [reasoning, planning, complex-tasks]
+
+  # ==========================================================================
+  # BROWSER & UI
+  # ==========================================================================
+    
+  playwright:
+    name: "Playwright"
+    description: "Browser automation, testing, and web scraping"
+    category: browser
+    recommended: false
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-playwright"]
+    tags: [browser, testing, automation, scraping]
+    
+  chrome-devtools:
+    name: "Chrome DevTools"
+    description: "Chrome debugging, performance analysis, DOM inspection"
+    category: browser
+    recommended: false
+    config:
+      command: npx
+      args: ["-y", "chrome-devtools-mcp@latest"]
+    tags: [chrome, debugging, devtools]
+    
+  puppeteer:
+    name: "Puppeteer"
+    description: "Headless Chrome automation"
+    category: browser
+    recommended: false
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-puppeteer"]
+    tags: [chrome, headless, automation]
+
+  # ==========================================================================
+  # INTEGRATIONS
+  # ==========================================================================
+    
+  atlassian:
+    name: "Atlassian (Jira/Confluence)"
+    description: "Jira issues, Confluence pages integration"
+    category: integrations
+    recommended: false
+    requires_env:
+      - ATLASSIAN_EMAIL
+      - ATLASSIAN_API_TOKEN
+      - ATLASSIAN_URL
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-atlassian"]
+    tags: [jira, confluence, tickets, docs]
+    
+  github:
+    name: "GitHub"
+    description: "GitHub repos, issues, PRs, actions"
+    category: integrations
+    recommended: false
+    requires_env:
+      - GITHUB_TOKEN
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-github"]
+    tags: [github, git, issues, prs]
+    
+  gitlab:
+    name: "GitLab"
+    description: "GitLab repos, issues, MRs, pipelines"
+    category: integrations
+    recommended: false
+    requires_env:
+      - GITLAB_TOKEN
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-gitlab"]
+    tags: [gitlab, git, issues, mrs]
+
+  slack:
+    name: "Slack"
+    description: "Slack messages, channels, search"
+    category: integrations
+    recommended: false
+    requires_env:
+      - SLACK_TOKEN
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-slack"]
+    tags: [slack, messaging, communication]
+
+  # ==========================================================================
+  # DATA & STORAGE
+  # ==========================================================================
+    
+  postgres:
+    name: "PostgreSQL"
+    description: "Query PostgreSQL databases"
+    category: database
+    recommended: false
+    requires_env:
+      - POSTGRES_CONNECTION_STRING
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-postgres"]
+    tags: [database, sql, postgres]
+    
+  sqlite:
+    name: "SQLite"
+    description: "Query SQLite databases"
+    category: database
+    recommended: false
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-sqlite"]
+    tags: [database, sql, sqlite]
+
+  redis:
+    name: "Redis"
+    description: "Redis key-value operations"
+    category: database
+    recommended: false
+    requires_env:
+      - REDIS_URL
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-redis"]
+    tags: [database, cache, redis]
+
+  # ==========================================================================
+  # FILE & SYSTEM
+  # ==========================================================================
+    
+  filesystem:
+    name: "Filesystem"
+    description: "Advanced file operations (usually built-in)"
+    category: system
+    recommended: false
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-filesystem"]
+    tags: [files, filesystem]
+
+  # ==========================================================================
+  # API & WEB
+  # ==========================================================================
+    
+  fetch:
+    name: "Fetch"
+    description: "HTTP requests to external APIs (usually built-in)"
+    category: api
+    recommended: false
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-fetch"]
+    tags: [http, api, fetch]
+
+  openapi:
+    name: "OpenAPI"
+    description: "Interact with APIs via OpenAPI specs"
+    category: api
+    recommended: false
+    config:
+      command: npx
+      args: ["-y", "@anthropic/mcp-openapi"]
+    tags: [api, openapi, swagger]
+
+# Categories for UI grouping
+categories:
+  documentation:
+    name: "Documentation & Research"
+    icon: "📚"
+  thinking:
+    name: "Thinking & Reasoning"
+    icon: "🧠"
+  browser:
+    name: "Browser & UI"
+    icon: "🌐"
+  integrations:
+    name: "Integrations"
+    icon: "🔌"
+  database:
+    name: "Data & Storage"
+    icon: "🗄️"
+  system:
+    name: "File & System"
+    icon: "📁"
+  api:
+    name: "API & Web"
+    icon: "🔗"

@@ -31,6 +31,7 @@ const OPENCODE_ITEMS = [
   'commands',
   'tools',
   'plugins',
+  'mcp',
   'package.json',
   'opencode.json'
 ];
@@ -42,7 +43,8 @@ const EXCLUDE = [
   'jira-config.yaml',
   '.gitignore',
   'USAGE-EXAMPLES.md',
-  'CONSISTENCY-REPORT.md'
+  'CONSISTENCY-REPORT.md',
+  'mcp/enabled.yaml'  // User config, not distributed
 ];
 
 async function build() {
@@ -88,6 +90,13 @@ async function build() {
   if (await fs.pathExists(internalRepoStructure)) {
     await fs.remove(internalRepoStructure);
     console.log('    ✅ Removed duplicate repo-structure from skills/');
+  }
+
+  // Remove mcp/enabled.yaml (user config, not distributed)
+  const mcpEnabledPath = path.join(opencodeDir, 'mcp', 'enabled.yaml');
+  if (await fs.pathExists(mcpEnabledPath)) {
+    await fs.remove(mcpEnabledPath);
+    console.log('    ✅ Removed mcp/enabled.yaml (user config)');
   }
 
   // Copy vectorizer source files (installed on demand)

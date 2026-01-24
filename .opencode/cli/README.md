@@ -278,6 +278,31 @@ vectorizer:
 4. Remove TODOs
 ```
 
+## MCP Servers
+
+Extend AI capabilities with Model Context Protocol servers:
+
+```bash
+# List available MCP servers
+npx @comfanion/workflow mcp list
+
+# Enable servers interactively
+npx @comfanion/workflow mcp enable
+```
+
+### Recommended MCP Servers
+
+| Server | Description |
+|--------|-------------|
+| **context7** ⭐ | Library docs for npm, Go, Python |
+| **sequential-thinking** ⭐ | Enhanced reasoning for complex tasks |
+| **playwright** | Browser automation, testing |
+| **atlassian** | Jira/Confluence integration |
+
+MCP configs stored in `.opencode/mcp/`:
+- `catalog.yaml` - Available servers (updated by workflow)
+- `enabled.yaml` - Your selections (not touched by updates)
+
 ## Jira Integration
 
 Set credentials:
