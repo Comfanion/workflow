@@ -11,20 +11,22 @@ import { execSync } from 'child_process';
 import yaml from 'js-yaml';
 
 /**
- * Deep merge two objects. User values override defaults.
- * Arrays are replaced, not merged.
+ * Find top-level keys that exist in newObj but not in oldObj
  */
-function deepMerge(defaults, user) {
-  const result = { ...defaults };
-  for (const key of Object.keys(user)) {
-    if (user[key] !== null && typeof user[key] === 'object' && !Array.isArray(user[key]) &&
-        defaults[key] !== null && typeof defaults[key] === 'object' && !Array.isArray(defaults[key])) {
-      result[key] = deepMerge(defaults[key], user[key]);
-    } else {
-      result[key] = user[key];
+function findNewKeys(newObj, oldObj, prefix = '') {
+  const newKeys = [];
+  for (const key of Object.keys(newObj)) {
+    const fullKey = prefix ? `${prefix}.${key}` : key;
+    if (!(key in oldObj)) {
+      newKeys.push(fullKey);
+    } else if (
+      newObj[key] !== null && typeof newObj[key] === 'object' && !Array.isArray(newObj[key]) &&
+      oldObj[key] !== null && typeof oldObj[key] === 'object' && !Array.isArray(oldObj[key])
+    ) {
+      newKeys.push(...findNewKeys(newObj[key], oldObj[key], fullKey));
     }
   }
-  return result;
+  return newKeys;
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -347,32 +349,24 @@ program
       // Update config.yaml with user values
       spinner.text = 'Configuring...';
       const configPath = path.join(targetDir, 'config.yaml');
-      let configContent = await fs.readFile(configPath, 'utf8');
+      let configContent;
       
-      // If we had existing config, merge it (preserve user customizations)
+      // If we had existing config, use it as base (preserves comments and formatting)
       if (existingConfigContent) {
-        try {
-          const newConfig = yaml.load(configContent) || {};
-          const existingConfig = yaml.load(existingConfigContent) || {};
-          const mergedConfig = deepMerge(newConfig, existingConfig);
-          configContent = yaml.dump(mergedConfig, {
-            indent: 2,
-            lineWidth: 120,
-            noRefs: true,
-            sortKeys: false
-          });
-          console.log(chalk.green('  ✅ Merged existing config settings'));
-        } catch (e) {
-          // Merge failed, continue with new config + user values
-        }
+        configContent = existingConfigContent;
+        // Update version to match new package
+        configContent = configContent.replace(/^version:\s*["']?[\d.]+["']?/m, `version: "${VERSION}"`);
+        console.log(chalk.green('  ✅ Restored your config (comments preserved)'));
+      } else {
+        configContent = await fs.readFile(configPath, 'utf8');
       }
       
       // Apply user's answers from prompts
       configContent = configContent
-        .replace(/user_name: .*/, `user_name: "${config.user_name}"`)
-        .replace(/communication_language: .*/, `communication_language: "${config.communication_language}"`)
-        .replace(/project_name: .*/, `project_name: "${config.project_name}"`)
-        .replace(/methodology: (tdd|stub)/, `methodology: ${config.methodology}`);
+        .replace(/user_name:\s*["']?[^"\n]*["']?/, `user_name: "${config.user_name}"`)
+        .replace(/communication_language:\s*["']?[^"\n]*["']?/, `communication_language: "${config.communication_language}"`)
+        .replace(/project_name:\s*["']?[^"\n]*["']?/, `project_name: "${config.project_name}"`)
+        .replace(/methodology:\s*(tdd|stub)/, `methodology: ${config.methodology}`);
       
       // Jira config
       if (config.jira_enabled) {
@@ -617,33 +611,37 @@ program
         await fs.move(tempVectors, path.join(targetDir, 'vectors'), { overwrite: true });
       }
       
-      // Merge config.yaml: new defaults + user overrides
-      spinner.text = 'Merging config.yaml...';
+      // Restore user's config.yaml (preserves comments and formatting)
+      spinner.text = 'Restoring config.yaml...';
       try {
-        const newConfigPath = path.join(targetDir, 'config.yaml');
-        const newConfigContent = await fs.readFile(newConfigPath, 'utf8');
+        // Update version in user's config to match new package
+        let restoredConfig = configBackup.replace(
+          /^version:\s*["']?[\d.]+["']?/m, 
+          `version: "${VERSION}"`
+        );
+        await fs.writeFile(configPath, restoredConfig);
+        console.log(chalk.green('  ✅ config.yaml restored (your settings + comments preserved)'));
         
-        // Parse both configs
-        const newConfig = yaml.load(newConfigContent) || {};
-        const userConfig = yaml.load(configBackup) || {};
-        
-        // Deep merge: defaults from new config, overridden by user values
-        const mergedConfig = deepMerge(newConfig, userConfig);
-        
-        // Dump back to YAML with nice formatting
-        const mergedContent = yaml.dump(mergedConfig, {
-          indent: 2,
-          lineWidth: 120,
-          noRefs: true,
-          sortKeys: false
-        });
-        
-        await fs.writeFile(configPath, mergedContent);
-        console.log(chalk.green('  ✅ config.yaml merged (your settings preserved, new options added)'));
+        // Check if new template has options that user doesn't have
+        const newConfigPath = path.join(OPENCODE_SRC, 'config.yaml');
+        if (await fs.pathExists(newConfigPath)) {
+          const newConfig = yaml.load(await fs.readFile(newConfigPath, 'utf8')) || {};
+          const userConfig = yaml.load(configBackup) || {};
+          const newKeys = findNewKeys(newConfig, userConfig);
+          if (newKeys.length > 0) {
+            console.log(chalk.yellow(`  💡 New config options available: ${newKeys.slice(0, 3).join(', ')}${newKeys.length > 3 ? '...' : ''}`));
+            console.log(chalk.gray('     Check .opencode.backup-*/config.yaml.new for full template'));
+            // Save new template for reference
+            await fs.writeFile(
+              path.join(process.cwd(), `.opencode.backup-${timestamp}`, 'config.yaml.new'),
+              await fs.readFile(newConfigPath, 'utf8')
+            );
+          }
+        }
       } catch (e) {
-        // Fallback: just restore user's config if merge fails
+        // Fallback: just restore user's config
         await fs.writeFile(configPath, configBackup);
-        console.log(chalk.yellow('  ⚠️ config.yaml restored (merge failed, using your original)'));
+        console.log(chalk.yellow('  ⚠️ config.yaml restored'));
       }
       
       // Install plugin dependencies
