@@ -1291,6 +1291,13 @@ const MCP_CATALOG = {
     command: ['npx', '-y', '@anthropic/mcp-playwright'],
     recommended: false
   },
+  'chrome-devtools': { 
+    name: 'Chrome DevTools',
+    description: 'Chrome debugging, DOM, network, console',
+    type: 'local', 
+    command: ['npx', '-y', 'chrome-devtools-mcp@latest'],
+    recommended: false
+  },
   'github': { 
     name: 'GitHub',
     description: 'GitHub repos, issues, PRs',

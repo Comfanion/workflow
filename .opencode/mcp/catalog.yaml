@@ -70,6 +70,15 @@ servers:
     command: ["npx", "-y", "@anthropic/mcp-playwright"]
     tags: [browser, testing, automation, scraping]
     
+  chrome-devtools:
+    name: "Chrome DevTools"
+    description: "Chrome debugging, DOM inspection, network, console"
+    category: browser
+    recommended: false
+    type: local
+    command: ["npx", "-y", "chrome-devtools-mcp@latest"]
+    tags: [chrome, debugging, devtools, dom]
+    
   puppeteer:
     name: "Puppeteer"
     description: "Headless Chrome automation"
