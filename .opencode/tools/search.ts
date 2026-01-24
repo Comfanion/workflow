@@ -63,7 +63,7 @@ Prerequisites: Run 'npx @comfanion/workflow index --index <name>' first.`,
       const { CodebaseIndexer } = await import(`file://${vectorizerModule}`)
       
       let allResults: any[] = []
-      const limit = args.limit || 5
+      const limit = args.limit || 10
       const indexName = args.index || "code"
 
       // Auto-freshen stale files before searching

@@ -4,10 +4,15 @@ Instructions for AI coding agents working in this repository.
 
 ## Project Overview
 
-**OpenCode Workflow** - AI-assisted development workflow system for Claude Code.
-An npm package (`@comfanion/workflow`) that installs workflow definitions, agents, skills, and templates.
+**Repository:** `/Users/evgeniystepanchuk/work/ai-wf/`
+**Package:** `@comfanion/workflow` - npm package for AI-assisted development workflow with semantic code search
+**Also maintains:** `create-opencode-workflow` (alias package)
 
 **Tech Stack**: JavaScript (ES Modules), Node.js 18+
+
+**Git Remotes:**
+- `origin` → GitLab (primary): `git@gitlab.com:comfanion/workflow.git`
+- `github` → GitHub (mirror): `git@github.com:Comfanion/workflow.git`
 
 ## Project Structure
 
@@ -22,27 +27,79 @@ An npm package (`@comfanion/workflow`) that installs workflow definitions, agent
 docs/                   # Documentation output (gitignored)
 ```
 
-## Build/Test Commands
+## Build & Deploy Workflow
 
+### Quick Reference
 ```bash
-# Install dependencies
-cd .opencode/cli && npm install
+cd .opencode/cli
 
-# Build CLI (copies opencode files to src/)
+# Build only
 npm run build
 
-# Test (runs --help to verify CLI works)
-npm test
-
-# Run CLI locally
-node bin/cli.js --help
-node bin/cli.js doctor
-
-# Publish
-npm run build && npm publish
+# Build + bump version + publish + push
+npm version patch && npm publish --access public
+cd ../.. && git add -A && git commit -m "feat: description" && git push origin main && git push github main
 ```
 
-**Note**: No test suite exists. Validation done via `node bin/cli.js --help`.
+### Full Deploy Process
+
+1. **Make changes** in `.opencode/` folder
+2. **Build** (copies .opencode files to cli/src/):
+   ```bash
+   cd .opencode/cli && npm run build
+   ```
+3. **Test locally**:
+   ```bash
+   node bin/cli.js --help
+   node bin/cli.js doctor
+   ```
+4. **Bump version & publish**:
+   ```bash
+   npm version patch   # or minor/major
+   npm publish --access public
+   ```
+5. **Commit & push to BOTH remotes**:
+   ```bash
+   cd ../..
+   git add -A
+   git commit -m "feat(scope): description"
+   git push origin main    # GitLab
+   git push github main    # GitHub mirror
+   ```
+
+### Git Remotes
+
+| Remote | URL | Purpose |
+|--------|-----|---------|
+| `origin` | `git@gitlab.com:comfanion/workflow.git` | Primary (GitLab) |
+| `github` | `git@github.com:Comfanion/workflow.git` | Mirror for awesome-opencode |
+
+**IMPORTANT**: Always push to BOTH remotes after publishing!
+
+### Version Bumping
+
+```bash
+npm version patch  # 4.36.21 → 4.36.22 (bug fixes, small changes)
+npm version minor  # 4.36.21 → 4.37.0  (new features)
+npm version major  # 4.36.21 → 5.0.0   (breaking changes)
+```
+
+### What Happens on Build
+
+`npm run build` runs `scripts/build.js` which:
+1. Cleans `src/` folder
+2. Copies `.opencode/` files → `src/opencode/`
+3. Copies `skills/coding-standards/repo-structure/` → `src/repo-structure/`
+4. Copies `vectorizer/` → `src/vectorizer/`
+5. Creates `src/build-info.json` with version from `package.json`
+
+### Validation
+
+No test suite. Validation is manual:
+```bash
+node bin/cli.js --help     # Should show commands
+node bin/cli.js doctor     # Should check installation
+```
 
 ## Code Style Guidelines
 
