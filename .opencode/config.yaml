@@ -221,3 +221,32 @@ changelog:
 testarch:
   use_playwright: false
   use_mcp_enhancements: true
+
+# =============================================================================
+# LSP (Language Server Protocol) - Code Intelligence
+# =============================================================================
+# LSP provides IDE-like features: go to definition, find references, hover, etc.
+# 
+# IMPORTANT: To enable LSP tool, set environment variable:
+#   export OPENCODE_EXPERIMENTAL_LSP_TOOL=true
+#
+# Or enable all experimental features:
+#   export OPENCODE_EXPERIMENTAL=true
+#
+lsp:
+  enabled: true
+  
+  # LSP operations available to agents:
+  # - goToDefinition    : Find where symbol is defined
+  # - findReferences    : Find all usages of symbol
+  # - hover             : Get type info and documentation
+  # - documentSymbol    : Get file structure (classes, functions)
+  # - workspaceSymbol   : Search symbols across project
+  # - goToImplementation: Find implementations of interface
+  # - incomingCalls     : Who calls this function?
+  # - outgoingCalls     : What does this function call?
+  #
+  # Usage: lsp <operation> <file>:<line>:<column>
+  # Example: lsp findReferences src/user.ts:10:5
+  
+  # Agents with LSP enabled: dev, architect, crawler, coder

@@ -29,13 +29,9 @@ This command invokes the **Dev** agent (Amelia).
 6. Update story file (File List, Change Log, Dev Agent Record)
 7. Mark story as `review` when all tasks complete
 
-## Workflow
-
-Executes: `workflows/dev-story/instructions.md`
-
 ## Skills Loaded
 
-- `dev-story` - Implementation workflow
+- `dev-story` - Implementation workflow (skills/dev-story/SKILL.md)
 - `test-design` - Test writing patterns
 
 ## Output

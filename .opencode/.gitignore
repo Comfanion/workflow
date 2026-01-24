@@ -13,3 +13,7 @@ cli/src/
 !opencode.json
 !jira-config.yaml
 cli-alias/
+
+# Vectorizer cache
+vectors/
+vectorizer/node_modules/

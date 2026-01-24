@@ -27,6 +27,7 @@ const OPENCODE_ITEMS = [
   'workflows',
   'checklists',
   'commands',
+  'tools',
   'opencode.json'
 ];
 
@@ -85,6 +86,19 @@ async function build() {
     console.log('    ✅ Removed duplicate repo-structure from skills/');
   }
 
+  // Copy vectorizer source files (installed on demand)
+  console.log('\n  Copying vectorizer module...');
+  const vectorizerSrc = path.join(CLI_DIR, 'src', 'vectorizer');
+  const vectorizerDest = path.join(DIST_DIR, 'vectorizer');
+  
+  if (await fs.pathExists(vectorizerSrc)) {
+    await fs.copy(vectorizerSrc, vectorizerDest);
+    console.log('    ✅ vectorizer/index.js');
+    console.log('    ✅ vectorizer/package.json');
+  } else {
+    console.log('    ⚠️  vectorizer/ (not found, skipping)');
+  }
+
   // Create package info
   console.log('\n  Creating build info...');
   const buildInfo = {
@@ -104,14 +118,15 @@ async function build() {
   console.log('  │   ├── config.yaml');
   console.log('  │   ├── FLOW.yaml');
   console.log('  │   ├── agents/');
-  console.log('  │   ├── skills/       # With co-located templates');
+  console.log('  │   ├── skills/');
+  console.log('  │   ├── tools/        # Custom tools for AI');
+  console.log('  │   │   ├── codesearch.ts');
+  console.log('  │   │   └── codeindex.ts');
   console.log('  │   ├── workflows/');
   console.log('  │   ├── checklists/');
   console.log('  │   └── commands/');
   console.log('  ├── repo-structure/   # Repository templates');
-  console.log('  │   ├── README.md');
-  console.log('  │   ├── CONTRIBUTING.md');
-  console.log('  │   └── docs/');
+  console.log('  ├── vectorizer/       # Semantic search module');
   console.log('  └── build-info.json');
 }
 

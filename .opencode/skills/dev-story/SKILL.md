@@ -1,4 +1,4 @@
-# Dev Story Workflow
+# Dev Story Skill
 
 Execute a story by implementing tasks/subtasks, writing tests, validating, and updating the story file per acceptance criteria.
 
@@ -491,7 +491,7 @@ Read from `config.yaml → development.methodology`:
     - Files changed: {{changed_files_count}}
     
     **Next Steps:**
-    - Run `code-review` workflow for peer review
+    - Run `code-review` skill for peer review
     - After approval, mark story as "done"
   </output>
 </step>

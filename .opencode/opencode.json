@@ -19,7 +19,12 @@
     }
   },
   
+  "tools": {
+    "lsp": true
+  },
+  
   "permission": {
+    "lsp": "allow",
     "bash": {
       "*": "allow",
       "rm -rf *": "deny",

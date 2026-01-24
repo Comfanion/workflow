@@ -7,11 +7,63 @@ import ora from 'ora';
 import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_DIR = path.join(__dirname, '..');
 const OPENCODE_SRC = path.join(PACKAGE_DIR, 'src', 'opencode');
 const REPO_TEMPLATES_SRC = path.join(PACKAGE_DIR, 'src', 'repo-structure');
+const VECTORIZER_SRC = path.join(PACKAGE_DIR, 'src', 'vectorizer');
+
+/**
+ * Install vectorizer module with dependencies
+ */
+async function installVectorizer(opencodeDir) {
+  console.log('');
+  const spinner = ora('Installing vectorizer & caching...').start();
+  
+  try {
+    const vectorizerDir = path.join(opencodeDir, 'vectorizer');
+    
+    // Copy vectorizer source files
+    spinner.text = 'Copying vectorizer files...';
+    await fs.ensureDir(vectorizerDir);
+    await fs.copy(VECTORIZER_SRC, vectorizerDir);
+    
+    // Run npm install
+    spinner.text = 'Installing dependencies (~100MB, may take a minute)...';
+    execSync('npm install --no-audit --no-fund', { 
+      cwd: vectorizerDir, 
+      stdio: 'pipe',
+      timeout: 300000 // 5 min timeout
+    });
+    
+    // Add to .gitignore
+    const gitignorePath = path.join(opencodeDir, '.gitignore');
+    let gitignore = '';
+    try { gitignore = await fs.readFile(gitignorePath, 'utf8'); } catch {}
+    if (!gitignore.includes('vectors/')) {
+      gitignore += '\n# Vectorizer cache\nvectors/\nvectorizer/node_modules/\n';
+      await fs.writeFile(gitignorePath, gitignore);
+    }
+    
+    spinner.succeed(chalk.green('Vectorizer installed!'));
+    
+    console.log(chalk.cyan('\n🔍 Vectorizer ready:'));
+    console.log(`
+  Index codebase:  ${chalk.cyan('npx opencode-workflow index')}
+  Search code:     ${chalk.cyan('npx opencode-workflow search "your query"')}
+    `);
+    
+    return true;
+    
+  } catch (error) {
+    spinner.fail(chalk.yellow('Vectorizer installation failed (optional)'));
+    console.log(chalk.gray(`  Error: ${error.message}`));
+    console.log(chalk.gray('  You can install later with: npx opencode-workflow vectorizer install'));
+    return false;
+  }
+}
 
 const program = new Command();
 
@@ -28,6 +80,7 @@ program
   .option('--tdd', 'Use TDD methodology')
   .option('--stub', 'Use STUB methodology')
   .option('--full', 'Create full repo structure')
+  .option('--vectorizer', 'Install vectorizer for semantic code search')
   .action(async (options) => {
     console.log(chalk.blue.bold('\n🚀 OpenCode Workflow v3.7\n'));
     
@@ -43,6 +96,7 @@ program
       jira_url: 'https://your-domain.atlassian.net',
       jira_project: 'PROJ',
       create_repo_structure: false,
+      install_vectorizer: false,
       project_name: path.basename(process.cwd())
     };
     
@@ -155,6 +209,12 @@ program
           name: 'create_repo_structure',
           message: 'Create full repository structure (README, CONTRIBUTING, .gitignore, docs/)?',
           default: options.full || false
+        },
+        {
+          type: 'confirm',
+          name: 'install_vectorizer',
+          message: 'Install vectorizer & caching? (semantic code search, ~100MB)',
+          default: false
         }
       ]);
       
@@ -165,6 +225,7 @@ program
       if (options.stub) config.methodology = 'stub';
       if (options.jira) config.jira_enabled = true;
       if (options.full) config.create_repo_structure = true;
+      if (options.vectorizer) config.install_vectorizer = true;
     }
 
     const spinner = ora('Initializing OpenCode Workflow...').start();
@@ -266,6 +327,11 @@ program
       }
 
       spinner.succeed(chalk.green('OpenCode Workflow initialized!'));
+
+      // Install vectorizer if requested
+      if (config.install_vectorizer) {
+        await installVectorizer(targetDir);
+      }
 
       // Show summary
       console.log(chalk.yellow('\n📁 Created structure:'));
@@ -461,10 +527,38 @@ program
       console.log(chalk.gray('  ○  Jira credentials not set'));
     }
     
+    // Check Vectorizer
+    console.log(chalk.cyan('\nVectorizer (semantic search):'));
+    const vectorizerInstalled = await fs.pathExists(path.join(process.cwd(), '.opencode', 'vectorizer', 'node_modules'));
+    const vectorsExist = await fs.pathExists(path.join(process.cwd(), '.opencode', 'vectors', 'hashes.json'));
+    
+    if (vectorizerInstalled) {
+      console.log(chalk.green('  ✅ Installed'));
+      if (vectorsExist) {
+        try {
+          const hashes = await fs.readJSON(path.join(process.cwd(), '.opencode', 'vectors', 'hashes.json'));
+          console.log(chalk.green(`  ✅ Indexed (${Object.keys(hashes).length} files)`));
+        } catch {
+          console.log(chalk.gray('  ○  Not indexed yet'));
+        }
+      } else {
+        console.log(chalk.gray('  ○  Not indexed (run: npx opencode-workflow index)'));
+      }
+    } else {
+      console.log(chalk.gray('  ○  Not installed (run: npx opencode-workflow vectorizer install)'));
+    }
+    
+    // Check LSP env
+    if (process.env.OPENCODE_EXPERIMENTAL_LSP_TOOL === 'true' || process.env.OPENCODE_EXPERIMENTAL === 'true') {
+      console.log(chalk.green('  ✅ LSP tool enabled'));
+    } else {
+      console.log(chalk.gray('  ○  LSP tool disabled (set OPENCODE_EXPERIMENTAL_LSP_TOOL=true)'));
+    }
+    
     console.log('');
     
     if (hasErrors) {
-      console.log(chalk.yellow('💡 Run `npx create-opencode-workflow init` to fix missing files.\n'));
+      console.log(chalk.yellow('💡 Run `npx opencode-workflow init` to fix missing files.\n'));
     } else {
       console.log(chalk.green.bold('✅ All checks passed!\n'));
     }
@@ -481,6 +575,252 @@ program
       console.log(content);
     } catch (error) {
       console.log(chalk.red('\n❌ .opencode/config.yaml not found. Run `init` first.\n'));
+    }
+  });
+
+// =============================================================================
+// VECTORIZER COMMANDS
+// =============================================================================
+
+program
+  .command('vectorizer')
+  .description('Manage vectorizer for semantic code search')
+  .argument('<action>', 'install | status | uninstall')
+  .action(async (action) => {
+    const opencodeDir = path.join(process.cwd(), '.opencode');
+    const vectorizerDir = path.join(opencodeDir, 'vectorizer');
+    
+    if (action === 'install') {
+      if (!await fs.pathExists(opencodeDir)) {
+        console.log(chalk.red('\n❌ .opencode/ not found. Run `init` first.\n'));
+        process.exit(1);
+      }
+      await installVectorizer(opencodeDir);
+      
+    } else if (action === 'status') {
+      const installed = await fs.pathExists(path.join(vectorizerDir, 'node_modules'));
+      const indexed = await fs.pathExists(path.join(process.cwd(), '.opencode', 'vectors', 'lancedb'));
+      
+      console.log(chalk.blue.bold('\n🔍 Vectorizer Status\n'));
+      console.log(installed 
+        ? chalk.green('  ✅ Installed') 
+        : chalk.gray('  ○  Not installed (run: npx opencode-workflow vectorizer install)'));
+      console.log(indexed
+        ? chalk.green('  ✅ Codebase indexed')
+        : chalk.gray('  ○  Not indexed (run: npx opencode-workflow index)'));
+      
+      if (indexed) {
+        try {
+          const hashes = await fs.readJSON(path.join(process.cwd(), '.opencode', 'vectors', 'hashes.json'));
+          console.log(chalk.cyan(`  📁 ${Object.keys(hashes).length} files indexed`));
+        } catch {}
+      }
+      console.log('');
+      
+    } else if (action === 'uninstall') {
+      const spinner = ora('Removing vectorizer...').start();
+      await fs.remove(vectorizerDir);
+      await fs.remove(path.join(process.cwd(), '.opencode', 'vectors'));
+      spinner.succeed(chalk.green('Vectorizer removed'));
+      
+    } else {
+      console.log(chalk.red(`Unknown action: ${action}`));
+      console.log('Available: install, status, uninstall');
+    }
+  });
+
+program
+  .command('index')
+  .description('Index codebase for semantic search')
+  .option('-i, --index <name>', 'Index name: code, docs, config, all, or custom', 'code')
+  .option('-p, --pattern <glob>', 'File pattern (overrides preset)')
+  .option('--force', 'Re-index all files (ignore cache)')
+  .option('--list', 'List all indexes and their stats')
+  .action(async (options) => {
+    const vectorizerDir = path.join(process.cwd(), '.opencode', 'vectorizer');
+    
+    if (!await fs.pathExists(path.join(vectorizerDir, 'node_modules'))) {
+      console.log(chalk.red('\n❌ Vectorizer not installed.'));
+      console.log(chalk.yellow('Run: npx opencode-workflow vectorizer install\n'));
+      process.exit(1);
+    }
+    
+    const spinner = ora('Initializing indexer...').start();
+    
+    try {
+      // Dynamic import of the vectorizer (need file:// URL for ESM)
+      const vectorizerPath = path.join(vectorizerDir, 'index.js');
+      const { CodebaseIndexer, INDEX_PRESETS } = await import(`file://${vectorizerPath}`);
+      
+      // List all indexes
+      if (options.list) {
+        spinner.stop();
+        const indexer = await new CodebaseIndexer(process.cwd(), 'code').init();
+        const allStats = await indexer.getAllStats();
+        
+        console.log(chalk.blue.bold('\n📊 Index Statistics\n'));
+        
+        if (allStats.length === 0) {
+          console.log(chalk.gray('  No indexes found. Create one with:'));
+          console.log(chalk.cyan('    npx opencode-workflow index --index code'));
+          console.log(chalk.cyan('    npx opencode-workflow index --index docs\n'));
+        } else {
+          for (const stat of allStats) {
+            console.log(chalk.cyan(`  📁 ${stat.indexName}`));
+            console.log(chalk.gray(`     ${stat.description}`));
+            console.log(`     Files: ${stat.fileCount}, Chunks: ${stat.chunkCount}\n`);
+          }
+        }
+        
+        console.log(chalk.yellow('Available presets:'));
+        for (const [name, preset] of Object.entries(INDEX_PRESETS)) {
+          console.log(`  ${chalk.cyan(name)}: ${preset.description}`);
+          console.log(chalk.gray(`    Pattern: ${preset.pattern}\n`));
+        }
+        return;
+      }
+      
+      const indexName = options.index;
+      const indexer = await new CodebaseIndexer(process.cwd(), indexName).init();
+      
+      // Get pattern from options or preset
+      const preset = INDEX_PRESETS[indexName];
+      const pattern = options.pattern || preset?.pattern || '**/*.{js,ts,jsx,tsx,py,go,rs,java,md,yaml,yml}';
+      
+      spinner.text = `Initializing index: ${indexName}...`;
+      
+      if (options.force) {
+        spinner.text = `Clearing index: ${indexName}...`;
+        await indexer.clear();
+      }
+      
+      // Find files to index
+      spinner.text = 'Finding files...';
+      const { glob } = await import('glob');
+      const { default: ignore } = await import('ignore');
+      
+      // Load .gitignore
+      let ig = ignore();
+      try {
+        const gitignore = await fs.readFile(path.join(process.cwd(), '.gitignore'), 'utf8');
+        ig = ig.add(gitignore);
+      } catch {}
+      ig.add(['node_modules', '.git', 'dist', 'build', '.opencode/vectors', '.opencode/vectorizer']);
+      
+      const files = await glob(pattern, { cwd: process.cwd(), nodir: true });
+      const filtered = files.filter(f => !ig.ignores(f));
+      
+      spinner.succeed(`Found ${filtered.length} files for index "${indexName}"`);
+      
+      let indexed = 0;
+      let skipped = 0;
+      
+      for (const file of filtered) {
+        const filePath = path.join(process.cwd(), file);
+        spinner.start(`[${indexName}] Indexing: ${file}`);
+        
+        try {
+          const wasIndexed = await indexer.indexFile(filePath);
+          if (wasIndexed) {
+            indexed++;
+          } else {
+            skipped++;
+          }
+        } catch (e) {
+          spinner.warn(`Skipped ${file}: ${e.message}`);
+        }
+      }
+      
+      spinner.succeed(chalk.green(`Index "${indexName}": ${indexed} indexed, ${skipped} unchanged`));
+      
+    } catch (error) {
+      spinner.fail(chalk.red('Indexing failed'));
+      console.error(error);
+    }
+  });
+
+program
+  .command('search')
+  .description('Semantic search in codebase')
+  .argument('<query>', 'Search query')
+  .option('-i, --index <name>', 'Index to search: code, docs, config, or custom', 'code')
+  .option('-n, --limit <number>', 'Number of results', '5')
+  .option('-a, --all', 'Search all indexes')
+  .action(async (query, options) => {
+    const vectorizerDir = path.join(process.cwd(), '.opencode', 'vectorizer');
+    
+    if (!await fs.pathExists(path.join(vectorizerDir, 'node_modules'))) {
+      console.log(chalk.red('\n❌ Vectorizer not installed.'));
+      console.log(chalk.yellow('Run: npx opencode-workflow vectorizer install\n'));
+      process.exit(1);
+    }
+    
+    const spinner = ora('Searching...').start();
+    
+    try {
+      // Dynamic import of the vectorizer (need file:// URL for ESM)
+      const vectorizerPath = path.join(vectorizerDir, 'index.js');
+      const { CodebaseIndexer } = await import(`file://${vectorizerPath}`);
+      
+      let allResults = [];
+      const limit = parseInt(options.limit);
+      
+      if (options.all) {
+        // Search all indexes
+        const tempIndexer = await new CodebaseIndexer(process.cwd(), 'code').init();
+        const indexes = await tempIndexer.listIndexes();
+        
+        if (indexes.length === 0) {
+          spinner.stop();
+          console.log(chalk.yellow('\nNo indexes found. Run `npx opencode-workflow index` first.\n'));
+          return;
+        }
+        
+        for (const indexName of indexes) {
+          spinner.text = `Searching index: ${indexName}...`;
+          const indexer = await new CodebaseIndexer(process.cwd(), indexName).init();
+          const results = await indexer.search(query, limit);
+          allResults.push(...results.map(r => ({ ...r, _index: indexName })));
+        }
+        
+        // Sort by distance and take top N
+        allResults.sort((a, b) => (a._distance || 0) - (b._distance || 0));
+        allResults = allResults.slice(0, limit);
+        
+      } else {
+        // Search specific index
+        const indexer = await new CodebaseIndexer(process.cwd(), options.index).init();
+        const results = await indexer.search(query, limit);
+        allResults = results.map(r => ({ ...r, _index: options.index }));
+      }
+      
+      spinner.stop();
+      
+      if (allResults.length === 0) {
+        const indexInfo = options.all ? 'any index' : `index "${options.index}"`;
+        console.log(chalk.yellow(`\nNo results found in ${indexInfo}.`));
+        console.log(chalk.gray('Try: npx opencode-workflow index --index code\n'));
+        return;
+      }
+      
+      const searchScope = options.all ? 'all indexes' : `index "${options.index}"`;
+      console.log(chalk.blue.bold(`\n🔍 Results for: "${query}" (${searchScope})\n`));
+      
+      for (let i = 0; i < allResults.length; i++) {
+        const r = allResults[i];
+        const score = r._distance ? (1 - r._distance).toFixed(3) : 'N/A';
+        const indexLabel = options.all ? chalk.magenta(`[${r._index}] `) : '';
+        console.log(chalk.cyan(`${i + 1}. ${indexLabel}${r.file}`) + chalk.gray(` (score: ${score})`));
+        console.log(chalk.gray('─'.repeat(60)));
+        // Show first 5 lines of content
+        const preview = r.content.split('\n').slice(0, 5).join('\n');
+        console.log(preview);
+        console.log('');
+      }
+      
+    } catch (error) {
+      spinner.fail(chalk.red('Search failed'));
+      console.error(error);
     }
   });
 

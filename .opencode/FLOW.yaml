@@ -31,7 +31,7 @@ config:
 # =============================================================================
 # 
 # PLANNING PHASE:
-#   research (opt) → requirements → prd → coding-standards → architecture → module-docs (opt)
+#   research (opt) → requirements → prd → coding-standards → architecture
 #
 # SPRINT PHASE:
 #   epics → stories → sprint-plan → jira-sync
@@ -145,26 +145,6 @@ pipeline:
         description: Integration test specifications
         template: skills/test-design/template-integration.md
         mandatory: true
-      next: module-docs
-
-    # OPTIONAL: Detailed module documentation
-    - id: module-docs
-      name: Module Documentation (Optional)
-      description: Create detailed docs for each module
-      phase: planning
-      optional: true
-      command: /module-docs [module-name]
-      agent: module-docs
-      skills:
-        - module-documentation
-      artifacts:
-        input:
-          - docs/architecture.md
-          - docs/prd.md
-        output:
-          - docs/architecture/[module]/index.md
-          - docs/architecture/[module]/architecture.md
-          - docs/architecture/[module]/data-model.md
       next: epics
 
     # =========================================================================
@@ -176,7 +156,7 @@ pipeline:
       description: Break PRD into implementation epics
       phase: sprint
       command: /epics
-      agent: sm
+      agent: pm
       skills:
         - epic-writing
         - acceptance-criteria
@@ -199,7 +179,7 @@ pipeline:
       description: Create detailed stories for each epic
       phase: sprint
       command: /stories {epic-id}
-      agent: sm
+      agent: pm
       skills:
         - story-writing
         - acceptance-criteria
@@ -221,7 +201,7 @@ pipeline:
       description: Organize epics and stories into sprints
       phase: sprint
       command: /sprint-plan
-      agent: sm
+      agent: pm
       skills:
         - sprint-planning
       artifacts:
@@ -234,7 +214,7 @@ pipeline:
       description: Sync epics/stories/tasks to Jira with development control
       phase: sprint
       command: /jira-sync [links...]
-      agent: sm
+      agent: pm
       skills:
         - jira-integration
       artifacts:
@@ -277,7 +257,6 @@ pipeline:
           - Implementation code
           - Unit tests
           - Integration tests
-      workflow: workflows/dev-story/instructions.md
       jira_integration:
         on_start: "transition to in_progress, create branch"
         on_review: "transition to review, link PR"
@@ -305,7 +284,7 @@ pipeline:
       description: Review sprint and capture learnings
       phase: implementation
       command: /retrospective
-      agent: sm
+      agent: pm
       artifacts:
         output:
           - docs/sprint-artifacts/sprint-N/retrospective.md
@@ -313,6 +292,14 @@ pipeline:
 # =============================================================================
 # AGENTS (Personas - WHO does work)
 # =============================================================================
+# 
+# Model Strategy (based on Jan 2026 research):
+# - Architecture/Planning: Claude 4.5 Opus, Gemini 3 Pro (wisdom, context)
+# - Development: DeepSeek-V3.2 (cheapest, fast), GLM-4.7 (preserved thinking)
+# - Testing: GPT-5.2 Codex (best at finding bugs)
+# - UI/Frontend: MiniMax-M2.1 (fast, aesthetic)
+# - Research: Gemini 3 Pro (10M context, grounding)
+#
 agents:
   analyst:
     name: Mary
@@ -332,13 +319,14 @@ agents:
       - requirements-gathering
       - requirements-validation
       - acceptance-criteria
+      - unit-writing
       - methodologies
 
   pm:
     name: John
     title: Product Manager
     icon: "📋"
-    description: Product Manager - creates PRDs, defines scope, prioritizes features
+    description: Product Manager - creates PRDs, epics, stories, sprint planning, Jira sync
     mode: subagent
     model: anthropic/claude-sonnet-4-20250514
     temperature: 0.3
@@ -346,12 +334,18 @@ agents:
     expertise:
       - Product management
       - B2B SaaS
-      - Marketplace platforms
+      - Agile/Sprint planning
     personality: Business-focused, user-centric, data-driven
     skills_used:
       - prd-writing
       - prd-validation
       - acceptance-criteria
+      - epic-writing
+      - story-writing
+      - sprint-planning
+      - jira-integration
+      - unit-writing
+      - translation
       - methodologies
 
   architect:
@@ -373,28 +367,8 @@ agents:
       - architecture-validation
       - adr-writing
       - coding-standards
+      - unit-writing
       - methodologies
-
-  sm:
-    name: Sarah
-    title: Sprint Manager
-    icon: "📊"
-    description: Sprint Manager - creates epics/stories, plans sprints, tracks progress
-    mode: subagent
-    model: anthropic/claude-sonnet-4-20250514
-    temperature: 0.2
-    file: agents/sm.md
-    expertise:
-      - Agile project management
-      - Sprint planning
-      - Backlog management
-    personality: Organized, detail-oriented, pragmatic
-    skills_used:
-      - epic-writing
-      - story-writing
-      - sprint-planning
-      - jira-integration
-      - acceptance-criteria
 
   dev:
     name: Amelia
@@ -422,34 +396,20 @@ agents:
     icon: "🔍"
     description: Researcher - conducts technical, market, and domain research
     mode: subagent
-    model: anthropic/claude-sonnet-4-20250514
+    model: google/gemini-3-pro:high  # 10M context, grounding, planning: 10/10
+    # $2/Mt input - best for research & planning
+    # alternatives: gemini-2.5-flash (faster), claude-4.5-opus (wiser)
     temperature: 0.4
     file: agents/researcher.md
     expertise:
       - Technical research
       - Market analysis
       - Domain expertise
+      - Deep research with web grounding
     personality: Curious, thorough, evidence-based
     skills_used:
       - research-methodology
       - methodologies
-
-  module-docs:
-    name: Marcus
-    title: Module Documenter
-    icon: "📚"
-    description: Module Documenter - creates detailed per-module documentation
-    mode: subagent
-    model: anthropic/claude-sonnet-4-20250514
-    temperature: 0.2
-    file: agents/module-docs.md
-    expertise:
-      - Technical writing
-      - System documentation
-      - API documentation
-    personality: Precise, structured, detail-oriented
-    skills_used:
-      - module-documentation
 
   change-manager:
     name: Charles
@@ -501,7 +461,7 @@ skills:
   acceptance-criteria:
     description: How to write testable AC (Given/When/Then)
     file: skills/acceptance-criteria/SKILL.md
-    used_by: [analyst, pm, sm]
+    used_by: [analyst, pm]
 
   # Architecture Skills
   architecture-design:
@@ -532,25 +492,25 @@ skills:
   epic-writing:
     description: How to write epics with AC
     file: skills/epic-writing/SKILL.md
-    used_by: [sm]
+    used_by: [pm]
     produces: docs/sprint-artifacts/*/epic-*.md
 
   story-writing:
     description: How to write user stories with AC and tasks
     file: skills/story-writing/SKILL.md
-    used_by: [sm]
+    used_by: [pm]
     produces: docs/sprint-artifacts/*/stories/story-*.md
 
   sprint-planning:
     description: How to plan and organize sprints
     file: skills/sprint-planning/SKILL.md
-    used_by: [sm]
+    used_by: [pm]
     produces: docs/sprint-artifacts/sprint-status.yaml
 
   jira-integration:
     description: Bidirectional Jira sync with development control
     file: skills/jira-integration/SKILL.md
-    used_by: [sm, dev]
+    used_by: [pm, dev]
     cache: "{project-root}/.opencode/jira-cache.yaml"
     produces: docs/sprint-artifacts/jira-sync-report.md
     modes:
@@ -566,7 +526,7 @@ skills:
   # Implementation Skills
   dev-story:
     description: How to implement stories using red-green-refactor
-    file: workflows/dev-story/instructions.md
+    file: skills/dev-story/SKILL.md
     used_by: [dev]
 
   code-review:
@@ -586,16 +546,16 @@ skills:
     used_by: [researcher]
     produces: docs/research/
 
-  module-documentation:
-    description: How to create detailed module documentation
-    file: skills/module-documentation/SKILL.md
-    used_by: [module-docs]
-    produces: docs/architecture/[module]/
+  unit-writing:
+    description: How to document modules, domains, entities, services, features using Universal Unit format
+    file: skills/unit-writing/SKILL.md
+    used_by: [analyst, architect, pm]
+    produces: docs/units/[unit-name]/
 
   archiving:
     description: How to archive documents properly
     file: skills/archiving/SKILL.md
-    used_by: [sm, architect]
+    used_by: [pm, architect]
     produces: docs/archive/
 
   diagram-creation:
@@ -617,7 +577,7 @@ skills:
   doc-todo:
     description: Incremental document writing with TODO placeholders
     file: skills/doc-todo/SKILL.md
-    used_by: [analyst, pm, architect, sm]
+    used_by: [analyst, pm, architect]
     types:
       - DRAFT       # Section is draft, needs review
       - EXPAND      # Section needs more detail
@@ -633,7 +593,7 @@ skills:
   changelog:
     description: Maintain changelogs for repository and documents
     file: skills/changelog/SKILL.md
-    used_by: [dev, sm, pm, architect]
+    used_by: [dev, pm, architect]
     mandatory: true
     artifacts:
       repo: CHANGELOG.md
@@ -686,13 +646,13 @@ commands:
   # Sprint Commands
   epics:
     description: Create epics from PRD
-    agent: sm
+    agent: pm
     file: commands/epics.md
     skills_loaded: [epic-writing, acceptance-criteria]
 
   stories:
     description: Create stories for epic
-    agent: sm
+    agent: pm
     file: commands/stories.md
     arguments:
       - name: epic-id
@@ -701,13 +661,13 @@ commands:
 
   sprint-plan:
     description: Plan sprints
-    agent: sm
+    agent: pm
     file: commands/sprint-plan.md
     skills_loaded: [sprint-planning]
 
   jira-sync:
     description: Sync to Jira
-    agent: sm
+    agent: pm
     file: commands/jira-sync.md
     skills_loaded: [jira-integration]
 
@@ -742,7 +702,7 @@ commands:
 
   workflow-status:
     description: Show workflow status
-    agent: sm
+    agent: pm
     file: commands/workflow-status.md
 
   research:
@@ -755,13 +715,16 @@ commands:
       - name: topic
         required: true
 
-  module-docs:
-    description: Create module documentation
-    agent: module-docs
-    file: commands/module-docs.md
+  unit-docs:
+    description: Document module/domain/service/feature using Universal Unit format
+    agent: architect
+    file: commands/unit-docs.md
     arguments:
-      - name: module-name
+      - name: unit-type
+        values: [module, domain, service, entity, feature]
+      - name: unit-name
         required: true
+    skills_loaded: [unit-writing]
 
   change:
     description: Manage documentation changes
@@ -898,3 +861,95 @@ quickstart:
         - step: 18
           command: /retrospective
           description: Sprint retrospective
+
+# =============================================================================
+# HOOKS & EVENTS (Plugin Integration)
+# =============================================================================
+# 
+# Workflow emits events that plugins can subscribe to.
+# Plugins are in .opencode/plugins/ directory.
+#
+hooks:
+  # Compaction hook - preserve context during session compaction
+  compaction:
+    plugin: custom-compaction.ts
+    description: Preserves task/story status, critical files, continuation instructions
+    context_files:
+      always:
+        - CLAUDE.md
+        - AGENTS.md
+        - project-context.md
+        - .opencode/config.yaml
+      if_exists:
+        - docs/prd.md
+        - docs/architecture.md
+        - docs/coding-standards/README.md
+        - docs/coding-standards/patterns.md
+      dynamic:
+        - active_story_file    # From sprint-status.yaml
+        - modified_files       # Files edited in session
+
+events:
+  # Session lifecycle
+  session:
+    - session.started        # New session began
+    - session.idle           # Agent finished responding
+    - session.compacted      # Session was compacted
+    - session.error          # Error occurred
+
+  # Agent lifecycle  
+  agent:
+    - agent.activated        # Agent persona loaded
+    - agent.skill.loaded     # Skill file was read
+    - agent.task.started     # Agent started a task
+    - agent.task.completed   # Agent completed a task
+
+  # Workflow pipeline
+  workflow:
+    - workflow.stage.started     # Pipeline stage began
+    - workflow.stage.completed   # Pipeline stage finished
+    - workflow.stage.skipped     # Optional stage skipped
+    - workflow.validation.passed # Validation succeeded
+    - workflow.validation.failed # Validation failed
+
+  # Document lifecycle
+  document:
+    - document.created       # New doc created
+    - document.updated       # Doc modified
+    - document.validated     # Doc passed validation
+    - document.archived      # Doc moved to archive
+
+  # Sprint/Story lifecycle
+  sprint:
+    - epic.created           # Epic document created
+    - story.created          # Story document created
+    - story.started          # Story status → in-progress
+    - story.task.completed   # Task marked [x]
+    - story.completed        # All tasks done, status → review
+    - story.approved         # Code review passed, status → done
+    - sprint.planned         # Sprint planning completed
+    - sprint.completed       # All stories done
+
+  # Jira integration
+  jira:
+    - jira.sync.started      # Sync began
+    - jira.sync.completed    # Sync finished
+    - jira.issue.created     # New issue in Jira
+    - jira.issue.updated     # Issue updated
+    - jira.transition        # Status changed
+
+# Example plugin subscriptions
+# 
+# .opencode/plugins/notifications.ts:
+#   event: async ({ event }) => {
+#     if (event.type === "story.completed") {
+#       await sendSlackNotification(event.data)
+#     }
+#   }
+#
+# .opencode/plugins/jira-auto-sync.ts:
+#   event: async ({ event }) => {
+#     if (event.type === "story.task.completed") {
+#       await updateJiraProgress(event.data)
+#     }
+#   }
