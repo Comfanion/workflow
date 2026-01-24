@@ -12,9 +12,9 @@
  *   codesearch({ query: "error handling", searchAll: true })
  * 
  * Prerequisites:
- *   npx opencode-workflow vectorizer install
- *   npx opencode-workflow index --index code
- *   npx opencode-workflow index --index docs
+ *   npx @comfanion/workflow vectorizer install
+ *   npx @comfanion/workflow index --index code
+ *   npx @comfanion/workflow index --index docs
  */
 
 import { tool } from "@opencode-ai/plugin"
@@ -36,7 +36,7 @@ Examples:
 - "how to deploy" with index: "docs" → finds deployment docs
 - "API keys" with index: "config" → finds config with API settings
 
-Prerequisites: Run 'npx opencode-workflow index --index <name>' first.`,
+Prerequisites: Run 'npx @comfanion/workflow index --index <name>' first.`,
 
   args: {
     query: tool.schema.string().describe("Semantic search query describing what you're looking for"),
@@ -54,7 +54,7 @@ Prerequisites: Run 'npx opencode-workflow index --index <name>' first.`,
     try {
       await fs.access(path.join(vectorizerDir, "node_modules"))
     } catch {
-      return `❌ Vectorizer not installed. Run: npx opencode-workflow vectorizer install`
+      return `❌ Vectorizer not installed. Run: npx @comfanion/workflow vectorizer install`
     }
 
     try {
@@ -71,7 +71,7 @@ Prerequisites: Run 'npx opencode-workflow index --index <name>' first.`,
         const indexes = await tempIndexer.listIndexes()
 
         if (indexes.length === 0) {
-          return `❌ No indexes found. Run: npx opencode-workflow index --index code`
+          return `❌ No indexes found. Run: npx @comfanion/workflow index --index code`
         }
 
         for (const idx of indexes) {
@@ -90,7 +90,7 @@ Prerequisites: Run 'npx opencode-workflow index --index <name>' first.`,
         try {
           await fs.access(hashesFile)
         } catch {
-          return `❌ Index "${indexName}" not found. Run: npx opencode-workflow index --index ${indexName}`
+          return `❌ Index "${indexName}" not found. Run: npx @comfanion/workflow index --index ${indexName}`
         }
 
         const indexer = await new CodebaseIndexer(projectRoot, indexName).init()
@@ -100,7 +100,7 @@ Prerequisites: Run 'npx opencode-workflow index --index <name>' first.`,
 
       if (allResults.length === 0) {
         const scope = args.searchAll ? "any index" : `index "${indexName}"`
-        return `No results found in ${scope} for: "${args.query}"\n\nTry:\n- Different keywords\n- Re-index with: npx opencode-workflow index --index ${indexName} --force`
+        return `No results found in ${scope} for: "${args.query}"\n\nTry:\n- Different keywords\n- Re-index with: npx @comfanion/workflow index --index ${indexName} --force`
       }
 
       // Format results for the model
@@ -128,7 +128,7 @@ Prerequisites: Run 'npx opencode-workflow index --index <name>' first.`,
       return output
 
     } catch (error: any) {
-      return `❌ Search failed: ${error.message}\n\nTry re-indexing: npx opencode-workflow index --index ${args.index || "code"} --force`
+      return `❌ Search failed: ${error.message}\n\nTry re-indexing: npx @comfanion/workflow index --index ${args.index || "code"} --force`
     }
   },
 })

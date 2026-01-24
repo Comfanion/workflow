@@ -93,8 +93,8 @@ This will download the embedding model (~100MB) and set up the vector database.`
           output += `⚠️ **No indexes created yet**\n\n`
           output += `Create indexes with:\n`
           output += `\`\`\`bash\n`
-          output += `npx opencode-workflow index --index code\n`
-          output += `npx opencode-workflow index --index docs --dir docs/\n`
+          output += `npx @comfanion/workflow index --index code\n`
+          output += `npx @comfanion/workflow index --index docs --dir docs/\n`
           output += `\`\`\`\n`
         } else {
           output += `### Active Indexes\n\n`
@@ -153,7 +153,7 @@ codesearch({ query: "your search query", index: "${indexName}" })
 
 To re-index:
 \`\`\`bash
-npx opencode-workflow index --index ${indexName}
+npx @comfanion/workflow index --index ${indexName}
 \`\`\``
 
       } catch {
@@ -164,9 +164,9 @@ npx opencode-workflow index --index ${indexName}
 
 To create this index:
 \`\`\`bash
-npx opencode-workflow index --index ${indexName}
+npx @comfanion/workflow index --index ${indexName}
 # Or with specific directory:
-npx opencode-workflow index --index ${indexName} --dir src/
+npx @comfanion/workflow index --index ${indexName} --dir src/
 \`\`\``
       }
     }
@@ -174,7 +174,7 @@ npx opencode-workflow index --index ${indexName} --dir src/
     // REINDEX: Re-index using CLI
     if (args.action === "reindex") {
       try {
-        execSync(`npx opencode-workflow index --index ${indexName}`, {
+        execSync(`npx @comfanion/workflow index --index ${indexName}`, {
           cwd: projectRoot,
           encoding: "utf8",
           timeout: 300000, // 5 min
@@ -201,7 +201,7 @@ codesearch({ query: "your search query", index: "${indexName}" })
 
 Try manually:
 \`\`\`bash
-npx opencode-workflow index --index ${indexName} --force
+npx @comfanion/workflow index --index ${indexName} --force
 \`\`\``
       }
     }
