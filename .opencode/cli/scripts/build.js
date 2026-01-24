@@ -23,13 +23,11 @@ const OPENCODE_ITEMS = [
   'ARCHITECTURE.md',
   'agents',
   'skills',
-  'templates',
-  'workflows',
   'checklists',
   'commands',
   'tools',
-  'plugins',           // ← ДОДАНО! Plugin files
-  'package.json',      // ← ДОДАНО! Plugin dependencies
+  'plugins',
+  'package.json',
   'opencode.json'
 ];
 
