@@ -297,6 +297,11 @@ export JIRA_API_TOKEN="your-api-token"
 - **npm:** https://www.npmjs.com/package/@comfanion/workflow
 - **GitLab:** https://gitlab.com/comfanion/workflow
 
+## Inspired By
+
+- **[BMAD Method](https://github.com/bmadcode/BMAD-METHOD)** - Breakthrough Method of Agile AI-Driven Development
+- **[OpenCode](https://github.com/opencode-ai/opencode)** - AI-native code editor
+
 ## License
 
 MIT

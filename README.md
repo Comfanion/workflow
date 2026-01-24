@@ -260,6 +260,11 @@ npx @comfanion/workflow config
 - **GitLab:** https://gitlab.com/comfanion/workflow
 - **Issues:** https://gitlab.com/comfanion/workflow/-/issues
 
+## Inspired By
+
+- **[BMAD Method](https://github.com/bmadcode/BMAD-METHOD)** - Breakthrough Method of Agile AI-Driven Development
+- **[OpenCode](https://github.com/opencode-ai/opencode)** - AI-native code editor
+
 ## License
 
 MIT
