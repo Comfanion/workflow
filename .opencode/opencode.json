@@ -20,7 +20,9 @@
   },
   
   "tools": {
-    "lsp": true
+    "lsp": true,
+    "search": true,
+    "codeindex": true
   },
   
   "permission": {

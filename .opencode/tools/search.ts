@@ -43,6 +43,7 @@ Prerequisites: Run 'npx @comfanion/workflow index --index <name>' first.`,
     index: tool.schema.string().optional().default("code").describe("Index to search: code, docs, config, or custom name"),
     limit: tool.schema.number().optional().default(5).describe("Number of results to return (default: 5)"),
     searchAll: tool.schema.boolean().optional().default(false).describe("Search all indexes instead of just one"),
+    freshen: tool.schema.boolean().optional().default(true).describe("Auto-update stale files before searching (default: true)"),
   },
 
   async execute(args, context) {
@@ -65,6 +66,14 @@ Prerequisites: Run 'npx @comfanion/workflow index --index <name>' first.`,
       const limit = args.limit || 5
       const indexName = args.index || "code"
 
+      // Auto-freshen stale files before searching
+      let freshenStats = { updated: 0 }
+      if (args.freshen !== false) {
+        const tempIndexer = await new CodebaseIndexer(projectRoot, args.index || "code").init()
+        freshenStats = await tempIndexer.freshen()
+        await tempIndexer.unloadModel() // Free memory after freshen
+      }
+
       if (args.searchAll) {
         // Search all indexes
         const tempIndexer = await new CodebaseIndexer(projectRoot, "code").init()
@@ -76,8 +85,12 @@ Prerequisites: Run 'npx @comfanion/workflow index --index <name>' first.`,
 
         for (const idx of indexes) {
           const indexer = await new CodebaseIndexer(projectRoot, idx).init()
+          if (args.freshen !== false) {
+            await indexer.freshen()
+          }
           const results = await indexer.search(args.query, limit)
           allResults.push(...results.map((r: any) => ({ ...r, _index: idx })))
+          await indexer.unloadModel() // Free memory after each index search
         }
 
         // Sort by distance and take top N
@@ -96,6 +109,7 @@ Prerequisites: Run 'npx @comfanion/workflow index --index <name>' first.`,
         const indexer = await new CodebaseIndexer(projectRoot, indexName).init()
         const results = await indexer.search(args.query, limit)
         allResults = results.map((r: any) => ({ ...r, _index: indexName }))
+        await indexer.unloadModel() // Free memory after search
       }
 
       if (allResults.length === 0) {

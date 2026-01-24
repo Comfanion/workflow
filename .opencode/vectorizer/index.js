@@ -197,6 +197,54 @@ class CodebaseIndexer {
   }
 
   /**
+   * Freshen index - check for stale files and reindex only changed ones
+   * Returns { checked, updated, deleted } counts
+   */
+  async freshen() {
+    let checked = 0;
+    let updated = 0;
+    let deleted = 0;
+
+    const indexedFiles = Object.keys(this.hashes);
+    
+    for (const relPath of indexedFiles) {
+      checked++;
+      const filePath = path.join(this.root, relPath);
+      
+      try {
+        const content = await fs.readFile(filePath, 'utf8');
+        const currentHash = this.fileHash(content);
+        
+        if (this.hashes[relPath] !== currentHash) {
+          // File changed - reindex it
+          await this.indexFile(filePath);
+          updated++;
+        }
+      } catch (e) {
+        // File deleted or unreadable - remove from index
+        delete this.hashes[relPath];
+        deleted++;
+      }
+    }
+    
+    if (deleted > 0) {
+      await this.saveHashes();
+    }
+    
+    return { checked, updated, deleted };
+  }
+
+  /**
+   * Index a single file by path (convenience method)
+   */
+  async indexSingleFile(filePath) {
+    const absPath = path.isAbsolute(filePath) 
+      ? filePath 
+      : path.join(this.root, filePath);
+    return await this.indexFile(absPath);
+  }
+
+  /**
    * Get indexing statistics for this index
    */
   async getStats() {

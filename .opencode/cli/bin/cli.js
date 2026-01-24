@@ -101,6 +101,8 @@ program
       jira_project: 'PROJ',
       create_repo_structure: false,
       install_vectorizer: false,
+      vectorizer_enabled: true,
+      vectorizer_auto_index: true,
       project_name: path.basename(process.cwd())
     };
     
@@ -120,12 +122,18 @@ program
           const jiraUrlMatch = existingContent.match(/base_url:\s*"([^"]+)"/);
           const jiraProjMatch = existingContent.match(/project_key:\s*"([^"]+)"/);
           
+          // Parse vectorizer settings
+          const vectorizerEnabledMatch = existingContent.match(/vectorizer:[\s\S]*?enabled:\s*(true|false)/);
+          const vectorizerAutoIndexMatch = existingContent.match(/vectorizer:[\s\S]*?auto_index:\s*(true|false)/);
+          
           if (nameMatch) config.user_name = nameMatch[1];
           if (langMatch) config.communication_language = langMatch[1];
           if (methMatch) config.methodology = methMatch[1];
           if (jiraMatch) config.jira_enabled = jiraMatch[1] === 'true';
           if (jiraUrlMatch) config.jira_url = jiraUrlMatch[1];
           if (jiraProjMatch) config.jira_project = jiraProjMatch[1];
+          if (vectorizerEnabledMatch) config.vectorizer_enabled = vectorizerEnabledMatch[1] === 'true';
+          if (vectorizerAutoIndexMatch) config.vectorizer_auto_index = vectorizerAutoIndexMatch[1] === 'true';
           
           isUpdate = true;
         } catch (e) {
@@ -217,8 +225,15 @@ program
         {
           type: 'confirm',
           name: 'install_vectorizer',
-          message: 'Install vectorizer & caching? (semantic code search, ~100MB)',
+          message: 'Install vectorizer? (semantic code search, ~100MB)',
           default: false
+        },
+        {
+          type: 'confirm',
+          name: 'vectorizer_auto_index',
+          message: 'Enable auto-indexing? (reindex files on save)',
+          when: (answers) => answers.install_vectorizer,
+          default: true
         }
       ]);
       
@@ -322,6 +337,13 @@ program
           .replace(/project_key: ".*"/, `project_key: "${config.jira_project}"`);
       }
       
+      // Vectorizer config
+      configContent = configContent
+        .replace(/(vectorizer:\s*\n\s+# Enable\/disable.*\n\s+enabled:)\s*(true|false)/, 
+          `$1 ${config.vectorizer_enabled}`)
+        .replace(/(# Auto-index files.*\n\s+auto_index:)\s*(true|false)/, 
+          `$1 ${config.vectorizer_auto_index}`);
+      
       await fs.writeFile(configPath, configContent);
       
       // Create docs structure (always)
@@ -379,7 +401,21 @@ program
         }
       }
 
-      spinner.succeed(chalk.green('OpenCode Workflow initialized!'));
+      // Install plugin dependencies
+      spinner.text = 'Installing plugin dependencies...';
+      try {
+        execSync('bun install', { 
+          cwd: targetDir, 
+          stdio: 'pipe',
+          timeout: 60000
+        });
+        spinner.succeed(chalk.green('OpenCode Workflow initialized!'));
+        console.log(chalk.green('✅ Plugin dependencies installed'));
+      } catch (e) {
+        spinner.succeed(chalk.green('OpenCode Workflow initialized!'));
+        console.log(chalk.yellow(`⚠️  Plugin dependencies failed: ${e.message}`));
+        console.log(chalk.gray('   Run manually: cd .opencode && bun install'));
+      }
 
       // Show what was preserved
       if (hadVectorizer) {
@@ -536,9 +572,42 @@ program
         await fs.move(tempVectors, path.join(targetDir, 'vectors'), { overwrite: true });
       }
       
-      // Restore user's config.yaml
+      // Restore user's config.yaml with new sections if missing
       spinner.text = 'Restoring config.yaml...';
-      await fs.writeFile(configPath, configBackup);
+      let mergedConfig = configBackup;
+      
+      // Add vectorizer section if missing
+      if (!mergedConfig.includes('vectorizer:')) {
+        const newConfigPath = path.join(targetDir, 'config.yaml');
+        const newConfig = await fs.readFile(newConfigPath, 'utf8');
+        const vectorizerMatch = newConfig.match(/(# =+\n# VECTORIZER[\s\S]*?)(?=# =+\n# [A-Z])/);
+        if (vectorizerMatch) {
+          // Insert before LSP section or at end
+          const insertPoint = mergedConfig.indexOf('# =============================================================================\n# LSP');
+          if (insertPoint > 0) {
+            mergedConfig = mergedConfig.slice(0, insertPoint) + vectorizerMatch[1] + mergedConfig.slice(insertPoint);
+          } else {
+            mergedConfig += '\n' + vectorizerMatch[1];
+          }
+          console.log(chalk.green('  ✅ Added new vectorizer configuration section'));
+        }
+      }
+      
+      await fs.writeFile(configPath, mergedConfig);
+      
+      // Install plugin dependencies
+      spinner.text = 'Installing plugin dependencies...';
+      let pluginDepsInstalled = false;
+      try {
+        execSync('bun install', { 
+          cwd: targetDir, 
+          stdio: 'pipe',
+          timeout: 60000
+        });
+        pluginDepsInstalled = true;
+      } catch (e) {
+        // Will show warning below
+      }
       
       spinner.succeed(chalk.green('OpenCode Workflow updated!'));
       
@@ -548,6 +617,11 @@ program
       }
       
       console.log(chalk.green('✅ Your config.yaml was preserved.'));
+      if (pluginDepsInstalled) {
+        console.log(chalk.green('✅ Plugin dependencies installed.'));
+      } else {
+        console.log(chalk.yellow('⚠️  Plugin deps: run `cd .opencode && bun install`'));
+      }
       if (hasVectorizer) {
         console.log(chalk.green('✅ Vectorizer updated (node_modules preserved).'));
       }
@@ -652,8 +726,25 @@ program
     const vectorizerInstalled = await fs.pathExists(path.join(process.cwd(), '.opencode', 'vectorizer', 'node_modules'));
     const vectorsExist = await fs.pathExists(path.join(process.cwd(), '.opencode', 'vectors', 'hashes.json'));
     
+    // Check vectorizer config
+    let vectorizerEnabled = true;
+    let autoIndexEnabled = true;
+    try {
+      const vecConfigContent = await fs.readFile(path.join(process.cwd(), '.opencode/config.yaml'), 'utf8');
+      const vecEnabledMatch = vecConfigContent.match(/vectorizer:[\s\S]*?enabled:\s*(true|false)/);
+      const autoIndexMatch = vecConfigContent.match(/vectorizer:[\s\S]*?auto_index:\s*(true|false)/);
+      if (vecEnabledMatch) vectorizerEnabled = vecEnabledMatch[1] === 'true';
+      if (autoIndexMatch) autoIndexEnabled = autoIndexMatch[1] === 'true';
+    } catch {}
+    
     if (vectorizerInstalled) {
       console.log(chalk.green('  ✅ Installed'));
+      console.log(vectorizerEnabled 
+        ? chalk.green('  ✅ Enabled in config')
+        : chalk.yellow('  ⚠️  Disabled in config'));
+      console.log(autoIndexEnabled
+        ? chalk.green('  ✅ Auto-index: ON')
+        : chalk.gray('  ○  Auto-index: OFF'));
       if (vectorsExist) {
         try {
           const hashes = await fs.readJSON(path.join(process.cwd(), '.opencode', 'vectors', 'hashes.json'));

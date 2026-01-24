@@ -223,6 +223,42 @@ testarch:
   use_mcp_enhancements: true
 
 # =============================================================================
+# VECTORIZER (Semantic Code Search)
+# =============================================================================
+vectorizer:
+  # Enable/disable vectorizer functionality
+  enabled: true
+  
+  # Auto-index files when they change (requires file-indexer plugin)
+  auto_index: true
+  
+  # Debounce time in ms (wait before indexing after file change)
+  debounce_ms: 2000
+  
+  # Indexes to maintain
+  indexes:
+    code:
+      enabled: true
+      extensions: ['.js', '.ts', '.jsx', '.tsx', '.py', '.go', '.rs', '.java']
+    docs:
+      enabled: true
+      extensions: ['.md', '.mdx', '.txt', '.rst']
+    config:
+      enabled: false  # Usually not needed
+      extensions: ['.yaml', '.yml', '.json', '.toml']
+  
+  # Directories to exclude from indexing
+  exclude:
+    - node_modules
+    - .git
+    - dist
+    - build
+    - .opencode/vectors
+    - .opencode/vectorizer
+    - vendor
+    - __pycache__
+
+# =============================================================================
 # LSP (Language Server Protocol) - Code Intelligence
 # =============================================================================
 # LSP provides IDE-like features: go to definition, find references, hover, etc.

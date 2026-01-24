@@ -28,6 +28,8 @@ const OPENCODE_ITEMS = [
   'checklists',
   'commands',
   'tools',
+  'plugins',           // ← ДОДАНО! Plugin files
+  'package.json',      // ← ДОДАНО! Plugin dependencies
   'opencode.json'
 ];
 
@@ -123,8 +125,9 @@ async function build() {
   console.log('  │   ├── agents/');
   console.log('  │   ├── skills/');
   console.log('  │   ├── tools/        # Custom tools for AI');
-  console.log('  │   │   ├── codesearch.ts');
+  console.log('  │   │   ├── search.ts');
   console.log('  │   │   └── codeindex.ts');
+  console.log('  │   └── plugins/      # Auto-indexer plugin');
   console.log('  │   ├── workflows/');
   console.log('  │   ├── checklists/');
   console.log('  │   └── commands/');

@@ -4,6 +4,34 @@ Plugins that extend OpenCode with hooks, events, and custom tools.
 
 ## Available Plugins
 
+### file-indexer.ts
+
+Automatically reindexes changed files for semantic search.
+
+**Features:**
+- Detects file type and updates appropriate index (code, docs, config)
+- Debounces rapid changes (2s) to avoid excessive indexing
+- Hooks into Edit/Write tool execution
+- Logs indexing activity for transparency
+
+**Events:** `file.edited`, `document.updated`, `tool.execute.after`
+
+**How it works:**
+
+| File Extension | Index Updated |
+|----------------|---------------|
+| `.js`, `.ts`, `.py`, etc. | `code` |
+| `.md`, `.txt`, `.rst` | `docs` |
+| `.yaml`, `.json`, `.toml` | `config` |
+
+**Prerequisites:**
+```bash
+npx opencode-workflow vectorizer install
+npx opencode-workflow index --index code
+```
+
+---
+
 ### custom-compaction.ts
 
 Intelligent session compaction that preserves flow context.

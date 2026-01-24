@@ -1,6 +1,6 @@
 ---
 description: "Business Analyst - Use for: gathering requirements, validating requirements, brainstorming. Has skills: requirements-gathering, requirements-validation, acceptance-criteria, methodologies"
-mode: all            # Can be primary agent or invoked via @analyst
+mode: all
 temperature: 0.3
 
 # Tools - what this agent can use
