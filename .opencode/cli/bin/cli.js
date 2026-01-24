@@ -8,6 +8,24 @@ import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
+import yaml from 'js-yaml';
+
+/**
+ * Deep merge two objects. User values override defaults.
+ * Arrays are replaced, not merged.
+ */
+function deepMerge(defaults, user) {
+  const result = { ...defaults };
+  for (const key of Object.keys(user)) {
+    if (user[key] !== null && typeof user[key] === 'object' && !Array.isArray(user[key]) &&
+        defaults[key] !== null && typeof defaults[key] === 'object' && !Array.isArray(defaults[key])) {
+      result[key] = deepMerge(defaults[key], user[key]);
+    } else {
+      result[key] = user[key];
+    }
+  }
+  return result;
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_DIR = path.join(__dirname, '..');
@@ -572,28 +590,34 @@ program
         await fs.move(tempVectors, path.join(targetDir, 'vectors'), { overwrite: true });
       }
       
-      // Restore user's config.yaml with new sections if missing
-      spinner.text = 'Restoring config.yaml...';
-      let mergedConfig = configBackup;
-      
-      // Add vectorizer section if missing
-      if (!mergedConfig.includes('vectorizer:')) {
+      // Merge config.yaml: new defaults + user overrides
+      spinner.text = 'Merging config.yaml...';
+      try {
         const newConfigPath = path.join(targetDir, 'config.yaml');
-        const newConfig = await fs.readFile(newConfigPath, 'utf8');
-        const vectorizerMatch = newConfig.match(/(# =+\n# VECTORIZER[\s\S]*?)(?=# =+\n# [A-Z])/);
-        if (vectorizerMatch) {
-          // Insert before LSP section or at end
-          const insertPoint = mergedConfig.indexOf('# =============================================================================\n# LSP');
-          if (insertPoint > 0) {
-            mergedConfig = mergedConfig.slice(0, insertPoint) + vectorizerMatch[1] + mergedConfig.slice(insertPoint);
-          } else {
-            mergedConfig += '\n' + vectorizerMatch[1];
-          }
-          console.log(chalk.green('  ✅ Added new vectorizer configuration section'));
-        }
+        const newConfigContent = await fs.readFile(newConfigPath, 'utf8');
+        
+        // Parse both configs
+        const newConfig = yaml.load(newConfigContent) || {};
+        const userConfig = yaml.load(configBackup) || {};
+        
+        // Deep merge: defaults from new config, overridden by user values
+        const mergedConfig = deepMerge(newConfig, userConfig);
+        
+        // Dump back to YAML with nice formatting
+        const mergedContent = yaml.dump(mergedConfig, {
+          indent: 2,
+          lineWidth: 120,
+          noRefs: true,
+          sortKeys: false
+        });
+        
+        await fs.writeFile(configPath, mergedContent);
+        console.log(chalk.green('  ✅ config.yaml merged (your settings preserved, new options added)'));
+      } catch (e) {
+        // Fallback: just restore user's config if merge fails
+        await fs.writeFile(configPath, configBackup);
+        console.log(chalk.yellow('  ⚠️ config.yaml restored (merge failed, using your original)'));
       }
-      
-      await fs.writeFile(configPath, mergedConfig);
       
       // Install plugin dependencies
       spinner.text = 'Installing plugin dependencies...';
