@@ -235,28 +235,50 @@ vectorizer:
   # Debounce time in ms (wait before indexing after file change)
   debounce_ms: 1000
   
-  # Indexes to maintain
+  # Indexes to maintain - each has pattern (what to include) and ignore (what to skip)
   indexes:
+    # Code index - source code files
     code:
       enabled: true
-      extensions: ['.js', '.ts', '.jsx', '.tsx', '.py', '.go', '.rs', '.java']
+      # Glob pattern for files to index
+      pattern: "**/*.{js,ts,jsx,tsx,mjs,cjs,py,go,rs,java,kt,swift,c,cpp,h,hpp,cs,rb,php,scala,clj}"
+      # Glob patterns to ignore
+      ignore:
+        - "**/node_modules/**"
+        - "**/.git/**"
+        - "**/dist/**"
+        - "**/build/**"
+        - "**/.opencode/**"
+        - "**/docs/**"
+        - "**/vendor/**"
+        - "**/__pycache__/**"
+        - "**/*.min.js"
+        - "**/*.bundle.js"
+    
+    # Documentation index - markdown, text files
     docs:
       enabled: true
-      extensions: ['.md', '.mdx', '.txt', '.rst']
+      # Only docs folder by default (change to "**/*.md" for all markdown)
+      pattern: "docs/**/*.{md,mdx,txt,rst,adoc}"
+      ignore: []
+    
+    # Configuration index - yaml, json, toml
     config:
-      enabled: false  # Usually not needed
-      extensions: ['.yaml', '.yml', '.json', '.toml']
+      enabled: false               # Disabled by default
+      pattern: "**/*.{yaml,yml,json,toml,ini}"
+      ignore:
+        - "**/node_modules/**"
+        - "**/.git/**"
+        - "**/.opencode/**"
+        - "**/package-lock.json"
+        - "**/yarn.lock"
   
-  # Directories to exclude from indexing
+  # Global exclude patterns (applied to ALL indexes, in addition to per-index ignore)
   exclude:
     - node_modules
     - .git
-    - dist
-    - build
     - .opencode/vectors
     - .opencode/vectorizer
-    - vendor
-    - __pycache__
 
 # =============================================================================
 # LSP (Language Server Protocol) - Code Intelligence

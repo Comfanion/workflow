@@ -17,9 +17,9 @@ if (!DEBUG) {
 }
 
 /**
- * Index presets for different content types
+ * Default index presets (can be overridden by config.yaml)
  */
-const INDEX_PRESETS = {
+const DEFAULT_PRESETS = {
   code: {
     pattern: '**/*.{js,ts,jsx,tsx,mjs,cjs,py,go,rs,java,kt,swift,c,cpp,h,hpp,cs,rb,php,scala,clj}',
     ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/build/**', '**/.opencode/**', '**/docs/**', '**/vendor/**', '**/__pycache__/**'],
@@ -42,6 +42,82 @@ const INDEX_PRESETS = {
   }
 };
 
+// Will be populated from config.yaml if available
+let INDEX_PRESETS = { ...DEFAULT_PRESETS };
+let GLOBAL_IGNORE = [];
+
+/**
+ * Load index configuration from config.yaml
+ * @param {string} projectRoot - Project root directory
+ */
+async function loadConfig(projectRoot) {
+  try {
+    const configPath = path.join(projectRoot, '.opencode', 'config.yaml');
+    const content = await fs.readFile(configPath, 'utf8');
+    
+    // Parse vectorizer section from YAML
+    const vectorizerMatch = content.match(/^vectorizer:([\s\S]*?)(?=^[a-z]|\Z)/m);
+    if (!vectorizerMatch) return;
+    
+    const section = vectorizerMatch[1];
+    
+    // Parse global exclude
+    const excludeMatch = section.match(/^\s{2}exclude:\s*\n((?:\s{4}-\s+.+\n?)*)/m);
+    if (excludeMatch) {
+      GLOBAL_IGNORE = excludeMatch[1]
+        .split('\n')
+        .map(line => line.replace(/^\s*-\s*/, '').trim())
+        .filter(Boolean)
+        .map(p => p.includes('*') ? p : `**/${p}/**`);
+    }
+    
+    // Parse indexes section
+    const indexesMatch = section.match(/^\s{2}indexes:\s*\n([\s\S]*?)(?=^\s{2}[a-z]|\s{2}exclude:|\Z)/m);
+    if (!indexesMatch) return;
+    
+    const indexesSection = indexesMatch[1];
+    
+    // Parse each index (code, docs, config)
+    for (const indexName of ['code', 'docs', 'config']) {
+      const indexRegex = new RegExp(`^\\s{4}${indexName}:\\s*\\n([\\s\\S]*?)(?=^\\s{4}[a-z]|\\Z)`, 'm');
+      const indexMatch = indexesSection.match(indexRegex);
+      if (!indexMatch) continue;
+      
+      const indexSection = indexMatch[1];
+      
+      // Parse enabled
+      const enabledMatch = indexSection.match(/^\s+enabled:\s*(true|false)/m);
+      const enabled = enabledMatch ? enabledMatch[1] === 'true' : true;
+      
+      // Parse pattern
+      const patternMatch = indexSection.match(/^\s+pattern:\s*["']?([^"'\n]+)["']?/m);
+      const pattern = patternMatch ? patternMatch[1].trim() : DEFAULT_PRESETS[indexName]?.pattern;
+      
+      // Parse ignore array
+      const ignoreMatch = indexSection.match(/^\s+ignore:\s*\n((?:\s+-\s+.+\n?)*)/m);
+      let ignore = [];
+      if (ignoreMatch) {
+        ignore = ignoreMatch[1]
+          .split('\n')
+          .map(line => line.replace(/^\s*-\s*/, '').replace(/["']/g, '').trim())
+          .filter(Boolean);
+      }
+      
+      if (enabled && pattern) {
+        INDEX_PRESETS[indexName] = {
+          pattern,
+          ignore,
+          description: `${indexName} files from config.yaml`
+        };
+      }
+    }
+    
+    if (DEBUG) console.log('[vectorizer] Loaded config:', { INDEX_PRESETS, GLOBAL_IGNORE });
+  } catch (e) {
+    if (DEBUG) console.log('[vectorizer] Using default presets (no config.yaml)');
+  }
+}
+
 class CodebaseIndexer {
   /**
    * @param {string} projectRoot - Project root directory
@@ -55,9 +131,15 @@ class CodebaseIndexer {
     this.model = null;
     this.db = null;
     this.hashes = {};
+    this.configLoaded = false;
   }
 
   async init() {
+    // Load config on first init
+    if (!this.configLoaded) {
+      await loadConfig(this.root);
+      this.configLoaded = true;
+    }
     await fs.mkdir(this.cacheDir, { recursive: true });
     this.db = await lancedb.connect(path.join(this.cacheDir, 'lancedb'));
     await this.loadHashes();
@@ -219,10 +301,14 @@ class CodebaseIndexer {
    */
   async checkHealth(extraIgnore = []) {
     const { glob } = await import('glob');
-    const preset = INDEX_PRESETS[this.indexName] || INDEX_PRESETS.code;
+    const preset = INDEX_PRESETS[this.indexName] || DEFAULT_PRESETS.code;
     
-    // Combine preset ignore with extra ignore patterns
-    const ignore = [...(preset.ignore || []), ...extraIgnore.map(p => `**/${p}/**`)];
+    // Combine: preset ignore + global ignore + extra ignore
+    const ignore = [
+      ...(preset.ignore || []), 
+      ...GLOBAL_IGNORE,
+      ...extraIgnore.map(p => p.includes('*') ? p : `**/${p}/**`)
+    ];
     
     const expectedFiles = await glob(preset.pattern, { 
       cwd: this.root, 
@@ -295,10 +381,14 @@ class CodebaseIndexer {
    */
   async indexAll(onProgress = null, extraIgnore = []) {
     const { glob } = await import('glob');
-    const preset = INDEX_PRESETS[this.indexName] || INDEX_PRESETS.code;
+    const preset = INDEX_PRESETS[this.indexName] || DEFAULT_PRESETS.code;
     
-    // Combine preset ignore with extra ignore patterns
-    const ignore = [...(preset.ignore || []), ...extraIgnore.map(p => `**/${p}/**`)];
+    // Combine: preset ignore + global ignore + extra ignore
+    const ignore = [
+      ...(preset.ignore || []), 
+      ...GLOBAL_IGNORE,
+      ...extraIgnore.map(p => p.includes('*') ? p : `**/${p}/**`)
+    ];
     
     const files = await glob(preset.pattern, { 
       cwd: this.root, 
