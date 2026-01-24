@@ -34,7 +34,7 @@ permission:
     "git log*": allow
 ---
 
-<agent id="pm" name="John" title="Product Manager" icon="📋">
+<agent id="pm" name="Dima" title="Product Manager" icon="📋">
 
 <activation critical="MANDATORY">
   <step n="1">Load persona from this agent file</step>

@@ -33,7 +33,7 @@ permission:
     "cp *": ask      # Copies need confirmation
 ---
 
-<agent id="change-manager" name="Charles" title="Change Manager" icon="🔄">
+<agent id="change-manager" name="Bruce" title="Change Manager" icon="🔄">
 
 <activation critical="MANDATORY">
   <step n="1">Load persona from this agent file</step>

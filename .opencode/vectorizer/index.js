@@ -181,6 +181,30 @@ class CodebaseIndexer {
     return crypto.createHash('md5').update(content).digest('hex');
   }
 
+  /**
+   * Check if file is archived (should be excluded from default search)
+   * Archived if:
+   * - Path contains /archive/ folder
+   * - File has frontmatter with archived: true
+   */
+  isArchived(relPath, content) {
+    // Check path
+    if (relPath.includes('/archive/') || relPath.startsWith('archive/')) {
+      return true;
+    }
+    
+    // Check frontmatter (YAML between --- markers at start of file)
+    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+    if (frontmatterMatch) {
+      const frontmatter = frontmatterMatch[1];
+      if (/^archived:\s*true/m.test(frontmatter)) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+
   async embed(text) {
     const model = await this.loadModel();
     const result = await model(text, { pooling: 'mean', normalize: true });
@@ -246,6 +270,7 @@ class CodebaseIndexer {
     }
 
     const chunks = this.chunkCode(content);
+    const archived = this.isArchived(relPath, content);
     const data = [];
 
     for (let i = 0; i < chunks.length; i++) {
@@ -254,7 +279,8 @@ class CodebaseIndexer {
         file: relPath,
         chunk_index: i,
         content: chunks[i],
-        vector: embedding
+        vector: embedding,
+        archived: archived
       });
     }
 
@@ -279,8 +305,11 @@ class CodebaseIndexer {
 
   /**
    * Semantic search across indexed codebase
+   * @param {string} query - Search query
+   * @param {number} limit - Max results (default 5)
+   * @param {boolean} includeArchived - Include archived files (default false)
    */
-  async search(query, limit = 5) {
+  async search(query, limit = 5, includeArchived = false) {
     const tableName = 'chunks';
     const tables = await this.db.tableNames();
     if (!tables.includes(tableName)) {
@@ -289,9 +318,18 @@ class CodebaseIndexer {
 
     const queryEmbedding = await this.embed(query);
     const table = await this.db.openTable(tableName);
-    const results = await table.search(queryEmbedding).limit(limit).execute();
     
-    return results;
+    // Fetch more results if we need to filter archived
+    const fetchLimit = includeArchived ? limit : limit * 3;
+    let results = await table.search(queryEmbedding).limit(fetchLimit).execute();
+    
+    // Filter out archived files unless explicitly requested
+    if (!includeArchived) {
+      results = results.filter(r => !r.archived);
+    }
+    
+    // Trim to requested limit
+    return results.slice(0, limit);
   }
 
   /**

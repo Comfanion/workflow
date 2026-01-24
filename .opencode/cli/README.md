@@ -12,6 +12,37 @@ AI-assisted development workflow with **semantic code search**, agents, and stru
 - 🔄 **Auto-indexing** - Background indexing on startup with fun toast notifications
 - 🎯 **Jira Integration** - Bidirectional sync with your project
 
+## Agents & Workflow
+
+The workflow uses specialized AI agents, each with a unique persona and skills:
+
+| Agent | Name | Role | Phase |
+|-------|------|------|-------|
+| 📊 **Analyst** | Sara | Requirements gathering, stakeholder interviews | Planning |
+| 📋 **PM** | Dima | PRD, epics, stories, sprint planning, Jira | Planning → Sprint |
+| 🏗️ **Architect** | Winston | System design, ADRs, coding standards | Planning |
+| 💻 **Dev** | Rick | TDD implementation, code review | Implementation |
+| ⚡ **Coder** | Morty | Quick implementation, bug fixes | Implementation |
+| 🔍 **Researcher** | Kristina | Technical/market/domain research | Any |
+| 🔄 **Change Manager** | Bruce | Documentation changes, impact analysis | Any |
+
+### Workflow Pipeline
+
+```
+Planning:    /requirements → /prd → /coding-standards → /architecture
+Sprint:      /epics → /stories → /sprint-plan → /jira-sync  
+Development: /dev-story ↔ /code-review (loop until done)
+```
+
+### Key Skills
+
+- **requirements-gathering** - Extract FR/NFR through interviews
+- **prd-writing** - Product requirements documents
+- **architecture-design** - Hexagonal/DDD patterns
+- **story-writing** - User stories with Given/When/Then AC
+- **dev-story** - Red-green-refactor implementation cycle
+- **jira-integration** - Bidirectional sync with Jira
+
 ## Quick Start
 
 ```bash

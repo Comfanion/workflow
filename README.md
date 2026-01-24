@@ -36,6 +36,83 @@ Requirements → PRD → Architecture → Epics → Stories → Code
 - **Jira integration** - Sync stories, manage sprints
 - **Multi-language** - English docs, Ukrainian/English communication
 
+## Agents
+
+Specialized AI personas that handle different stages of the workflow:
+
+| Agent | Name | Role | Key Skills |
+|-------|------|------|------------|
+| 📊 **Analyst** | Sara | Business Analyst | Requirements gathering, stakeholder interviews, acceptance criteria |
+| 📋 **PM** | Dima | Product Manager | PRD writing, epics, stories, sprint planning, Jira sync |
+| 🏗️ **Architect** | Winston | Solution Architect | System design, ADRs, coding standards, architecture validation |
+| 💻 **Dev** | Rick | Senior Developer | TDD implementation, code review, test design |
+| ⚡ **Coder** | Morty | Fast Coder | Quick implementation, bug fixes, code following patterns |
+| 🔍 **Researcher** | Kristina | Research Specialist | Technical/market/domain research, competitive analysis |
+| 🔄 **Change Manager** | Bruce | Change Manager | Documentation changes, impact analysis, version control |
+
+### Workflow Pipeline
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        PLANNING PHASE                           │
+├─────────────────────────────────────────────────────────────────┤
+│  📊 Analyst          📋 PM              🏗️ Architect            │
+│  /requirements  →   /prd          →   /architecture            │
+│                                        /coding-standards        │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                         SPRINT PHASE                            │
+├─────────────────────────────────────────────────────────────────┤
+│  📋 PM                                                          │
+│  /epics  →  /stories  →  /sprint-plan  →  /jira-sync           │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                     IMPLEMENTATION PHASE                        │
+├─────────────────────────────────────────────────────────────────┤
+│  💻 Dev                                                         │
+│  /dev-story  →  /code-review  →  (repeat until done)           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Agent Skills
+
+Each agent has access to specialized skills (knowledge modules):
+
+**📊 Analyst (Sara)**
+- `requirements-gathering` - Stakeholder interviews, FR/NFR extraction
+- `requirements-validation` - SMART criteria, conflict detection
+- `acceptance-criteria` - Given/When/Then format
+- `methodologies` - User interviews, empathy mapping, five whys
+
+**📋 PM (Dima)**
+- `prd-writing` - Product requirements documents
+- `epic-writing` - Epic structure with acceptance criteria
+- `story-writing` - User stories with tasks/subtasks
+- `sprint-planning` - Sprint organization, velocity tracking
+- `jira-integration` - Bidirectional Jira sync
+
+**🏗️ Architect (Winston)**
+- `architecture-design` - Hexagonal/DDD architecture
+- `adr-writing` - Architecture Decision Records
+- `coding-standards` - Patterns, conventions, style guides
+- `architecture-validation` - PRD coverage, NFR compliance
+
+**💻 Dev (Rick)**
+- `dev-story` - Red-green-refactor implementation
+- `code-review` - Quality gates, refactoring suggestions
+- `test-design` - Unit/integration test structure
+
+**⚡ Coder (Morty)**
+- Fast implementation of well-defined tasks
+- Bug fixes, repetitive tasks, code following patterns
+- Delegated by Rick for simple tasks
+
+**🔍 Researcher (Kristina)**
+- `research-methodology` - Technical, market, domain research
+- Deep research with web grounding (10M context)
+
 ## Installation Options
 
 ### Interactive (recommended)

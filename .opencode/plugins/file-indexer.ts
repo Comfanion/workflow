@@ -51,7 +51,10 @@ const DEFAULT_CONFIG = {
     docs: { enabled: true, extensions: ['.md', '.mdx', '.txt', '.rst', '.adoc'] },
     config: { enabled: false, extensions: ['.yaml', '.yml', '.json', '.toml', '.ini', '.xml'] },
   },
-  exclude: ['node_modules', '.git', 'dist', 'build', '.opencode/vectors', '.opencode/vectorizer', 'vendor', '__pycache__'],
+  exclude: [
+    // Build & deps (dot-folders like .git, .claude, .idea are already ignored by glob default)
+    'node_modules', 'vendor', 'dist', 'build', 'out', '__pycache__',
+  ],
 }
 
 interface VectorizerConfig {

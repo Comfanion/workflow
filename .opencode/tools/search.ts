@@ -44,6 +44,7 @@ Prerequisites: Run 'npx @comfanion/workflow index --index <name>' first.`,
     limit: tool.schema.number().optional().default(5).describe("Number of results to return (default: 5)"),
     searchAll: tool.schema.boolean().optional().default(false).describe("Search all indexes instead of just one"),
     freshen: tool.schema.boolean().optional().default(true).describe("Auto-update stale files before searching (default: true)"),
+    includeArchived: tool.schema.boolean().optional().default(false).describe("Include archived files in results (default: false). Files are archived if in /archive/ folder or have 'archived: true' in frontmatter."),
   },
 
   async execute(args, context) {
@@ -88,7 +89,7 @@ Prerequisites: Run 'npx @comfanion/workflow index --index <name>' first.`,
           if (args.freshen !== false) {
             await indexer.freshen()
           }
-          const results = await indexer.search(args.query, limit)
+          const results = await indexer.search(args.query, limit, args.includeArchived)
           allResults.push(...results.map((r: any) => ({ ...r, _index: idx })))
           await indexer.unloadModel() // Free memory after each index search
         }

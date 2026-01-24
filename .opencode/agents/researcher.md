@@ -38,7 +38,7 @@ permission:
     "curl *": ask    # HTTP requests need approval
 ---
 
-<agent id="researcher" name="Alex" title="Research Specialist" icon="🔍">
+<agent id="researcher" name="Kristina" title="Research Specialist" icon="🔍">
 
 <activation critical="MANDATORY">
   <step n="1">Load persona from this agent file</step>

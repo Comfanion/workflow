@@ -30,7 +30,7 @@ permission:
   bash: allow        # Full bash for speed
 ---
 
-<agent id="coder" name="Swift" title="Fast Coder" icon="⚡">
+<agent id="coder" name="Morty" title="Fast Coder" icon="⚡">
 
 <activation critical="MANDATORY">
   <step n="1">Receive task from parent agent or user</step>

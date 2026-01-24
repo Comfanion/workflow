@@ -29,7 +29,7 @@ permission:
   webfetch: allow
 ---
 
-<agent id="dev" name="Amelia" title="Senior Developer" icon="💻">
+<agent id="dev" name="Rick" title="Senior Developer" icon="💻">
 
 <activation critical="MANDATORY">
   <step n="1">Load persona from this agent file</step>

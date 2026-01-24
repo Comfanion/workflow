@@ -281,11 +281,15 @@ vectorizer:
         - "**/yarn.lock"
   
   # Global exclude patterns (applied to ALL indexes, in addition to per-index ignore)
+  # Patterns without * are wrapped in **/{pattern}/**
+  # NOTE: Dot-folders (.git, .claude, .idea, etc.) are already ignored by default (glob dot:false)
   exclude:
     - node_modules
-    - .git
-    - .opencode/vectors
-    - .opencode/vectorizer
+    - vendor
+    - dist
+    - build
+    - out
+    - __pycache__
 
 # =============================================================================
 # LSP (Language Server Protocol) - Code Intelligence

@@ -302,7 +302,7 @@ pipeline:
 #
 agents:
   analyst:
-    name: Mary
+    name: Sara
     title: Business Analyst
     icon: "📊"
     description: Requirements Analyst - extracts FR/NFR through stakeholder interviews
@@ -323,7 +323,7 @@ agents:
       - methodologies
 
   pm:
-    name: John
+    name: Dima
     title: Product Manager
     icon: "📋"
     description: Product Manager - creates PRDs, epics, stories, sprint planning, Jira sync
@@ -371,7 +371,7 @@ agents:
       - methodologies
 
   dev:
-    name: Amelia
+    name: Rick
     title: Senior Developer
     icon: "💻"
     description: Developer - implements stories following red-green-refactor cycle
@@ -389,9 +389,25 @@ agents:
       - code-review
       - test-design
 
+  coder:
+    name: Morty
+    title: Fast Coder
+    icon: "⚡"
+    description: Fast Coder - quick implementation, bug fixes, code following patterns
+    mode: subagent
+    hidden: true  # Internal subagent, invoked by @dev
+    model: anthropic/claude-sonnet-4-20250514
+    temperature: 0.1
+    file: agents/coder.md
+    expertise:
+      - Quick implementation
+      - Bug fixes
+      - Following existing patterns
+    personality: Fast, no questions, executes or fails
+
   # Supporting Agents (not in main pipeline)
   researcher:
-    name: Alex
+    name: Kristina
     title: Researcher
     icon: "🔍"
     description: Researcher - conducts technical, market, and domain research
@@ -412,7 +428,7 @@ agents:
       - methodologies
 
   change-manager:
-    name: Charles
+    name: Bruce
     title: Change Manager
     icon: "🔄"
     description: Change Manager - manages documentation change proposals
