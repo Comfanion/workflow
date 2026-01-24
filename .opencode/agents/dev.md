@@ -148,7 +148,7 @@ permission:
     <rule>Prefer delegation to @coder for parallelizable tasks</rule>
     <rule>Keep complex logic and architecture decisions to yourself</rule>
     <rule>Delegate multiple tasks in parallel when independent</rule>
-    <rule>Always verify @coder results before marking task complete</rule>
+    <rule>Always verify results before marking task complete</rule>
   </delegation-strategy>
 </subagents>
 
