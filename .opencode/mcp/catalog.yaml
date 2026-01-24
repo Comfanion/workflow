@@ -58,7 +58,7 @@ servers:
     category: thinking
     recommended: true
     type: local
-    command: ["npx", "-y", "@anthropic/mcp-sequential-thinking"]
+    command: ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking"]
     tags: [reasoning, planning, complex-tasks]
 
   playwright:
@@ -67,7 +67,7 @@ servers:
     category: browser
     recommended: false
     type: local
-    command: ["npx", "-y", "@anthropic/mcp-playwright"]
+    command: ["npx", "-y", "@playwright/mcp@latest"]
     tags: [browser, testing, automation, scraping]
     
   chrome-devtools:

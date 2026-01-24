@@ -265,6 +265,7 @@ program
             { name: 'sequential-thinking - Enhanced reasoning (recommended)', value: 'sequential-thinking', checked: true },
             { name: 'chrome-devtools - Chrome debugging, DOM, network', value: 'chrome-devtools', checked: false },
             { name: 'playwright - Browser automation and testing', value: 'playwright', checked: false },
+            { name: 'figma - Figma design files', value: 'figma', checked: false },
             { name: 'grep - Search code examples from GitHub', value: 'grep', checked: false },
             { name: 'github - GitHub repos, issues, PRs', value: 'github', checked: false },
             { name: 'sentry - Query Sentry issues (OAuth)', value: 'sentry', checked: false },
@@ -515,11 +516,12 @@ program
           'context7': { type: 'remote', url: 'https://mcp.context7.com/mcp' },
           'grep': { type: 'remote', url: 'https://mcp.grep.app' },
           'sentry': { type: 'remote', url: 'https://mcp.sentry.dev/mcp', oauth: {} },
-          'sequential-thinking': { type: 'local', command: ['npx', '-y', '@anthropic/mcp-sequential-thinking'] },
+          'sequential-thinking': { type: 'local', command: ['npx', '-y', '@modelcontextprotocol/server-sequential-thinking'] },
           'chrome-devtools': { type: 'local', command: ['npx', '-y', 'chrome-devtools-mcp@latest'] },
-          'playwright': { type: 'local', command: ['npx', '-y', '@anthropic/mcp-playwright'] },
-          'github': { type: 'local', command: ['npx', '-y', '@anthropic/mcp-github'] },
-          'postgres': { type: 'local', command: ['npx', '-y', '@anthropic/mcp-postgres'] }
+          'playwright': { type: 'local', command: ['npx', '-y', '@playwright/mcp@latest'] },
+          'figma': { type: 'local', command: ['npx', '-y', 'figma-mcp'] },
+          'github': { type: 'local', command: ['npx', '-y', '@modelcontextprotocol/server-github'] },
+          'postgres': { type: 'local', command: ['npx', '-y', '@modelcontextprotocol/server-postgres'] }
         };
         
         // Read existing opencode.json or create new
@@ -1283,14 +1285,14 @@ const MCP_CATALOG = {
     name: 'Sequential Thinking',
     description: 'Enhanced reasoning for complex tasks',
     type: 'local', 
-    command: ['npx', '-y', '@anthropic/mcp-sequential-thinking'],
+    command: ['npx', '-y', '@modelcontextprotocol/server-sequential-thinking'],
     recommended: true
   },
   'playwright': { 
     name: 'Playwright',
     description: 'Browser automation and testing',
     type: 'local', 
-    command: ['npx', '-y', '@anthropic/mcp-playwright'],
+    command: ['npx', '-y', '@playwright/mcp@latest'],
     recommended: false
   },
   'chrome-devtools': { 
@@ -1300,11 +1302,19 @@ const MCP_CATALOG = {
     command: ['npx', '-y', 'chrome-devtools-mcp@latest'],
     recommended: false
   },
-  'github': { 
+  'figma': { 
+    name: 'Figma',
+    description: 'Figma design files and components',
+    type: 'local', 
+    command: ['npx', '-y', 'figma-mcp'],
+    requires_env: ['FIGMA_ACCESS_TOKEN'],
+    recommended: false
+  },
+  'github': {
     name: 'GitHub',
     description: 'GitHub repos, issues, PRs',
     type: 'local', 
-    command: ['npx', '-y', '@anthropic/mcp-github'],
+    command: ['npx', '-y', '@modelcontextprotocol/server-github'],
     requires_env: ['GITHUB_TOKEN'],
     recommended: false
   },
@@ -1312,7 +1322,7 @@ const MCP_CATALOG = {
     name: 'GitLab',
     description: 'GitLab repos, issues, MRs',
     type: 'local', 
-    command: ['npx', '-y', '@anthropic/mcp-gitlab'],
+    command: ['npx', '-y', '@modelcontextprotocol/server-gitlab'],
     requires_env: ['GITLAB_TOKEN'],
     recommended: false
   },
@@ -1320,7 +1330,7 @@ const MCP_CATALOG = {
     name: 'PostgreSQL',
     description: 'Query PostgreSQL databases',
     type: 'local', 
-    command: ['npx', '-y', '@anthropic/mcp-postgres'],
+    command: ['npx', '-y', '@modelcontextprotocol/server-postgres'],
     requires_env: ['POSTGRES_CONNECTION_STRING'],
     recommended: false
   },
@@ -1328,7 +1338,7 @@ const MCP_CATALOG = {
     name: 'Slack',
     description: 'Slack messages and channels',
     type: 'local', 
-    command: ['npx', '-y', '@anthropic/mcp-slack'],
+    command: ['npx', '-y', '@modelcontextprotocol/server-slack'],
     requires_env: ['SLACK_TOKEN'],
     recommended: false
   }
