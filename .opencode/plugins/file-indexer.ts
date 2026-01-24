@@ -366,13 +366,12 @@ async function processPendingFiles(projectRoot: string, config: VectorizerConfig
         try {
           const wasIndexed = await indexer.indexSingleFile(filePath)
           if (wasIndexed) {
-            // Only log in debug mode, successful reindex is silent
-            debug(`Reindexed: ${path.relative(projectRoot, filePath)} -> ${indexName}`)
+            log(`Reindexed: ${path.relative(projectRoot, filePath)} → ${indexName}`)
           } else {
-            debug(`Skipped (unchanged): ${path.relative(projectRoot, filePath)}`)
+            logFile(`Skipped (unchanged): ${path.relative(projectRoot, filePath)}`)
           }
         } catch (e) {
-          debug(`Error: ${(e as Error).message}`)
+          log(`Error reindexing ${path.relative(projectRoot, filePath)}: ${(e as Error).message}`)
         }
       }
       
@@ -478,7 +477,7 @@ export const FileIndexerPlugin: Plugin = async ({ directory, client }) => {
         const props = (event as any).properties || {}
         const filePath = props.file || props.path || props.filePath
         if (filePath) {
-          debug(`${event.type}: ${filePath}`)
+          log(`Event: ${event.type} → ${filePath}`)
           queueFileForIndexing(filePath)
         }
       }

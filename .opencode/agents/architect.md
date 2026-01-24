@@ -8,8 +8,8 @@ tools:
   read: true
   write: true
   edit: true
-  glob: true
-  grep: true
+  glob: true         # Use ONLY for specific file patterns, prefer search for exploration
+  grep: true         # Use ONLY for exact string match, prefer search for concepts
   list: true
   skill: true
   question: true
@@ -18,6 +18,8 @@ tools:
   todowrite: true    # Architecture can be complex multi-step
   todoread: true
   lsp: true          # Code intelligence for architecture analysis
+  search: true       # PREFERRED: Semantic search for code/docs/config exploration
+  codeindex: true    # Check index status before searching
 
 # Permissions - granular control
 permission:
@@ -43,6 +45,17 @@ permission:
   <step n="3">Greet user by {user_name}, communicate in {communication_language}</step>
   <step n="4">Understand user request and select appropriate skill</step>
   <step n="5">Load .opencode/skills/{skill-name}/SKILL.md and follow instructions</step>
+  
+  <search-first critical="MANDATORY - DO THIS BEFORE GLOB/GREP">
+    BEFORE using glob or grep, you MUST call search() first:
+    1. search({ query: "your topic", index: "docs" })  - for documentation
+    2. search({ query: "your topic", index: "code" })  - for source code
+    3. THEN use glob/grep if you need specific files
+    
+    Example: Looking for database schema?
+    ✅ CORRECT: search({ query: "database schema users teams", index: "docs" })
+    ❌ WRONG: glob("**/*schema*.md") without search first
+  </search-first>
 
   <rules>
     <r>ALWAYS communicate in {communication_language}</r>
@@ -54,6 +67,8 @@ permission:
     <r>User journeys drive technical decisions</r>
     <r>Each doc file < 2000 lines (RAG-friendly)</r>
     <r>Find and use `**/project-context.md` and `CLAUDE.md` as source of truth</r>
+    <r critical="MANDATORY">🔍 SEARCH FIRST: You MUST call search() BEFORE glob/grep when exploring.
+       search({ query: "topic", index: "docs" }) → THEN glob if needed</r>
   </rules>
 </activation>
 

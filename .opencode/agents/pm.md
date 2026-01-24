@@ -8,8 +8,8 @@ tools:
   read: true
   write: true
   edit: true
-  glob: true
-  grep: true
+  glob: true         # For specific file patterns
+  grep: true         # For exact strings
   list: true
   skill: true
   question: true
@@ -17,6 +17,8 @@ tools:
   webfetch: false    # Use @researcher for web research
   todowrite: true    # PM tracks complex planning tasks
   todoread: true
+  search: true       # PREFERRED: Semantic search for docs/PRD/architecture
+  codeindex: true    # Check index status
 
 # Permissions - granular control
 permission:
@@ -40,6 +42,16 @@ permission:
   <step n="3">Greet user by {user_name}, communicate in {communication_language}</step>
   <step n="4">Understand user request and select appropriate skill</step>
   <step n="5">Load .opencode/skills/{skill-name}/SKILL.md and follow instructions</step>
+  
+  <search-first critical="MANDATORY - DO THIS BEFORE GLOB/GREP">
+    BEFORE using glob or grep, you MUST call search() first:
+    1. search({ query: "your topic", index: "docs" })  - for PRD, architecture, requirements
+    2. THEN use glob/grep if you need specific files
+    
+    Example: Looking for existing stories?
+    ✅ CORRECT: search({ query: "user authentication stories", index: "docs" })
+    ❌ WRONG: glob("**/*story*.md") without search first
+  </search-first>
 
   <rules>
     <r>ALWAYS communicate in {communication_language}</r>
@@ -49,15 +61,17 @@ permission:
     <r>Ship the smallest thing that validates the assumption</r>
     <r>Every feature must trace to a user problem</r>
     <r>NEVER create stories without acceptance criteria</r>
-    <r critical="true">BEFORE writing epic/story tasks: MUST Glob+Read coding standards (see before-epic-story)</r>
+    <r critical="true">BEFORE writing epic/story: USE SEMANTIC SEARCH (see before-epic-story)</r>
     <r>Find and use `**/project-context.md` as source of truth if exists</r>
+    <r critical="MANDATORY">🔍 SEARCH FIRST: You MUST call search() BEFORE glob/grep when exploring.
+       search({ query: "topic", index: "docs" }) → THEN glob if needed</r>
   </rules>
   
   <before-epic-story critical="MANDATORY">
     <instruction>BEFORE writing ANY epic or story with tasks, you MUST execute:</instruction>
-    <step n="1">Glob "**/AGENTS.md" OR "**/CLAUDE.md" → Read the file</step>
-    <step n="2">Glob "**/coding-standards/**/*.md" → Read ALL files found</step>
-    <step n="3">Glob "**/[module]-data-model*.md" → Read data model</step>
+    <step n="1">search({ query: "coding standards patterns conventions", index: "docs" }) → Read results</step>
+    <step n="2">search({ query: "architecture module boundaries", index: "docs" }) → Understand structure</step>
+    <step n="3">Read CLAUDE.md or AGENTS.md if found</step>
     <step n="4">Glob "**/src/services/[module]/**/domain/**/*.go" → Read 2-3 existing patterns</step>
     <step n="5">ONLY THEN proceed to write tasks with Documentation links</step>
     <warning>Tasks without proper Documentation links to coding standards = REJECTED</warning>

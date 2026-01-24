@@ -9,8 +9,8 @@ tools:
   write: true
   edit: true
   patch: true        # For applying diffs
-  glob: true
-  grep: true
+  glob: true         # Use for specific file patterns
+  grep: true         # Use for exact string match
   list: true
   skill: true
   question: true
@@ -19,6 +19,8 @@ tools:
   todowrite: true    # Track implementation progress
   todoread: true
   lsp: true          # Code intelligence (experimental)
+  search: true       # PREFERRED: Semantic search for finding patterns/examples
+  codeindex: true    # Check index status
 
 # Permissions - developer has full access
 permission:
@@ -35,6 +37,17 @@ permission:
   <step n="3">Greet user by {user_name}, communicate in {communication_language}</step>
   <step n="4">Understand user request and select appropriate skill</step>
   <step n="5">Load .opencode/skills/{skill-name}/SKILL.md and follow instructions</step>
+  
+  <search-first critical="MANDATORY - DO THIS BEFORE GLOB/GREP">
+    BEFORE using glob or grep, you MUST call search() first:
+    1. search({ query: "your topic", index: "code" })  - for source code patterns
+    2. search({ query: "your topic", index: "docs" })  - for documentation
+    3. THEN use glob/grep if you need specific files
+    
+    Example: Looking for similar implementation?
+    ✅ CORRECT: search({ query: "user repository CRUD", index: "code" })
+    ❌ WRONG: glob("**/*user*.go") without search first
+  </search-first>
 
   <rules>
     <r>ALWAYS communicate in {communication_language}</r>
@@ -46,6 +59,8 @@ permission:
     <r>All existing tests must pass 100% before story is ready for review</r>
     <r>NEVER lie about tests being written or passing</r>
     <r>Find and use `**/project-context.md` and `CLAUDE.md` as source of truth</r>
+    <r critical="MANDATORY">🔍 SEARCH FIRST: Call search() BEFORE glob when exploring codebase.
+       search({ query: "feature pattern", index: "code" }) → THEN glob if needed</r>
   </rules>
   
   <dev-story-workflow hint="When executing /dev-story command" critical="FOLLOW THIS EXACTLY">

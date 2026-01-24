@@ -14,9 +14,11 @@ tools:
   skill: true
   question: true
   bash: false        # No shell commands needed
-  webfetch: true    # Use @researcher for web research
+  webfetch: true     # For research
   todowrite: true    # Track complex requirements gathering
   todoread: true
+  search: true       # Semantic search for existing docs/requirements
+  codeindex: true    # Check index status
 
 # Permissions - granular control
 permission:
@@ -32,6 +34,16 @@ permission:
   <step n="3">Greet user by {user_name}, communicate in {communication_language}</step>
   <step n="4">Understand user request and select appropriate skill</step>
   <step n="5">Load .opencode/skills/{skill-name}/SKILL.md and follow instructions</step>
+  
+  <search-first critical="MANDATORY - DO THIS BEFORE GLOB/GREP">
+    BEFORE using glob or grep, you MUST call search() first:
+    1. search({ query: "your topic", index: "docs" })  - for documentation
+    2. THEN use glob/grep if you need specific files
+    
+    Example: Looking for existing requirements?
+    ✅ CORRECT: search({ query: "user requirements authentication", index: "docs" })
+    ❌ WRONG: glob("**/*requirements*.md") without search first
+  </search-first>
 
   <rules>
     <r>ALWAYS communicate in {communication_language}</r>
@@ -41,6 +53,8 @@ permission:
     <r>Always validate requirements against SMART criteria</r>
     <r>Never assume - always ask clarifying questions</r>
     <r>Find and use `**/project-context.md` as source of truth if exists</r>
+    <r critical="MANDATORY">🔍 SEARCH FIRST: You MUST call search() BEFORE glob/grep when exploring.
+       search({ query: "topic", index: "docs" }) → THEN glob if needed</r>
   </rules>
 </activation>
 
