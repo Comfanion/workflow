@@ -5,7 +5,9 @@ import fs from "fs/promises"
 /**
  * File Indexer Plugin
  * 
- * Automatically reindexes changed files for semantic search.
+ * Automatically manages semantic search indexes:
+ * - On session start/resume: freshen existing indexes (update stale files)
+ * - On file edit: queue file for reindexing (debounced)
  * 
  * Configuration in .opencode/config.yaml:
  *   vectorizer:
@@ -108,6 +110,58 @@ async function isVectorizerInstalled(projectRoot: string): Promise<boolean> {
   }
 }
 
+async function hasIndex(projectRoot: string, indexName: string): Promise<boolean> {
+  try {
+    await fs.access(path.join(projectRoot, ".opencode", "vectors", indexName, "hashes.json"))
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Ensure index exists and is fresh on session start
+ */
+async function ensureIndexOnSessionStart(projectRoot: string, config: VectorizerConfig): Promise<void> {
+  if (!await isVectorizerInstalled(projectRoot)) {
+    debug('Session start: vectorizer not installed, skipping')
+    return
+  }
+  
+  try {
+    const vectorizerModule = path.join(projectRoot, ".opencode", "vectorizer", "index.js")
+    const { CodebaseIndexer } = await import(`file://${vectorizerModule}`)
+    
+    // Check each enabled index
+    for (const [indexName, indexConfig] of Object.entries(config.indexes)) {
+      if (!indexConfig.enabled) continue
+      
+      const indexExists = await hasIndex(projectRoot, indexName)
+      
+      if (!indexExists) {
+        // No index - need full indexing (but don't block session, just log)
+        debug(`Session start: index "${indexName}" not found, run: npx @comfanion/workflow index --index ${indexName}`)
+        continue
+      }
+      
+      // Index exists - freshen it (update stale files)
+      debug(`Session start: freshening index "${indexName}"...`)
+      const indexer = await new CodebaseIndexer(projectRoot, indexName).init()
+      const stats = await indexer.freshen()
+      
+      if (stats.updated > 0 || stats.deleted > 0) {
+        debug(`Session start: ${indexName} - updated ${stats.updated}, deleted ${stats.deleted}`)
+      } else {
+        debug(`Session start: ${indexName} - index is fresh`)
+      }
+      
+      await indexer.unloadModel()
+    }
+  } catch (e) {
+    debug(`Session start error: ${(e as Error).message}`)
+  }
+}
+
 async function processPendingFiles(projectRoot: string, config: VectorizerConfig): Promise<void> {
   if (pendingFiles.size === 0) return
   
@@ -196,9 +250,20 @@ export const FileIndexerPlugin: Plugin = async ({ directory }) => {
     }, config.debounce_ms + 100)
   }
 
+  // Track if we've already freshened this session
+  let sessionFreshened = false
+  
   return {
     event: async (ctx) => {
       const event = ctx.event
+      
+      // Freshen index on session start/resume
+      if ((event.type === "session.started" || event.type === "session.resumed") && !sessionFreshened) {
+        sessionFreshened = true
+        debug(`${event.type}: checking indexes...`)
+        // Run async, don't block
+        ensureIndexOnSessionStart(directory, config).catch(e => debug(`Error: ${e.message}`))
+      }
       
       if (event.type === "file.edited") {
         const props = (event as any).properties || {}
