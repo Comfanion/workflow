@@ -119,8 +119,14 @@ permission:
   </prefer-lsp-when>
 </lsp-exploration>
 
-<codesearch-exploration hint="Semantic search with MULTI-INDEX support">
-  <check>codeindex({ action: "list" }) → See all indexes. If none, suggest: npx opencode-workflow index --index code</check>
+<codesearch-exploration hint="ALWAYS TRY SEMANTIC SEARCH FIRST">
+  <critical>
+    BEFORE using grep/glob, ALWAYS check: codeindex({ action: "list" })
+    If indexes exist → USE codesearch instead of grep!
+    codesearch returns 5-10 relevant files vs 100+ grep matches
+  </critical>
+  
+  <first-step>codeindex({ action: "list" }) → Check if indexes exist</first-step>
   
   <indexes hint="Different indexes for different content types">
     <index name="code">Source code (*.go, *.ts, *.py) - functions, classes, logic</index>
@@ -175,14 +181,22 @@ permission:
     - Regex pattern matching needed
   </use-grep-when>
   
-  <exploration-strategy>
-    1. codeindex({ action: "list" }) → Check what indexes exist
-    2. codesearch({ query: "high-level concept", index: "code" }) → Find relevant code areas
-    3. codesearch({ query: "explanation", index: "docs" }) → Find related documentation
-    4. Read top results to understand structure
-    5. lsp documentSymbol on key files → Get detailed structure
-    6. grep for specific patterns if needed
+  <exploration-strategy priority="MANDATORY">
+    1. FIRST: codeindex({ action: "list" }) → Check what indexes exist
+    2. IF indexes exist:
+       - codesearch({ query: "concept", index: "code" }) → 5-10 relevant files (NOT 100+ grep matches!)
+       - Read top 3-5 results
+       - Done! Much faster than grep
+    3. IF no indexes:
+       - Suggest: "Index not found. Create with: codeindex({ action: 'reindex', index: 'code' })"
+       - Fall back to grep/glob
+    4. Use grep ONLY for exact string matches (function names, imports)
   </exploration-strategy>
+  
+  <efficiency-comparison>
+    BAD:  grep "category.*mapping" → 100 matches → read 20 files → slow!
+    GOOD: codesearch({ query: "category mapping logic" }) → 5 files → fast!
+  </efficiency-comparison>
 </codesearch-exploration>
 
 </agent>
