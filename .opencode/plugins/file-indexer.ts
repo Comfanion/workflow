@@ -422,10 +422,13 @@ export const FileIndexerPlugin: Plugin = async ({ directory, client }) => {
       const result = await ensureIndexOnSessionStart(
         directory, 
         config,
-        // onStart callback - show 2 toasts
+        // onStart callback - show toasts
         async (totalFiles, estimatedMins) => {
           await toast(messages.indexing(totalFiles), 'info')
-          setTimeout(() => toast(messages.fun(totalFiles, estimatedMins), 'info'), 1500)
+          // Only show fun message if there's actual work to do
+          if (totalFiles > 0) {
+            setTimeout(() => toast(messages.fun(totalFiles, estimatedMins), 'info'), 1500)
+          }
         }
       )
       
