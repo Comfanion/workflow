@@ -31,9 +31,9 @@ function logFile(msg: string): void {
   }
 }
 
-// Log to console AND file
+// Log to file, console only in debug mode
 function log(msg: string): void {
-  console.log(`[file-indexer] ${msg}`)
+  if (DEBUG) console.log(`[file-indexer] ${msg}`)
   logFile(msg)
 }
 
