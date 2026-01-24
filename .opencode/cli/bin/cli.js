@@ -402,8 +402,9 @@ program
 
 program
   .command('update')
-  .description('Update .opencode/ to latest version (preserves config.yaml)')
+  .description('Update .opencode/ to latest version (preserves config.yaml and vectorizer)')
   .option('--no-backup', 'Skip creating backup')
+  .option('--vectorizer', 'Update/install vectorizer too')
   .action(async (options) => {
     const spinner = ora('Updating OpenCode Workflow...').start();
     
@@ -416,6 +417,8 @@ program
       }
       
       const configPath = path.join(targetDir, 'config.yaml');
+      const vectorizerDir = path.join(targetDir, 'vectorizer');
+      const vectorsDir = path.join(targetDir, 'vectors');
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
       const backupDir = path.join(process.cwd(), `.opencode.backup-${timestamp}`);
       
@@ -423,19 +426,48 @@ program
       spinner.text = 'Reading config.yaml...';
       const configBackup = await fs.readFile(configPath, 'utf8');
       
+      // Check if vectorizer exists
+      const hasVectorizer = await fs.pathExists(path.join(vectorizerDir, 'node_modules'));
+      const hasVectors = await fs.pathExists(vectorsDir);
+      
       // Create full backup (unless --no-backup)
       if (options.backup !== false) {
         spinner.text = 'Creating backup...';
-        await fs.copy(targetDir, backupDir);
+        await fs.copy(targetDir, backupDir, {
+          filter: (src) => !src.includes('node_modules') && !src.includes('vectors')
+        });
       }
       
-      // Remove old .opencode directory completely
+      // Preserve vectorizer and vectors by moving them temporarily
+      const tempVectorizer = path.join(process.cwd(), '.vectorizer-temp');
+      const tempVectors = path.join(process.cwd(), '.vectors-temp');
+      
+      if (hasVectorizer) {
+        spinner.text = 'Preserving vectorizer...';
+        await fs.move(vectorizerDir, tempVectorizer, { overwrite: true });
+      }
+      if (hasVectors) {
+        spinner.text = 'Preserving vector indexes...';
+        await fs.move(vectorsDir, tempVectors, { overwrite: true });
+      }
+      
+      // Remove old .opencode directory
       spinner.text = 'Removing old files...';
       await fs.remove(targetDir);
       
       // Copy new files
       spinner.text = 'Installing new version...';
       await fs.copy(OPENCODE_SRC, targetDir);
+      
+      // Restore vectorizer and vectors
+      if (hasVectorizer) {
+        spinner.text = 'Restoring vectorizer...';
+        await fs.move(tempVectorizer, vectorizerDir, { overwrite: true });
+      }
+      if (hasVectors) {
+        spinner.text = 'Restoring vector indexes...';
+        await fs.move(tempVectors, vectorsDir, { overwrite: true });
+      }
       
       // Restore user's config.yaml
       spinner.text = 'Restoring config.yaml...';
@@ -448,7 +480,24 @@ program
         console.log(chalk.gray('   You can delete it after verifying the update works.\n'));
       }
       
-      console.log(chalk.green('✅ Your config.yaml was preserved.\n'));
+      console.log(chalk.green('✅ Your config.yaml was preserved.'));
+      if (hasVectorizer) {
+        console.log(chalk.green('✅ Vectorizer was preserved.'));
+      }
+      if (hasVectors) {
+        console.log(chalk.green('✅ Vector indexes were preserved.'));
+      }
+      
+      // Option to install/update vectorizer
+      if (options.vectorizer) {
+        console.log('');
+        await installVectorizer(targetDir);
+      } else if (!hasVectorizer) {
+        console.log(chalk.yellow('\n💡 Vectorizer not installed. Install with:'));
+        console.log(chalk.cyan('   npx opencode-workflow vectorizer install\n'));
+      }
+      
+      console.log('');
       
     } catch (error) {
       spinner.fail(chalk.red('Failed to update'));
