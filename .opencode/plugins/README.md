@@ -32,6 +32,24 @@ npx opencode-workflow index --index code
 
 ---
 
+### version-check.ts
+
+Checks for updates and shows a toast notification if a newer version is available.
+
+**Features:**
+- Checks npm registry for latest @comfanion/workflow version
+- Compares with locally installed version
+- Shows toast notification if update available
+- Caches check result for 24 hours (avoids spam)
+- Supports EN/UK/RU languages
+
+**Toast Example:**
+```
+🚀 Update available! 4.36.19 → 4.37.0. Run: npx @comfanion/workflow update
+```
+
+---
+
 ### custom-compaction.ts
 
 Intelligent session compaction that preserves flow context.

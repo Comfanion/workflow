@@ -16,6 +16,10 @@ const CLI_DIR = path.join(__dirname, '..');
 const OPENCODE_SRC = path.join(CLI_DIR, '..'); // .opencode/
 const DIST_DIR = path.join(CLI_DIR, 'src');
 
+// Read version from package.json
+const packageJson = await fs.readJson(path.join(CLI_DIR, 'package.json'));
+const VERSION = packageJson.version;
+
 // Files/folders to copy for .opencode/
 const OPENCODE_ITEMS = [
   'config.yaml',
@@ -105,7 +109,7 @@ async function build() {
   // Create package info
   console.log('\n  Creating build info...');
   const buildInfo = {
-    version: '3.0.0',
+    version: VERSION,
     buildDate: new Date().toISOString(),
     files: OPENCODE_ITEMS
   };
