@@ -138,7 +138,8 @@ async function processPendingFiles(projectRoot: string, config: VectorizerConfig
         try {
           const wasIndexed = await indexer.indexSingleFile(filePath)
           if (wasIndexed) {
-            console.log(`[file-indexer] Reindexed: ${path.relative(projectRoot, filePath)} -> ${indexName}`)
+            // Only log in debug mode, successful reindex is silent
+            debug(`Reindexed: ${path.relative(projectRoot, filePath)} -> ${indexName}`)
           } else {
             debug(`Skipped (unchanged): ${path.relative(projectRoot, filePath)}`)
           }

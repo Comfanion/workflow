@@ -1,11 +1,20 @@
 // OpenCode Vectorizer - Semantic Code Search with Multi-Index Support
 // Part of @comfanion/workflow
 
-import { pipeline } from '@xenova/transformers';
+import { pipeline, env } from '@xenova/transformers';
 import * as lancedb from 'vectordb';
 import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
+
+// Suppress transformers.js logs unless DEBUG is set
+const DEBUG = process.env.DEBUG?.includes('vectorizer') || process.env.DEBUG === '*';
+if (!DEBUG) {
+  env.allowLocalModels = true;
+  env.useBrowserCache = false;
+  // Disable progress callbacks and logs
+  env.logLevel = 'error';
+}
 
 /**
  * Index presets for different content types
@@ -53,8 +62,11 @@ class CodebaseIndexer {
 
   async loadModel() {
     if (!this.model) {
-      console.log('Loading embedding model (first time takes ~30s)...');
-      this.model = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+      if (DEBUG) console.log('[vectorizer] Loading embedding model...');
+      this.model = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
+        progress_callback: DEBUG ? undefined : null  // Suppress progress bar unless DEBUG
+      });
+      if (DEBUG) console.log('[vectorizer] Model loaded');
     }
     return this.model;
   }
