@@ -6,15 +6,14 @@
 #
 # Usage:
 #   npx @comfanion/workflow mcp list      # Show available MCP servers
-#   npx @comfanion/workflow mcp enable    # Interactive selection
-#   npx @comfanion/workflow mcp add <id>  # Add specific MCP
+#   npx @comfanion/workflow mcp install   # Install selected to opencode.json
 #
-# Version: 1.0.0
+# Version: 1.1.0
 # Last updated: 2026-01-24
 
 servers:
   # ==========================================================================
-  # DOCUMENTATION & RESEARCH
+  # DOCUMENTATION & RESEARCH (Remote MCP)
   # ==========================================================================
   
   context7:
@@ -22,13 +21,35 @@ servers:
     description: "Library documentation for npm, Go, Python packages"
     category: documentation
     recommended: true
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-context7"]
+    type: remote
+    url: "https://mcp.context7.com/mcp"
     tags: [docs, npm, go, python, research]
     
+  grep:
+    name: "Grep by Vercel"
+    description: "Search code examples from GitHub"
+    category: documentation
+    recommended: false
+    type: remote
+    url: "https://mcp.grep.app"
+    tags: [github, code-search, examples]
+
   # ==========================================================================
-  # THINKING & REASONING
+  # INTEGRATIONS (Remote MCP with OAuth)
+  # ==========================================================================
+  
+  sentry:
+    name: "Sentry"
+    description: "Query Sentry issues, projects, and error data"
+    category: integrations
+    recommended: false
+    type: remote
+    url: "https://mcp.sentry.dev/mcp"
+    oauth: true
+    tags: [errors, monitoring, debugging]
+
+  # ==========================================================================
+  # LOCAL MCP SERVERS
   # ==========================================================================
     
   sequential-thinking:
@@ -36,73 +57,37 @@ servers:
     description: "Enhanced reasoning for complex multi-step problems"
     category: thinking
     recommended: true
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-sequential-thinking"]
+    type: local
+    command: ["npx", "-y", "@anthropic/mcp-sequential-thinking"]
     tags: [reasoning, planning, complex-tasks]
 
-  # ==========================================================================
-  # BROWSER & UI
-  # ==========================================================================
-    
   playwright:
     name: "Playwright"
     description: "Browser automation, testing, and web scraping"
     category: browser
     recommended: false
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-playwright"]
+    type: local
+    command: ["npx", "-y", "@anthropic/mcp-playwright"]
     tags: [browser, testing, automation, scraping]
-    
-  chrome-devtools:
-    name: "Chrome DevTools"
-    description: "Chrome debugging, performance analysis, DOM inspection"
-    category: browser
-    recommended: false
-    config:
-      command: npx
-      args: ["-y", "chrome-devtools-mcp@latest"]
-    tags: [chrome, debugging, devtools]
     
   puppeteer:
     name: "Puppeteer"
     description: "Headless Chrome automation"
     category: browser
     recommended: false
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-puppeteer"]
+    type: local
+    command: ["npx", "-y", "@anthropic/mcp-puppeteer"]
     tags: [chrome, headless, automation]
 
-  # ==========================================================================
-  # INTEGRATIONS
-  # ==========================================================================
-    
-  atlassian:
-    name: "Atlassian (Jira/Confluence)"
-    description: "Jira issues, Confluence pages integration"
-    category: integrations
-    recommended: false
-    requires_env:
-      - ATLASSIAN_EMAIL
-      - ATLASSIAN_API_TOKEN
-      - ATLASSIAN_URL
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-atlassian"]
-    tags: [jira, confluence, tickets, docs]
-    
   github:
     name: "GitHub"
     description: "GitHub repos, issues, PRs, actions"
     category: integrations
     recommended: false
+    type: local
+    command: ["npx", "-y", "@anthropic/mcp-github"]
     requires_env:
       - GITHUB_TOKEN
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-github"]
     tags: [github, git, issues, prs]
     
   gitlab:
@@ -110,11 +95,10 @@ servers:
     description: "GitLab repos, issues, MRs, pipelines"
     category: integrations
     recommended: false
+    type: local
+    command: ["npx", "-y", "@anthropic/mcp-gitlab"]
     requires_env:
       - GITLAB_TOKEN
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-gitlab"]
     tags: [gitlab, git, issues, mrs]
 
   slack:
@@ -122,27 +106,21 @@ servers:
     description: "Slack messages, channels, search"
     category: integrations
     recommended: false
+    type: local
+    command: ["npx", "-y", "@anthropic/mcp-slack"]
     requires_env:
       - SLACK_TOKEN
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-slack"]
     tags: [slack, messaging, communication]
 
-  # ==========================================================================
-  # DATA & STORAGE
-  # ==========================================================================
-    
   postgres:
     name: "PostgreSQL"
     description: "Query PostgreSQL databases"
     category: database
     recommended: false
+    type: local
+    command: ["npx", "-y", "@anthropic/mcp-postgres"]
     requires_env:
       - POSTGRES_CONNECTION_STRING
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-postgres"]
     tags: [database, sql, postgres]
     
   sqlite:
@@ -150,9 +128,8 @@ servers:
     description: "Query SQLite databases"
     category: database
     recommended: false
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-sqlite"]
+    type: local
+    command: ["npx", "-y", "@anthropic/mcp-sqlite"]
     tags: [database, sql, sqlite]
 
   redis:
@@ -160,50 +137,29 @@ servers:
     description: "Redis key-value operations"
     category: database
     recommended: false
+    type: local
+    command: ["npx", "-y", "@anthropic/mcp-redis"]
     requires_env:
       - REDIS_URL
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-redis"]
     tags: [database, cache, redis]
 
-  # ==========================================================================
-  # FILE & SYSTEM
-  # ==========================================================================
-    
   filesystem:
     name: "Filesystem"
     description: "Advanced file operations (usually built-in)"
     category: system
     recommended: false
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-filesystem"]
+    type: local
+    command: ["npx", "-y", "@anthropic/mcp-filesystem"]
     tags: [files, filesystem]
 
-  # ==========================================================================
-  # API & WEB
-  # ==========================================================================
-    
   fetch:
     name: "Fetch"
     description: "HTTP requests to external APIs (usually built-in)"
     category: api
     recommended: false
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-fetch"]
+    type: local
+    command: ["npx", "-y", "@anthropic/mcp-fetch"]
     tags: [http, api, fetch]
-
-  openapi:
-    name: "OpenAPI"
-    description: "Interact with APIs via OpenAPI specs"
-    category: api
-    recommended: false
-    config:
-      command: npx
-      args: ["-y", "@anthropic/mcp-openapi"]
-    tags: [api, openapi, swagger]
 
 # Categories for UI grouping
 categories:

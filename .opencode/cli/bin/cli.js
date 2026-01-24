@@ -259,14 +259,14 @@ program
         {
           type: 'checkbox',
           name: 'mcp_servers',
-          message: 'Select MCP servers to enable:',
+          message: 'Select MCP servers to enable (writes to opencode.json):',
           choices: [
             { name: 'context7 - Library docs for npm, Go, Python (recommended)', value: 'context7', checked: true },
+            { name: 'grep - Search code examples from GitHub', value: 'grep', checked: false },
             { name: 'sequential-thinking - Enhanced reasoning for complex tasks', value: 'sequential-thinking', checked: false },
             { name: 'playwright - Browser automation and testing', value: 'playwright', checked: false },
-            { name: 'chrome-devtools - Chrome debugging and inspection', value: 'chrome-devtools', checked: false },
-            { name: 'atlassian - Jira/Confluence integration', value: 'atlassian', checked: false },
-            { name: 'github - GitHub repos, issues, PRs', value: 'github', checked: false },
+            { name: 'github - GitHub repos, issues, PRs (needs GITHUB_TOKEN)', value: 'github', checked: false },
+            { name: 'sentry - Query Sentry issues and errors (OAuth)', value: 'sentry', checked: false },
             { name: 'postgres - PostgreSQL database queries', value: 'postgres', checked: false }
           ]
         }
@@ -504,26 +504,40 @@ program
         }
       }
       
-      // Save MCP server selections (only if user made selections)
+      // Save MCP server selections to opencode.json
       if (config.mcp_servers && config.mcp_servers.length > 0) {
-        spinner.text = 'Configuring MCP servers...';
-        const mcpEnabledPath = path.join(targetDir, 'mcp', 'enabled.yaml');
+        spinner.text = 'Configuring MCP servers in opencode.json...';
+        const opencodeJsonPath = path.join(process.cwd(), 'opencode.json');
         
-        // Don't overwrite existing enabled.yaml if updating
-        if (!isUpdate || !await fs.pathExists(mcpEnabledPath)) {
-          let mcpContent = `# Enabled MCP Servers
-# Your personal selection of MCP servers
-# This file is NOT modified by updates
-
-`;
-          for (const server of config.mcp_servers) {
-            mcpContent += `${server}:
-  enabled: true
-
-`;
+        // MCP catalog with server configs
+        const mcpCatalog = {
+          'context7': { type: 'remote', url: 'https://mcp.context7.com/mcp' },
+          'grep': { type: 'remote', url: 'https://mcp.grep.app' },
+          'sentry': { type: 'remote', url: 'https://mcp.sentry.dev/mcp', oauth: {} },
+          'sequential-thinking': { type: 'local', command: ['npx', '-y', '@anthropic/mcp-sequential-thinking'] },
+          'playwright': { type: 'local', command: ['npx', '-y', '@anthropic/mcp-playwright'] },
+          'github': { type: 'local', command: ['npx', '-y', '@anthropic/mcp-github'] },
+          'postgres': { type: 'local', command: ['npx', '-y', '@anthropic/mcp-postgres'] }
+        };
+        
+        // Read existing opencode.json or create new
+        let opencodeConfig = { "$schema": "https://opencode.ai/config.json" };
+        try {
+          if (await fs.pathExists(opencodeJsonPath)) {
+            opencodeConfig = JSON.parse(await fs.readFile(opencodeJsonPath, 'utf8'));
           }
-          await fs.writeFile(mcpEnabledPath, mcpContent);
+        } catch {}
+        
+        // Add MCP servers
+        if (!opencodeConfig.mcp) opencodeConfig.mcp = {};
+        for (const serverId of config.mcp_servers) {
+          if (mcpCatalog[serverId]) {
+            opencodeConfig.mcp[serverId] = { ...mcpCatalog[serverId], enabled: true };
+          }
         }
+        
+        await fs.writeFile(opencodeJsonPath, JSON.stringify(opencodeConfig, null, 2) + '\n');
+        console.log(chalk.green(`✅ MCP servers added to opencode.json`));
       }
 
       // Install plugin dependencies
@@ -1232,6 +1246,241 @@ program
     } catch (error) {
       spinner.fail(chalk.red('Search failed'));
       console.error(error);
+    }
+  });
+
+// =============================================================================
+// MCP COMMANDS
+// =============================================================================
+
+// MCP catalog with server configs
+const MCP_CATALOG = {
+  'context7': { 
+    name: 'Context7',
+    description: 'Library docs for npm, Go, Python',
+    type: 'remote', 
+    url: 'https://mcp.context7.com/mcp',
+    recommended: true
+  },
+  'grep': { 
+    name: 'Grep by Vercel',
+    description: 'Search code examples from GitHub',
+    type: 'remote', 
+    url: 'https://mcp.grep.app',
+    recommended: false
+  },
+  'sentry': { 
+    name: 'Sentry',
+    description: 'Query Sentry issues and errors',
+    type: 'remote', 
+    url: 'https://mcp.sentry.dev/mcp', 
+    oauth: {},
+    recommended: false
+  },
+  'sequential-thinking': { 
+    name: 'Sequential Thinking',
+    description: 'Enhanced reasoning for complex tasks',
+    type: 'local', 
+    command: ['npx', '-y', '@anthropic/mcp-sequential-thinking'],
+    recommended: true
+  },
+  'playwright': { 
+    name: 'Playwright',
+    description: 'Browser automation and testing',
+    type: 'local', 
+    command: ['npx', '-y', '@anthropic/mcp-playwright'],
+    recommended: false
+  },
+  'github': { 
+    name: 'GitHub',
+    description: 'GitHub repos, issues, PRs',
+    type: 'local', 
+    command: ['npx', '-y', '@anthropic/mcp-github'],
+    requires_env: ['GITHUB_TOKEN'],
+    recommended: false
+  },
+  'gitlab': { 
+    name: 'GitLab',
+    description: 'GitLab repos, issues, MRs',
+    type: 'local', 
+    command: ['npx', '-y', '@anthropic/mcp-gitlab'],
+    requires_env: ['GITLAB_TOKEN'],
+    recommended: false
+  },
+  'postgres': { 
+    name: 'PostgreSQL',
+    description: 'Query PostgreSQL databases',
+    type: 'local', 
+    command: ['npx', '-y', '@anthropic/mcp-postgres'],
+    requires_env: ['POSTGRES_CONNECTION_STRING'],
+    recommended: false
+  },
+  'slack': { 
+    name: 'Slack',
+    description: 'Slack messages and channels',
+    type: 'local', 
+    command: ['npx', '-y', '@anthropic/mcp-slack'],
+    requires_env: ['SLACK_TOKEN'],
+    recommended: false
+  }
+};
+
+program
+  .command('mcp')
+  .description('Manage MCP servers in opencode.json')
+  .argument('<action>', 'list | add <id> | remove <id> | install')
+  .argument('[server]', 'Server ID for add/remove')
+  .action(async (action, server) => {
+    const opencodeJsonPath = path.join(process.cwd(), 'opencode.json');
+    
+    if (action === 'list') {
+      console.log(chalk.blue.bold('\n🔌 Available MCP Servers\n'));
+      
+      // Show installed
+      let installed = {};
+      try {
+        if (await fs.pathExists(opencodeJsonPath)) {
+          const config = JSON.parse(await fs.readFile(opencodeJsonPath, 'utf8'));
+          installed = config.mcp || {};
+        }
+      } catch {}
+      
+      for (const [id, info] of Object.entries(MCP_CATALOG)) {
+        const isInstalled = installed[id];
+        const status = isInstalled ? chalk.green('✓') : chalk.gray('○');
+        const rec = info.recommended ? chalk.yellow(' ⭐') : '';
+        const type = info.type === 'remote' ? chalk.cyan('[remote]') : chalk.gray('[local]');
+        console.log(`  ${status} ${chalk.white(id)}${rec} ${type}`);
+        console.log(chalk.gray(`     ${info.description}`));
+        if (info.requires_env) {
+          console.log(chalk.yellow(`     Requires: ${info.requires_env.join(', ')}`));
+        }
+      }
+      
+      console.log(chalk.gray('\nUsage:'));
+      console.log(chalk.cyan('  npx @comfanion/workflow mcp add context7'));
+      console.log(chalk.cyan('  npx @comfanion/workflow mcp remove github'));
+      console.log('');
+      
+    } else if (action === 'add') {
+      if (!server) {
+        console.log(chalk.red('Usage: mcp add <server-id>'));
+        console.log(chalk.gray('Run `mcp list` to see available servers'));
+        process.exit(1);
+      }
+      
+      if (!MCP_CATALOG[server]) {
+        console.log(chalk.red(`Unknown server: ${server}`));
+        console.log(chalk.gray('Run `mcp list` to see available servers'));
+        process.exit(1);
+      }
+      
+      const spinner = ora(`Adding ${server}...`).start();
+      
+      // Read or create opencode.json
+      let config = { "$schema": "https://opencode.ai/config.json" };
+      try {
+        if (await fs.pathExists(opencodeJsonPath)) {
+          config = JSON.parse(await fs.readFile(opencodeJsonPath, 'utf8'));
+        }
+      } catch {}
+      
+      if (!config.mcp) config.mcp = {};
+      
+      const serverConfig = MCP_CATALOG[server];
+      config.mcp[server] = {
+        type: serverConfig.type,
+        ...(serverConfig.type === 'remote' 
+          ? { url: serverConfig.url, ...(serverConfig.oauth ? { oauth: serverConfig.oauth } : {}) }
+          : { command: serverConfig.command }),
+        enabled: true
+      };
+      
+      await fs.writeFile(opencodeJsonPath, JSON.stringify(config, null, 2) + '\n');
+      spinner.succeed(chalk.green(`Added ${server} to opencode.json`));
+      
+      if (serverConfig.requires_env) {
+        console.log(chalk.yellow(`\n⚠️  Set environment variables:`));
+        for (const env of serverConfig.requires_env) {
+          console.log(chalk.cyan(`   export ${env}="..."`));
+        }
+      }
+      if (serverConfig.oauth) {
+        console.log(chalk.yellow(`\n⚠️  OAuth required. Run:`));
+        console.log(chalk.cyan(`   opencode mcp auth ${server}`));
+      }
+      
+    } else if (action === 'remove') {
+      if (!server) {
+        console.log(chalk.red('Usage: mcp remove <server-id>'));
+        process.exit(1);
+      }
+      
+      if (!await fs.pathExists(opencodeJsonPath)) {
+        console.log(chalk.yellow('No opencode.json found'));
+        return;
+      }
+      
+      const spinner = ora(`Removing ${server}...`).start();
+      
+      const config = JSON.parse(await fs.readFile(opencodeJsonPath, 'utf8'));
+      if (config.mcp && config.mcp[server]) {
+        delete config.mcp[server];
+        await fs.writeFile(opencodeJsonPath, JSON.stringify(config, null, 2) + '\n');
+        spinner.succeed(chalk.green(`Removed ${server} from opencode.json`));
+      } else {
+        spinner.info(chalk.yellow(`${server} not found in opencode.json`));
+      }
+      
+    } else if (action === 'install') {
+      // Interactive selection
+      const installed = {};
+      try {
+        if (await fs.pathExists(opencodeJsonPath)) {
+          const config = JSON.parse(await fs.readFile(opencodeJsonPath, 'utf8'));
+          Object.assign(installed, config.mcp || {});
+        }
+      } catch {}
+      
+      const choices = Object.entries(MCP_CATALOG).map(([id, info]) => ({
+        name: `${id} - ${info.description}${info.recommended ? ' (recommended)' : ''}`,
+        value: id,
+        checked: installed[id] || info.recommended
+      }));
+      
+      const { servers } = await inquirer.prompt([{
+        type: 'checkbox',
+        name: 'servers',
+        message: 'Select MCP servers:',
+        choices
+      }]);
+      
+      // Read or create opencode.json
+      let config = { "$schema": "https://opencode.ai/config.json" };
+      try {
+        if (await fs.pathExists(opencodeJsonPath)) {
+          config = JSON.parse(await fs.readFile(opencodeJsonPath, 'utf8'));
+        }
+      } catch {}
+      
+      config.mcp = {};
+      for (const id of servers) {
+        const serverConfig = MCP_CATALOG[id];
+        config.mcp[id] = {
+          type: serverConfig.type,
+          ...(serverConfig.type === 'remote' 
+            ? { url: serverConfig.url, ...(serverConfig.oauth ? { oauth: serverConfig.oauth } : {}) }
+            : { command: serverConfig.command }),
+          enabled: true
+        };
+      }
+      
+      await fs.writeFile(opencodeJsonPath, JSON.stringify(config, null, 2) + '\n');
+      console.log(chalk.green(`\n✅ Updated opencode.json with ${servers.length} MCP servers`));
+      
+    } else {
+      console.log(chalk.red(`Unknown action: ${action}`));
+      console.log('Available: list, add <id>, remove <id>, install');
     }
   });
 
