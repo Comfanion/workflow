@@ -23,10 +23,13 @@ npx @comfanion/workflow init
 Search your codebase by **meaning**, not just text matching:
 
 ```bash
-# In Claude Code / AI assistant:
-/search "user authentication middleware"    # Finds auth-related code
-/search "database connection handling"      # Finds DB setup
-/search "error handling patterns"           # Finds error handlers
+# Terminal CLI:
+npx @comfanion/workflow search "authentication logic"
+npx @comfanion/workflow search "how to deploy" --index docs
+npx @comfanion/workflow search "database config" --all
+
+# AI agents use MCP tool automatically:
+# search({ query: "authentication", index: "code" })
 ```
 
 ### How It Works
