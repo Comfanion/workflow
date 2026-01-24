@@ -15,6 +15,10 @@ const OPENCODE_SRC = path.join(PACKAGE_DIR, 'src', 'opencode');
 const REPO_TEMPLATES_SRC = path.join(PACKAGE_DIR, 'src', 'repo-structure');
 const VECTORIZER_SRC = path.join(PACKAGE_DIR, 'src', 'vectorizer');
 
+// Read version from package.json
+const packageJson = JSON.parse(fs.readFileSync(path.join(PACKAGE_DIR, 'package.json'), 'utf8'));
+const VERSION = packageJson.version;
+
 /**
  * Install vectorizer module with dependencies
  */
@@ -70,7 +74,7 @@ const program = new Command();
 program
   .name('create-opencode-workflow')
   .description('Initialize OpenCode Workflow system for AI-assisted development')
-  .version('3.7.1');
+  .version(VERSION);
 
 program
   .command('init')
@@ -82,7 +86,7 @@ program
   .option('--full', 'Create full repo structure')
   .option('--vectorizer', 'Install vectorizer for semantic code search')
   .action(async (options) => {
-    console.log(chalk.blue.bold('\n🚀 OpenCode Workflow v3.7\n'));
+    console.log(chalk.blue.bold(`\n🚀 OpenCode Workflow v${VERSION}\n`));
     
     const targetDir = path.join(process.cwd(), '.opencode');
     const existingConfigPath = path.join(targetDir, 'config.yaml');
