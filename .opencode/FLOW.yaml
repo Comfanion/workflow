@@ -412,9 +412,8 @@ agents:
     icon: "🔍"
     description: Researcher - conducts technical, market, and domain research
     mode: subagent
-    model: google/gemini-3-pro:high  # 10M context, grounding, planning: 10/10
-    # $2/Mt input - best for research & planning
-    # alternatives: gemini-2.5-flash (faster), claude-4.5-opus (wiser)
+    model: google/gemini-2.5-pro  # Best for research - 1M context, grounding
+    # Alternatives: gemini-2.5-flash (faster), gemini-3-pro (preview)
     temperature: 0.4
     file: agents/researcher.md
     expertise:

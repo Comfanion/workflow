@@ -1,11 +1,12 @@
 ---
 description: "Research Specialist - Use for: technical research, market research, domain research, competitive analysis. Has skills: research-methodology, methodologies"
 
-# Gemini - best for research (10M context, grounding, planning: 10/10)
-model: google/gemini-2.5-pro-preview-05-06
+# Model for research - Gemini recommended for large context and grounding
+model: google/gemini-2.5-pro
 # Alternatives:
-#   google/gemini-2.5-flash-preview-05-20  - faster, 1M context
-#   anthropic/claude-sonnet-4-20250514     - balanced
+#   google/gemini-2.5-flash       - faster, cheaper
+#   google/gemini-2.0-flash       - even faster
+#   anthropic/claude-sonnet-4-20250514  - balanced
 
 mode: all            # Can be primary agent or invoked via @researcher
 temperature: 0.4
