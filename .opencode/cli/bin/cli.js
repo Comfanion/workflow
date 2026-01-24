@@ -6,6 +6,7 @@ import inquirer from 'inquirer';
 import ora from 'ora';
 import fs from 'fs-extra';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
 import yaml from 'js-yaml';
@@ -293,7 +294,7 @@ program
         const oldPkgPath = path.join(vectorizerDir, 'package.json');
         if (await fs.pathExists(oldPkgPath)) {
           const oldPkg = await fs.readFile(oldPkgPath, 'utf8');
-          oldPkgHash = require('crypto').createHash('md5').update(oldPkg).digest('hex');
+          oldPkgHash = crypto.createHash('md5').update(oldPkg).digest('hex');
         }
         
         // Read existing config.yaml for merge
@@ -342,7 +343,7 @@ program
           // Check if package.json changed
           const newPkgPath = path.join(newVectorizerDir, 'package.json');
           const newPkg = await fs.readFile(newPkgPath, 'utf8');
-          const newPkgHash = require('crypto').createHash('md5').update(newPkg).digest('hex');
+          const newPkgHash = crypto.createHash('md5').update(newPkg).digest('hex');
           
           if (hadVectorizerModules && oldPkgHash === newPkgHash) {
             // Dependencies unchanged - restore cached node_modules
@@ -620,7 +621,7 @@ program
       const oldPkgPath = path.join(vectorizerDir, 'package.json');
       if (await fs.pathExists(oldPkgPath)) {
         const oldPkg = await fs.readFile(oldPkgPath, 'utf8');
-        oldPkgHash = require('crypto').createHash('md5').update(oldPkg).digest('hex');
+        oldPkgHash = crypto.createHash('md5').update(oldPkg).digest('hex');
       }
       
       // Create full backup (unless --no-backup)
@@ -667,7 +668,7 @@ program
           // Check if package.json changed
           const newPkgPath = path.join(newVectorizerDir, 'package.json');
           const newPkg = await fs.readFile(newPkgPath, 'utf8');
-          const newPkgHash = require('crypto').createHash('md5').update(newPkg).digest('hex');
+          const newPkgHash = crypto.createHash('md5').update(newPkg).digest('hex');
           
           if (hasVectorizerModules && oldPkgHash === newPkgHash) {
             // Dependencies unchanged - restore cached node_modules
