@@ -14,27 +14,13 @@
 import { tool } from "@opencode-ai/plugin"
 import path from "path"
 import fs from "fs/promises"
-import { glob } from "glob"
-import ignore from "ignore"
+import { execSync } from "child_process"
 
-// Index presets (duplicated from vectorizer for independence)
+// Index presets for documentation
 const INDEX_PRESETS: Record<string, { pattern: string; description: string }> = {
-  code: {
-    pattern: '**/*.{js,ts,jsx,tsx,mjs,cjs,py,go,rs,java,kt,swift,c,cpp,h,hpp,cs,rb,php,scala,clj}',
-    description: 'Source code files'
-  },
-  docs: {
-    pattern: '**/*.{md,mdx,txt,rst,adoc}',
-    description: 'Documentation files'
-  },
-  config: {
-    pattern: '**/*.{yaml,yml,json,toml,ini,env,xml}',
-    description: 'Configuration files'
-  },
-  all: {
-    pattern: '**/*.{js,ts,jsx,tsx,mjs,cjs,py,go,rs,java,kt,swift,c,cpp,h,hpp,cs,rb,php,scala,clj,md,mdx,txt,rst,adoc,yaml,yml,json,toml}',
-    description: 'All supported files'
-  }
+  code: { pattern: '**/*.{js,ts,go,py,...}', description: 'Source code files' },
+  docs: { pattern: '**/*.{md,txt,...}', description: 'Documentation files' },
+  config: { pattern: '**/*.{yaml,json,...}', description: 'Configuration files' },
 }
 
 export default tool({
@@ -54,7 +40,7 @@ Note: Initial indexing takes ~30s to load the embedding model.`,
 
   args: {
     action: tool.schema.enum(["status", "list", "reindex"]).describe("Action to perform"),
-    index: tool.schema.string().optional().default("code").describe("Index name for status/reindex: code, docs, config"),
+    index: tool.schema.string().optional().default("code").describe("Index name: code, docs, config"),
   },
 
   async execute(args, context) {
@@ -72,83 +58,93 @@ Note: Initial indexing takes ~30s to load the embedding model.`,
 
 To install:
 \`\`\`bash
-npx opencode-workflow vectorizer install
+npx @comfanion/workflow vectorizer install
 \`\`\`
 
 This will download the embedding model (~100MB) and set up the vector database.`
     }
 
-    try {
-      const vectorizerModule = path.join(vectorizerDir, "index.js")
-      const { CodebaseIndexer, INDEX_PRESETS: PRESETS } = await import(`file://${vectorizerModule}`)
+    const indexName = args.index || "code"
 
-      // LIST: Show all indexes
-      if (args.action === "list") {
-        const tempIndexer = await new CodebaseIndexer(projectRoot, "code").init()
-        const allStats = await tempIndexer.getAllStats()
-
+    // LIST: Show all indexes
+    if (args.action === "list") {
+      try {
+        const result = execSync("node .opencode/vectorizer/list-indexes.js 2>/dev/null || echo '{}'", {
+          cwd: projectRoot,
+          encoding: "utf8",
+          timeout: 30000
+        })
+        
+        // Fallback: read hashes files directly
         let output = `## Codebase Index Overview\n\n`
         output += `✅ **Vectorizer installed**\n\n`
-
-        if (allStats.length === 0) {
+        
+        const indexes: string[] = []
+        try {
+          const entries = await fs.readdir(vectorsDir, { withFileTypes: true })
+          for (const entry of entries) {
+            if (entry.isDirectory()) {
+              indexes.push(entry.name)
+            }
+          }
+        } catch {}
+        
+        if (indexes.length === 0) {
           output += `⚠️ **No indexes created yet**\n\n`
           output += `Create indexes with:\n`
           output += `\`\`\`bash\n`
-          output += `npx opencode-workflow index --index code   # Source code\n`
-          output += `npx opencode-workflow index --index docs   # Documentation\n`
-          output += `npx opencode-workflow index --index config # Config files\n`
-          output += `\`\`\`\n\n`
+          output += `npx opencode-workflow index --index code\n`
+          output += `npx opencode-workflow index --index docs --dir docs/\n`
+          output += `\`\`\`\n`
         } else {
           output += `### Active Indexes\n\n`
-          for (const stat of allStats) {
-            output += `**📁 ${stat.indexName}** - ${stat.description}\n`
-            output += `   Files: ${stat.fileCount}, Chunks: ${stat.chunkCount}\n\n`
+          for (const idx of indexes) {
+            try {
+              const hashesPath = path.join(vectorsDir, idx, "hashes.json")
+              const hashes = JSON.parse(await fs.readFile(hashesPath, "utf8"))
+              const fileCount = Object.keys(hashes).length
+              const desc = INDEX_PRESETS[idx]?.description || "Custom index"
+              output += `**📁 ${idx}** - ${desc}\n`
+              output += `   Files: ${fileCount}\n\n`
+            } catch {}
           }
         }
-
-        output += `### Available Presets\n\n`
-        for (const [name, preset] of Object.entries(PRESETS || INDEX_PRESETS) as [string, any][]) {
-          const exists = allStats.find((s: any) => s.indexName === name)
-          const status = exists ? "✅" : "⬜"
-          output += `${status} **${name}**: ${preset.description}\n`
-        }
-
-        output += `\n### Usage\n`
+        
+        output += `### Usage\n`
         output += `\`\`\`\n`
         output += `codesearch({ query: "your query", index: "code" })\n`
-        output += `codesearch({ query: "deployment guide", index: "docs" })\n`
-        output += `codesearch({ query: "api keys", searchAll: true })\n`
+        output += `codesearch({ query: "how to deploy", index: "docs" })\n`
         output += `\`\`\``
-
+        
         return output
+        
+      } catch (error: any) {
+        return `❌ Error listing indexes: ${error.message}`
       }
+    }
 
-      // STATUS: Show specific index status
-      if (args.action === "status") {
-        const indexName = args.index || "code"
-        const hashesFile = path.join(vectorsDir, indexName, "hashes.json")
+    // STATUS: Show specific index status
+    if (args.action === "status") {
+      const hashesFile = path.join(vectorsDir, indexName, "hashes.json")
+      
+      try {
+        const hashesContent = await fs.readFile(hashesFile, "utf8")
+        const hashes = JSON.parse(hashesContent)
+        const fileCount = Object.keys(hashes).length
+        const sampleFiles = Object.keys(hashes).slice(0, 5)
+        const desc = INDEX_PRESETS[indexName]?.description || "Custom index"
 
-        try {
-          const indexer = await new CodebaseIndexer(projectRoot, indexName).init()
-          const stats = await indexer.getStats()
-
-          // Get sample files
-          const hashesContent = await fs.readFile(hashesFile, "utf8")
-          const hashes = JSON.parse(hashesContent)
-          const sampleFiles = Object.keys(hashes).slice(0, 5)
-
-          return `## Index Status: "${indexName}"
+        return `## Index Status: "${indexName}"
 
 ✅ **Vectorizer installed**
 ✅ **Index active**
 
-**Description:** ${stats.description}
-**Files indexed:** ${stats.fileCount}
-**Chunks:** ${stats.chunkCount}
+**Description:** ${desc}
+**Files indexed:** ${fileCount}
 
 **Sample indexed files:**
 ${sampleFiles.map(f => `- ${f}`).join("\n")}
-${stats.fileCount > 5 ? `- ... and ${stats.fileCount - 5} more` : ""}
+${fileCount > 5 ? `- ... and ${fileCount - 5} more` : ""}
 
 **Usage:**
 \`\`\`
@@ -156,12 +152,12 @@ codesearch({ query: "your search query", index: "${indexName}" })
 \`\`\`
 
 To re-index:
-\`\`\`
-codeindex({ action: "reindex", index: "${indexName}" })
+\`\`\`bash
+npx opencode-workflow index --index ${indexName}
 \`\`\``
 
-        } catch {
-          return `## Index Status: "${indexName}"
+      } catch {
+        return `## Index Status: "${indexName}"
 
 ✅ **Vectorizer installed**
 ⚠️ **Index "${indexName}" not created yet**
@@ -169,87 +165,47 @@ codeindex({ action: "reindex", index: "${indexName}" })
 To create this index:
 \`\`\`bash
 npx opencode-workflow index --index ${indexName}
-\`\`\`
-
-Or use:
-\`\`\`
-codeindex({ action: "reindex", index: "${indexName}" })
+# Or with specific directory:
+npx opencode-workflow index --index ${indexName} --dir src/
 \`\`\``
-        }
       }
+    }
 
-      // REINDEX: Re-index specific index (do it directly, no shell)
-      if (args.action === "reindex") {
-        const indexName = args.index || "code"
-        
-        try {
-          const indexer = await new CodebaseIndexer(projectRoot, indexName).init()
-          
-          // Get pattern from preset
-          const preset = (PRESETS || INDEX_PRESETS)[indexName]
-          const pattern = preset?.pattern || '**/*.{js,ts,py,go,md,yaml,json}'
-          
-          // Load .gitignore
-          let ig = ignore()
-          try {
-            const gitignore = await fs.readFile(path.join(projectRoot, '.gitignore'), 'utf8')
-            ig = ig.add(gitignore)
-          } catch {}
-          ig.add(['node_modules', '.git', 'dist', 'build', '.opencode/vectors', '.opencode/vectorizer'])
-          
-          // Find files
-          const files = await glob(pattern, { cwd: projectRoot, nodir: true })
-          const filtered = files.filter((f: string) => !ig.ignores(f))
-          
-          let indexed = 0
-          let skipped = 0
-          
-          for (const file of filtered) {
-            const filePath = path.join(projectRoot, file)
-            try {
-              const wasIndexed = await indexer.indexFile(filePath)
-              if (wasIndexed) {
-                indexed++
-              } else {
-                skipped++
-              }
-            } catch {
-              // Skip files that can't be read
-            }
-          }
-          
-          // Unload model to free memory
-          await indexer.unloadModel()
-          
-          const stats = await indexer.getStats()
+    // REINDEX: Re-index using CLI
+    if (args.action === "reindex") {
+      try {
+        execSync(`npx opencode-workflow index --index ${indexName}`, {
+          cwd: projectRoot,
+          encoding: "utf8",
+          timeout: 300000, // 5 min
+          stdio: "pipe"
+        })
 
-          return `## Re-indexing Complete ✅
+        // Get stats after indexing
+        const hashesFile = path.join(vectorsDir, indexName, "hashes.json")
+        const hashes = JSON.parse(await fs.readFile(hashesFile, "utf8"))
+        const fileCount = Object.keys(hashes).length
+
+        return `## Re-indexing Complete ✅
 
 **Index:** ${indexName}
-**Description:** ${stats.description}
-**Files found:** ${filtered.length}
-**Files indexed:** ${indexed}
-**Files unchanged:** ${skipped}
-**Total chunks:** ${stats.chunkCount}
+**Files indexed:** ${fileCount}
 
 You can now use semantic search:
 \`\`\`
 codesearch({ query: "your search query", index: "${indexName}" })
 \`\`\``
 
-        } catch (error: any) {
-          return `❌ Re-indexing failed: ${error.message}
+      } catch (error: any) {
+        return `❌ Re-indexing failed: ${error.message}
 
-Try:
-1. Check if vectorizer is installed: \`npx opencode-workflow vectorizer status\`
-2. Re-install vectorizer: \`npx opencode-workflow vectorizer install\``
-        }
+Try manually:
+\`\`\`bash
+npx opencode-workflow index --index ${indexName} --force
+\`\`\``
       }
-
-      return `Unknown action: ${args.action}. Use: status, list, or reindex`
-
-    } catch (error: any) {
-      return `❌ Error: ${error.message}`
     }
+
+    return `Unknown action: ${args.action}. Use: status, list, or reindex`
   },
 })
