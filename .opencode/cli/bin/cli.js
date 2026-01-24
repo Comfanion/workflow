@@ -273,21 +273,16 @@ program
       // If updating, preserve vectorizer and indexes
       const vectorizerDir = path.join(targetDir, 'vectorizer');
       const vectorsDir = path.join(targetDir, 'vectors');
-      const vectorizerNodeModules = path.join(vectorizerDir, 'node_modules');
-      const tempNodeModules = path.join(process.cwd(), '.vectorizer-node_modules-temp');
       const tempVectors = path.join(process.cwd(), '.vectors-temp');
       
-      let hadVectorizer = false;
       let hadVectors = false;
-      
       let existingConfigContent = null;
       
       if (await fs.pathExists(targetDir)) {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
         const backupDir = path.join(process.cwd(), `.opencode.backup-${timestamp}`);
         
-        // Check what we need to preserve
-        hadVectorizer = await fs.pathExists(vectorizerNodeModules);
+        // Check what we need to preserve (only vectors, vectorizer will be reinstalled fresh)
         hadVectors = await fs.pathExists(vectorsDir);
         
         // Read existing config.yaml for merge
@@ -296,13 +291,7 @@ program
           existingConfigContent = await fs.readFile(existingConfigPath, 'utf8');
         }
         
-        // Preserve vectorizer node_modules (100MB+, don't backup)
-        if (hadVectorizer) {
-          spinner.text = 'Preserving vectorizer dependencies...';
-          await fs.move(vectorizerNodeModules, tempNodeModules, { overwrite: true });
-        }
-        
-        // Preserve vector indexes
+        // Preserve vector indexes only (not node_modules - will reinstall fresh)
         if (hadVectors) {
           spinner.text = 'Preserving vector indexes...';
           await fs.move(vectorsDir, tempVectors, { overwrite: true });
@@ -325,19 +314,24 @@ program
       // Copy .opencode structure (fresh, no old files)
       await fs.copy(OPENCODE_SRC, targetDir);
       
-      // Copy updated vectorizer source files
+      // Copy and install vectorizer fresh
       if (await fs.pathExists(VECTORIZER_SRC)) {
-        spinner.text = 'Updating vectorizer...';
+        spinner.text = 'Installing vectorizer...';
         const newVectorizerDir = path.join(targetDir, 'vectorizer');
         await fs.ensureDir(newVectorizerDir);
         await fs.copy(path.join(VECTORIZER_SRC, 'index.js'), path.join(newVectorizerDir, 'index.js'));
         await fs.copy(path.join(VECTORIZER_SRC, 'package.json'), path.join(newVectorizerDir, 'package.json'));
-      }
-      
-      // Restore vectorizer node_modules
-      if (hadVectorizer) {
-        spinner.text = 'Restoring vectorizer dependencies...';
-        await fs.move(tempNodeModules, path.join(targetDir, 'vectorizer', 'node_modules'), { overwrite: true });
+        
+        // Always install vectorizer dependencies fresh
+        try {
+          execSync('npm install --silent', { 
+            cwd: newVectorizerDir,
+            stdio: 'pipe',
+            timeout: 120000
+          });
+        } catch (e) {
+          // Non-fatal, will show warning below
+        }
       }
       
       // Restore vector indexes
@@ -456,16 +450,19 @@ program
         console.log(chalk.gray('   Run manually: cd .opencode && bun install'));
       }
 
-      // Show what was preserved
-      if (hadVectorizer) {
-        console.log(chalk.green('✅ Vectorizer updated (dependencies preserved)'));
+      // Show what was done
+      const vectorizerInstalled = await fs.pathExists(path.join(targetDir, 'vectorizer', 'node_modules'));
+      if (vectorizerInstalled) {
+        console.log(chalk.green('✅ Vectorizer installed (fresh dependencies)'));
+      } else {
+        console.log(chalk.yellow('⚠️  Vectorizer: run `npx @comfanion/workflow vectorizer install`'));
       }
       if (hadVectors) {
         console.log(chalk.green('✅ Vector indexes preserved'));
       }
 
-      // Install vectorizer if requested (and not already installed)
-      if (config.install_vectorizer && !hadVectorizer) {
+      // Install vectorizer if requested and failed above
+      if (config.install_vectorizer && !vectorizerInstalled) {
         await installVectorizer(targetDir);
       }
 
