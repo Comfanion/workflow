@@ -22,18 +22,22 @@ if (!DEBUG) {
 const INDEX_PRESETS = {
   code: {
     pattern: '**/*.{js,ts,jsx,tsx,mjs,cjs,py,go,rs,java,kt,swift,c,cpp,h,hpp,cs,rb,php,scala,clj}',
-    description: 'Source code files'
+    ignore: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/build/**', '**/.opencode/**', '**/docs/**', '**/vendor/**', '**/__pycache__/**'],
+    description: 'Source code files (excludes docs, vendor, node_modules)'
   },
   docs: {
-    pattern: '**/*.{md,mdx,txt,rst,adoc}',
-    description: 'Documentation files'
+    pattern: 'docs/**/*.{md,mdx,txt,rst,adoc}',
+    ignore: [],
+    description: 'Documentation in docs/ folder'
   },
   config: {
     pattern: '**/*.{yaml,yml,json,toml,ini,env,xml}',
+    ignore: ['**/node_modules/**', '**/.git/**', '**/.opencode/**'],
     description: 'Configuration files'
   },
   all: {
     pattern: '**/*.{js,ts,jsx,tsx,mjs,cjs,py,go,rs,java,kt,swift,c,cpp,h,hpp,cs,rb,php,scala,clj,md,mdx,txt,rst,adoc,yaml,yml,json,toml}',
+    ignore: ['**/node_modules/**', '**/.git/**', '**/.opencode/**'],
     description: 'All supported files'
   }
 };
@@ -209,6 +213,43 @@ class CodebaseIndexer {
   }
 
   /**
+   * Check if index needs full reindex (files don't match current patterns)
+   * @param {string[]} extraIgnore - Additional patterns to ignore
+   * Returns { needsReindex, reason, currentCount, expectedCount }
+   */
+  async checkHealth(extraIgnore = []) {
+    const { glob } = await import('glob');
+    const preset = INDEX_PRESETS[this.indexName] || INDEX_PRESETS.code;
+    
+    // Combine preset ignore with extra ignore patterns
+    const ignore = [...(preset.ignore || []), ...extraIgnore.map(p => `**/${p}/**`)];
+    
+    const expectedFiles = await glob(preset.pattern, { 
+      cwd: this.root, 
+      nodir: true,
+      ignore
+    });
+    
+    const indexedFiles = Object.keys(this.hashes);
+    const currentCount = indexedFiles.length;
+    const expectedCount = expectedFiles.length;
+    
+    // Check if counts differ significantly (>20% difference or index is empty)
+    const diff = Math.abs(currentCount - expectedCount);
+    const threshold = Math.max(5, expectedCount * 0.2); // 20% or at least 5 files
+    
+    if (currentCount === 0 && expectedCount > 0) {
+      return { needsReindex: true, reason: 'empty', currentCount, expectedCount };
+    }
+    
+    if (diff > threshold) {
+      return { needsReindex: true, reason: 'mismatch', currentCount, expectedCount };
+    }
+    
+    return { needsReindex: false, reason: 'ok', currentCount, expectedCount };
+  }
+
+  /**
    * Freshen index - check for stale files and reindex only changed ones
    * Returns { checked, updated, deleted } counts
    */
@@ -244,6 +285,46 @@ class CodebaseIndexer {
     }
     
     return { checked, updated, deleted };
+  }
+
+  /**
+   * Index all files matching the preset pattern
+   * @param {function} onProgress - Optional callback(indexed, total, currentFile)
+   * @param {string[]} extraIgnore - Additional patterns to ignore
+   * Returns { indexed, skipped } counts
+   */
+  async indexAll(onProgress = null, extraIgnore = []) {
+    const { glob } = await import('glob');
+    const preset = INDEX_PRESETS[this.indexName] || INDEX_PRESETS.code;
+    
+    // Combine preset ignore with extra ignore patterns
+    const ignore = [...(preset.ignore || []), ...extraIgnore.map(p => `**/${p}/**`)];
+    
+    const files = await glob(preset.pattern, { 
+      cwd: this.root, 
+      nodir: true,
+      ignore
+    });
+    
+    let indexed = 0;
+    let skipped = 0;
+    
+    for (const relPath of files) {
+      const filePath = path.join(this.root, relPath);
+      try {
+        const wasIndexed = await this.indexFile(filePath);
+        if (wasIndexed) {
+          indexed++;
+          if (onProgress) onProgress(indexed, files.length, relPath);
+        } else {
+          skipped++;
+        }
+      } catch (e) {
+        skipped++;
+      }
+    }
+    
+    return { indexed, skipped, total: files.length };
   }
 
   /**
