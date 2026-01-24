@@ -269,7 +269,14 @@ vectorizer:
       ignore:
         - "**/node_modules/**"
         - "**/.git/**"
+        - "**/dist/**"
+        - "**/build/**"
         - "**/.opencode/**"
+        - "**/docs/**"
+        - "**/vendor/**"
+        - "**/__pycache__/**"
+        - "**/*.min.js"
+        - "**/*.bundle.js"
         - "**/package-lock.json"
         - "**/yarn.lock"
   
