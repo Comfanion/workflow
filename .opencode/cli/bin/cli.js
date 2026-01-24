@@ -438,13 +438,14 @@ program
         });
       }
       
-      // Preserve vectorizer and vectors by moving them temporarily
-      const tempVectorizer = path.join(process.cwd(), '.vectorizer-temp');
+      // Preserve vectorizer node_modules and vectors by moving them temporarily
+      const tempNodeModules = path.join(process.cwd(), '.vectorizer-node_modules-temp');
       const tempVectors = path.join(process.cwd(), '.vectors-temp');
+      const vectorizerNodeModules = path.join(vectorizerDir, 'node_modules');
       
       if (hasVectorizer) {
-        spinner.text = 'Preserving vectorizer...';
-        await fs.move(vectorizerDir, tempVectorizer, { overwrite: true });
+        spinner.text = 'Preserving vectorizer dependencies...';
+        await fs.move(vectorizerNodeModules, tempNodeModules, { overwrite: true });
       }
       if (hasVectors) {
         spinner.text = 'Preserving vector indexes...';
@@ -455,18 +456,27 @@ program
       spinner.text = 'Removing old files...';
       await fs.remove(targetDir);
       
-      // Copy new files
+      // Copy new files (including updated vectorizer source)
       spinner.text = 'Installing new version...';
       await fs.copy(OPENCODE_SRC, targetDir);
       
-      // Restore vectorizer and vectors
+      // Copy new vectorizer source files
+      if (await fs.pathExists(VECTORIZER_SRC)) {
+        spinner.text = 'Updating vectorizer...';
+        const newVectorizerDir = path.join(targetDir, 'vectorizer');
+        await fs.ensureDir(newVectorizerDir);
+        await fs.copy(path.join(VECTORIZER_SRC, 'index.js'), path.join(newVectorizerDir, 'index.js'));
+        await fs.copy(path.join(VECTORIZER_SRC, 'package.json'), path.join(newVectorizerDir, 'package.json'));
+      }
+      
+      // Restore vectorizer node_modules and vectors
       if (hasVectorizer) {
-        spinner.text = 'Restoring vectorizer...';
-        await fs.move(tempVectorizer, vectorizerDir, { overwrite: true });
+        spinner.text = 'Restoring vectorizer dependencies...';
+        await fs.move(tempNodeModules, path.join(targetDir, 'vectorizer', 'node_modules'), { overwrite: true });
       }
       if (hasVectors) {
         spinner.text = 'Restoring vector indexes...';
-        await fs.move(tempVectors, vectorsDir, { overwrite: true });
+        await fs.move(tempVectors, path.join(targetDir, 'vectors'), { overwrite: true });
       }
       
       // Restore user's config.yaml
@@ -482,7 +492,7 @@ program
       
       console.log(chalk.green('✅ Your config.yaml was preserved.'));
       if (hasVectorizer) {
-        console.log(chalk.green('✅ Vectorizer was preserved.'));
+        console.log(chalk.green('✅ Vectorizer updated (node_modules preserved).'));
       }
       if (hasVectors) {
         console.log(chalk.green('✅ Vector indexes were preserved.'));
