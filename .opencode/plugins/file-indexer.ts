@@ -13,7 +13,7 @@ import fs from "fs/promises"
  *   vectorizer:
  *     enabled: true       # Master switch
  *     auto_index: true    # Enable this plugin
- *     debounce_ms: 2000   # Wait time before indexing
+ *     debounce_ms: 100   # Wait time before indexing
  * 
  * Debug mode: set DEBUG=file-indexer or DEBUG=* to see logs
  */
@@ -24,7 +24,7 @@ const DEBUG = process.env.DEBUG?.includes('file-indexer') || process.env.DEBUG =
 const DEFAULT_CONFIG = {
   enabled: true,
   auto_index: true,
-  debounce_ms: 2000,
+  debounce_ms: 1000,
   indexes: {
     code: { enabled: true, extensions: ['.js', '.ts', '.jsx', '.tsx', '.py', '.go', '.rs', '.java', '.kt', '.swift', '.c', '.cpp', '.h', '.hpp', '.cs', '.rb', '.php', '.scala', '.clj'] },
     docs: { enabled: true, extensions: ['.md', '.mdx', '.txt', '.rst', '.adoc'] },

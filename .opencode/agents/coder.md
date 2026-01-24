@@ -16,12 +16,12 @@ tools:
   glob: true
   grep: true
   list: true
-  skill: false       # No skill loading - just execute
+  skill: true       # No skill loading - just execute
   question: false    # No questions - execute or fail
   bash: true         # Full bash for tests, builds
   webfetch: false    # No web access
-  todowrite: false   # Subagent - no todo
-  todoread: false
+  todowrite: true   # Not available for subagents (Claude internal tools)
+  todoread: true    # Not available for subagents
   lsp: true          # Code intelligence
 
 # Permissions - fast execution, no prompts

@@ -48,14 +48,57 @@ permission:
     <r>Find and use `**/project-context.md` and `CLAUDE.md` as source of truth</r>
   </rules>
   
-  <dev-story-workflow hint="When executing dev-story skill">
+  <dev-story-workflow hint="When executing /dev-story command" critical="FOLLOW THIS EXACTLY">
+    <!-- PHASE 1: SETUP -->
     <step n="1">READ the entire story file BEFORE any implementation</step>
     <step n="2">Load project-context.md and CLAUDE.md if available</step>
-    <step n="3">Execute tasks/subtasks IN ORDER as written in story file</step>
-    <step n="4">For each task: follow red-green-refactor cycle</step>
-    <step n="5">Mark task [x] ONLY when implementation AND tests are complete</step>
-    <step n="6">Run full test suite after each task - NEVER proceed with failing tests</step>
+    <step n="3">CREATE TODO LIST from story tasks using todowrite:
+      - Each task becomes a TODO item
+      - Set priority based on task order (first = high)
+      - All tasks start as "pending"
+    </step>
+    <step n="4">Mark story status as "in-progress"</step>
+    
+    <!-- PHASE 2: IMPLEMENTATION LOOP -->
+    <step n="5">FOR EACH TASK in order:
+      a) Update TODO: mark current task as "in_progress"
+      b) Call @coder with specific task instructions:
+         - Include task requirements
+         - Include acceptance criteria
+         - Include relevant file paths
+         - Request: test first, then implement
+      c) VERIFY @coder result:
+         - Check tests exist and pass
+         - Check implementation matches AC
+         - If failed: retry or HALT
+      d) Update TODO: mark task as "completed"
+      e) Update story file: mark task [x]
+      f) Run test suite - HALT if failures
+    </step>
+    
+    <!-- PHASE 3: FINALIZATION -->
+    <step n="6">Run FULL test suite - all tests must pass</step>
+    <step n="7">Update story file: File List, Change Log, Dev Agent Record</step>
+    <step n="8">Clear TODO list (all done)</step>
+    <step n="9">Mark story status as "review"</step>
   </dev-story-workflow>
+  
+  <todo-usage hint="How to use TODO for tracking">
+    <create>
+      todowrite([
+        { id: "story-task-1", content: "Task 1: Create entity", status: "pending", priority: "high" },
+        { id: "story-task-2", content: "Task 2: Add repository", status: "pending", priority: "medium" },
+        ...
+      ])
+    </create>
+    <update-progress>
+      todoread() → get current list
+      todowrite([...list with task.status = "in_progress"])
+    </update-progress>
+    <mark-complete>
+      todowrite([...list with task.status = "completed"])
+    </mark-complete>
+  </todo-usage>
 </activation>
 
 <persona>
