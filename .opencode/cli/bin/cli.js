@@ -278,6 +278,8 @@ program
       let hadVectorizer = false;
       let hadVectors = false;
       
+      let existingConfigContent = null;
+      
       if (await fs.pathExists(targetDir)) {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
         const backupDir = path.join(process.cwd(), `.opencode.backup-${timestamp}`);
@@ -285,6 +287,12 @@ program
         // Check what we need to preserve
         hadVectorizer = await fs.pathExists(vectorizerNodeModules);
         hadVectors = await fs.pathExists(vectorsDir);
+        
+        // Read existing config.yaml for merge
+        const existingConfigPath = path.join(targetDir, 'config.yaml');
+        if (await fs.pathExists(existingConfigPath)) {
+          existingConfigContent = await fs.readFile(existingConfigPath, 'utf8');
+        }
         
         // Preserve vectorizer node_modules (100MB+, don't backup)
         if (hadVectorizer) {
@@ -341,18 +349,37 @@ program
       const configPath = path.join(targetDir, 'config.yaml');
       let configContent = await fs.readFile(configPath, 'utf8');
       
+      // If we had existing config, merge it (preserve user customizations)
+      if (existingConfigContent) {
+        try {
+          const newConfig = yaml.load(configContent) || {};
+          const existingConfig = yaml.load(existingConfigContent) || {};
+          const mergedConfig = deepMerge(newConfig, existingConfig);
+          configContent = yaml.dump(mergedConfig, {
+            indent: 2,
+            lineWidth: 120,
+            noRefs: true,
+            sortKeys: false
+          });
+          console.log(chalk.green('  ✅ Merged existing config settings'));
+        } catch (e) {
+          // Merge failed, continue with new config + user values
+        }
+      }
+      
+      // Apply user's answers from prompts
       configContent = configContent
-        .replace(/user_name: ".*"/, `user_name: "${config.user_name}"`)
-        .replace(/communication_language: ".*"/, `communication_language: "${config.communication_language}"`)
-        .replace(/project_name: ".*"/, `project_name: "${config.project_name}"`)
+        .replace(/user_name: .*/, `user_name: "${config.user_name}"`)
+        .replace(/communication_language: .*/, `communication_language: "${config.communication_language}"`)
+        .replace(/project_name: .*/, `project_name: "${config.project_name}"`)
         .replace(/methodology: (tdd|stub)/, `methodology: ${config.methodology}`);
       
       // Jira config
       if (config.jira_enabled) {
         configContent = configContent
           .replace(/enabled: false\s+# Jira/, `enabled: true  # Jira`)
-          .replace(/base_url: ".*"/, `base_url: "${config.jira_url}"`)
-          .replace(/project_key: ".*"/, `project_key: "${config.jira_project}"`);
+          .replace(/base_url: .*/, `base_url: "${config.jira_url}"`)
+          .replace(/project_key: .*/, `project_key: "${config.jira_project}"`);
       }
       
       // Vectorizer config
