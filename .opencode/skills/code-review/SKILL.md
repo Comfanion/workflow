@@ -28,9 +28,9 @@ For each AC in the story:
 ### 3. Code Quality Review
 
 #### Architecture Compliance
-- [ ] Follows hexagonal architecture
-- [ ] Domain layer has no infrastructure imports
-- [ ] Use cases have 4 files (inport, dto, handler, mappers)
+- [ ] Follows project's chosen architecture pattern (see AGENTS.md)
+- [ ] Business logic isolated from infrastructure
+- [ ] Clear separation of concerns
 - [ ] Explicit mapping (no reflection libraries)
 
 #### Code Structure

@@ -58,7 +58,7 @@ docs/coding-standards/
 
 | Topic | Document | Key Rules |
 |-------|----------|-----------|
-| Project Layout | [project-structure.md](./project-structure.md) | Hexagonal, modules |
+| Project Layout | [project-structure.md](./project-structure.md) | Modules, structure |
 | Go Code | [go-standards.md](./go-standards.md) | Naming, errors, imports |
 | Testing | [testing-standards.md](./testing-standards.md) | 80% coverage, table-driven |
 | API | [api-standards.md](./api-standards.md) | REST, error format |
@@ -150,13 +150,12 @@ project/
 ```markdown
 # Architecture Patterns
 
-## Required Patterns
+## Chosen Pattern
 
-### Hexagonal Architecture
-[Description, when to use, example structure]
+### [Pattern Name] (e.g., Layered, Hexagonal, Clean, Vertical Slices)
+[Description, why chosen for this project, example structure]
 
-### Use Case Pattern
-[4-file structure, example]
+See architecture-design skill for pattern selection guidance.
 
 ### Repository Pattern
 [Interface in domain, implementation in infrastructure]

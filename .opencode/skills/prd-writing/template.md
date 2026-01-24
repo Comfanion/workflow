@@ -31,7 +31,7 @@ author: {{author}}
 <!-- e.g.
 TaskFlow is a B2B platform for managing distributed teams. The system handles task management, real-time collaboration, and team analytics.
 
-**Architecture:** Modular Monolith with Hexagonal Architecture
+**Architecture:** Modular Monolith (pattern chosen based on team size and requirements)
 
 **Key Domains:**
 1. **Task Management** — CRUD, assignments, status workflow

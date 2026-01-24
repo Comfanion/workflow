@@ -202,7 +202,7 @@ C4Component
 
 ## Patterns Used
 
-- Hexagonal Architecture (Ports & Adapters)
+- [Project's chosen architecture pattern]
 - Dependency injection
 - Repository pattern
 ```

@@ -56,8 +56,8 @@ Use this checklist to validate architecture before proceeding to epic/story crea
 ## Design Quality
 
 ### Architecture Patterns
-- [ ] Chosen patterns documented (hexagonal, DDD, etc.)
-- [ ] Pattern choice justified
+- [ ] Chosen pattern documented (Layered, Hexagonal, Clean, Microservices, etc.)
+- [ ] Pattern choice justified with ADR
 - [ ] Consistent pattern application
 
 ### Module Design
@@ -93,9 +93,8 @@ Use this checklist to validate architecture before proceeding to epic/story crea
 
 ## Coding Standards Alignment
 
-- [ ] Architecture follows CLAUDE.md patterns
-- [ ] Hexagonal architecture enforced
-- [ ] Use case pattern applicable
+- [ ] Architecture follows AGENTS.md patterns
+- [ ] Chosen architecture pattern consistently applied
 - [ ] Testing strategy fits architecture
 
 ## ADR Quality

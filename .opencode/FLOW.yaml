@@ -370,7 +370,7 @@ agents:
     file: agents/architect.md
     expertise:
       - Distributed systems
-      - DDD, hexagonal architecture
+      - Architecture patterns (chooses based on context)
       - System design
     personality: Technical, precise, patterns-focused
     skills_used:

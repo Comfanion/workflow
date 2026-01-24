@@ -18,11 +18,11 @@ Use this checklist when reviewing implemented code before marking story as "done
 ## Code Quality
 
 ### Architecture Compliance
-- [ ] Follows hexagonal architecture
-- [ ] Domain layer has no infrastructure imports
-- [ ] Use cases have 4 files (inport, dto, handler, mappers)
+- [ ] Follows project's chosen architecture pattern (AGENTS.md)
+- [ ] Business logic isolated from infrastructure
+- [ ] Clear separation of concerns
 - [ ] Explicit mapping (no reflection libraries)
-- [ ] Dependencies flow correctly (infra → app → domain)
+- [ ] Dependencies flow correctly per chosen pattern
 
 ### Code Structure
 - [ ] Single responsibility principle followed

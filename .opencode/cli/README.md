@@ -38,7 +38,7 @@ Development: /dev-story ↔ /code-review (loop until done)
 
 - **requirements-gathering** - Extract FR/NFR through interviews
 - **prd-writing** - Product requirements documents
-- **architecture-design** - Hexagonal/DDD patterns
+- **architecture-design** - System architecture patterns
 - **story-writing** - User stories with Given/When/Then AC
 - **dev-story** - Red-green-refactor implementation cycle
 - **jira-integration** - Bidirectional sync with Jira

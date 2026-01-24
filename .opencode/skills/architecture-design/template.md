@@ -31,7 +31,7 @@ author: {{author}}
 <!-- e.g.
 TaskFlow is a task management platform for distributed teams.
 
-**Architecture Pattern:** Modular Monolith with Hexagonal Architecture — enables independent scaling while keeping deployment simple
+**Architecture Pattern:** Modular Monolith — enables independent scaling while keeping deployment simple (pattern chosen based on team size and scale requirements)
 
 **Key Domains:**
 1. **Task Domain** (2 modules) — Task CRUD, assignments, status workflow
@@ -53,8 +53,8 @@ TaskFlow is a task management platform for distributed teams.
 | Communication | {{decision}} | {{why}} |
 
 <!-- e.g.
-| Architecture | Hexagonal (Ports & Adapters) | Organizational standard |
-| Database | PostgreSQL per module | Service isolation |
+| Architecture | Modular Monolith | Team size, deployment simplicity |
+| Database | PostgreSQL | ACID needed, team expertise |
 | Communication | REST sync + Kafka async | REST for queries, Kafka for events |
 -->
 

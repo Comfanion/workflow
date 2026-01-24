@@ -19,7 +19,7 @@ size: S | M | L
 - {{what_this_story_does_NOT_do}}
 
 <!-- e.g.
-Implement CRUD operations for Task entity following hexagonal architecture.
+Implement CRUD operations for Task entity following project architecture.
 
 **Context:** This story is part of Epic 1 (Task Management Core). It focuses on the domain layer and repository.
 
@@ -52,8 +52,8 @@ Implement CRUD operations for Task entity following hexagonal architecture.
 | → Epic: `{{epic_path}}` | Technical Decisions | ADRs for this epic |
 
 <!-- e.g.
-| → `CLAUDE.md` | All | Project patterns, naming |
-| → `docs/coding-standards/` | All | **MANDATORY** — hexagonal, error handling |
+| → `AGENTS.md` | All | Project patterns, naming |
+| → `docs/coding-standards/` | All | **MANDATORY** — architecture, error handling |
 | → Unit: `Task` | Data Model, Operations | Fields, validation rules |
 | → `docs/architecture.md` | Task Module | Internal services, events |
 | → `docs/architecture.md#error-handling` | Error Handling | Error codes format |
@@ -76,7 +76,7 @@ Story is complete when:
 - [ ] Empty title returns validation error (400, TASK_001)
 - [ ] Task ID is UUID format
 - [ ] Tests cover: create, validation, duplicate handling
-- [ ] Code follows hexagonal architecture from coding-standards
+- [ ] Code follows architecture patterns from coding-standards
 -->
 
 ---

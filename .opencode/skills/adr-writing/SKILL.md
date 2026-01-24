@@ -175,7 +175,8 @@ ADR-[NNN]-[short-title].md
 
 Examples:
 - ADR-001-postgresql-database.md
-- ADR-002-hexagonal-architecture.md
+- ADR-002-architecture-pattern.md
+- ADR-003-api-versioning.md
 ```
 
 ### IDs

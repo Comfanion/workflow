@@ -2,8 +2,8 @@
   "$schema": "https://opencode.ai/config.json",
   
   "instructions": [
+    "AGENTS.md",
     ".opencode/FLOW.yaml",
-    "docs/requirements/requirements.md",
     "docs/prd.md",
     "docs/architecture.md"
   ],

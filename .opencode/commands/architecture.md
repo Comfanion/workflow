@@ -47,7 +47,7 @@ $ARGUMENTS
 
 ## Alignment Checks
 
-- Follows hexagonal architecture (CLAUDE.md)
+- Follows project's chosen architecture pattern (AGENTS.md)
 - Matches existing code structure
 - NFRs have architectural support
 
