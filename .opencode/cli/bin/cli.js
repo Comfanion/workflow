@@ -637,6 +637,7 @@ program
   .command('index')
   .description('Index codebase for semantic search')
   .option('-i, --index <name>', 'Index name: code, docs, config, all, or custom', 'code')
+  .option('-d, --dir <path>', 'Directory to index (default: current directory)')
   .option('-p, --pattern <glob>', 'File pattern (overrides preset)')
   .option('--force', 'Re-index all files (ignore cache)')
   .option('--list', 'List all indexes and their stats')
@@ -703,6 +704,11 @@ program
       const { glob } = await import('glob');
       const { default: ignore } = await import('ignore');
       
+      // Determine base directory
+      const baseDir = options.dir 
+        ? path.resolve(process.cwd(), options.dir)
+        : process.cwd();
+      
       // Load .gitignore
       let ig = ignore();
       try {
@@ -711,16 +717,17 @@ program
       } catch {}
       ig.add(['node_modules', '.git', 'dist', 'build', '.opencode/vectors', '.opencode/vectorizer']);
       
-      const files = await glob(pattern, { cwd: process.cwd(), nodir: true });
+      const files = await glob(pattern, { cwd: baseDir, nodir: true });
       const filtered = files.filter(f => !ig.ignores(f));
       
-      spinner.succeed(`Found ${filtered.length} files for index "${indexName}"`);
+      const dirLabel = options.dir ? ` in ${options.dir}` : '';
+      spinner.succeed(`Found ${filtered.length} files for index "${indexName}"${dirLabel}`);
       
       let indexed = 0;
       let skipped = 0;
       
       for (const file of filtered) {
-        const filePath = path.join(process.cwd(), file);
+        const filePath = path.join(baseDir, file);
         spinner.start(`[${indexName}] Indexing: ${file}`);
         
         try {
