@@ -100,7 +100,7 @@ program
       jira_url: 'https://your-domain.atlassian.net',
       jira_project: 'PROJ',
       create_repo_structure: false,
-      install_vectorizer: false,
+      install_vectorizer: true,   // Vectorizer ON by default
       vectorizer_enabled: true,
       vectorizer_auto_index: true,
       project_name: path.basename(process.cwd())
@@ -226,7 +226,7 @@ program
           type: 'confirm',
           name: 'install_vectorizer',
           message: 'Install vectorizer? (semantic code search, ~100MB)',
-          default: false
+          default: true
         },
         {
           type: 'confirm',

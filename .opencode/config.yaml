@@ -94,7 +94,7 @@ agents:
 # JIRA INTEGRATION
 # =============================================================================
 jira:
-  enabled: true
+  enabled: false  # Jira
   
   # Connection
   base_url: "https://your-domain.atlassian.net"
