@@ -27,6 +27,17 @@ config:
     - implementation_artifacts
 
 # =============================================================================
+# MCP TOOLS (Available to agents)
+# =============================================================================
+mcp:
+  context7:
+    use: "When researching library documentation (npm, Go, Python)"
+    agents: [dev, architect, researcher]
+  sequential-thinking:
+    use: "For complex reasoning, architecture decisions, multi-step analysis"
+    agents: [architect, analyst]
+
+# =============================================================================
 # WORKFLOW PIPELINE (Main Flow)
 # =============================================================================
 # 
