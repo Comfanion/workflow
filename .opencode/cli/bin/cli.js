@@ -558,8 +558,7 @@ program
       spinner.text = 'Reading config.yaml...';
       const configBackup = await fs.readFile(configPath, 'utf8');
       
-      // Check if vectorizer exists
-      const hasVectorizer = await fs.pathExists(path.join(vectorizerDir, 'node_modules'));
+      // Check if vectors exist (we preserve only indexes, reinstall vectorizer fresh)
       const hasVectors = await fs.pathExists(vectorsDir);
       
       // Create full backup (unless --no-backup)
@@ -570,15 +569,8 @@ program
         });
       }
       
-      // Preserve vectorizer node_modules and vectors by moving them temporarily
-      const tempNodeModules = path.join(process.cwd(), '.vectorizer-node_modules-temp');
+      // Preserve only vector indexes (not node_modules - will reinstall fresh)
       const tempVectors = path.join(process.cwd(), '.vectors-temp');
-      const vectorizerNodeModules = path.join(vectorizerDir, 'node_modules');
-      
-      if (hasVectorizer) {
-        spinner.text = 'Preserving vectorizer dependencies...';
-        await fs.move(vectorizerNodeModules, tempNodeModules, { overwrite: true });
-      }
       if (hasVectors) {
         spinner.text = 'Preserving vector indexes...';
         await fs.move(vectorsDir, tempVectors, { overwrite: true });
@@ -588,24 +580,31 @@ program
       spinner.text = 'Removing old files...';
       await fs.remove(targetDir);
       
-      // Copy new files (including updated vectorizer source)
+      // Copy new files
       spinner.text = 'Installing new version...';
       await fs.copy(OPENCODE_SRC, targetDir);
       
       // Copy new vectorizer source files
       if (await fs.pathExists(VECTORIZER_SRC)) {
-        spinner.text = 'Updating vectorizer...';
+        spinner.text = 'Installing vectorizer...';
         const newVectorizerDir = path.join(targetDir, 'vectorizer');
         await fs.ensureDir(newVectorizerDir);
         await fs.copy(path.join(VECTORIZER_SRC, 'index.js'), path.join(newVectorizerDir, 'index.js'));
         await fs.copy(path.join(VECTORIZER_SRC, 'package.json'), path.join(newVectorizerDir, 'package.json'));
+        
+        // Always install vectorizer dependencies fresh
+        try {
+          execSync('npm install --silent', { 
+            cwd: newVectorizerDir,
+            stdio: 'pipe',
+            timeout: 120000
+          });
+        } catch (e) {
+          // Non-fatal, will show warning below
+        }
       }
       
-      // Restore vectorizer node_modules and vectors
-      if (hasVectorizer) {
-        spinner.text = 'Restoring vectorizer dependencies...';
-        await fs.move(tempNodeModules, path.join(targetDir, 'vectorizer', 'node_modules'), { overwrite: true });
-      }
+      // Restore vector indexes
       if (hasVectors) {
         spinner.text = 'Restoring vector indexes...';
         await fs.move(tempVectors, path.join(targetDir, 'vectors'), { overwrite: true });
@@ -671,20 +670,14 @@ program
       } else {
         console.log(chalk.yellow('⚠️  Plugin deps: run `cd .opencode && bun install`'));
       }
-      if (hasVectorizer) {
-        console.log(chalk.green('✅ Vectorizer updated (node_modules preserved).'));
+      const vectorizerInstalled = await fs.pathExists(path.join(targetDir, 'vectorizer', 'node_modules'));
+      if (vectorizerInstalled) {
+        console.log(chalk.green('✅ Vectorizer reinstalled (fresh dependencies).'));
+      } else {
+        console.log(chalk.yellow('⚠️  Vectorizer: run `npx @comfanion/workflow vectorizer install`'));
       }
       if (hasVectors) {
         console.log(chalk.green('✅ Vector indexes were preserved.'));
-      }
-      
-      // Option to install/update vectorizer
-      if (options.vectorizer) {
-        console.log('');
-        await installVectorizer(targetDir);
-      } else if (!hasVectorizer) {
-        console.log(chalk.yellow('\n💡 Vectorizer not installed. Install with:'));
-        console.log(chalk.cyan('   npx opencode-workflow vectorizer install\n'));
       }
       
       console.log('');
