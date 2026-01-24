@@ -1,6 +1,6 @@
 ---
 name: architecture-validation
-description: How to validate architecture for PRD coverage, NFR compliance, and QA artifact presence
+description: Use when validating architecture document before creating epics - checks PRD coverage, NFR compliance, module boundaries, and QA artifacts
 license: MIT
 compatibility: opencode
 metadata:
@@ -61,9 +61,9 @@ For each module:
 
 ### Pattern Compliance
 
-- [ ] Follows hexagonal architecture
-- [ ] Domain layer has no infrastructure imports
-- [ ] Use case pattern (4 files) documented
+- [ ] Architecture style is documented and justified (ADR)
+- [ ] Dependency direction follows chosen pattern
+- [ ] Business logic isolated from infrastructure
 - [ ] Aligns with CLAUDE.md standards
 
 ### ADR Checks

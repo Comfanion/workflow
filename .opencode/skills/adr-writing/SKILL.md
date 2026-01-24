@@ -1,6 +1,6 @@
 ---
 name: adr-writing
-description: How to write Architecture Decision Records (ADRs) documenting technical decisions and rationale
+description: Use when documenting significant architectural decisions - database choice, framework selection, pattern adoption, or any decision with long-term consequences
 license: MIT
 compatibility: opencode
 metadata:

@@ -1,11 +1,11 @@
 ---
 name: architecture-design
-description: How to design system architecture following hexagonal/DDD patterns with proper module boundaries
+description: Use when designing new system architecture, defining module boundaries, choosing architectural patterns (CQRS, Event Sourcing), or making technology decisions
 license: MIT
 compatibility: opencode
 metadata:
   domain: software-architecture
-  patterns: hexagonal, ddd, modular-monolith
+  patterns: hexagonal, ddd, cqrs, event-sourcing, saga
   artifacts: docs/architecture.md
 ---
 
@@ -18,6 +18,8 @@ Use this skill when you need to:
 - Define module/service boundaries
 - Create data ownership model
 - Design integration points
+- Choose architectural patterns (CQRS, Event Sourcing, Saga)
+- Make technology trade-off decisions
 - Document architectural decisions
 
 ## Reference
@@ -43,8 +45,10 @@ Brief prose with:
 
 | Category | Decision | Rationale |
 |----------|----------|-----------|
-| Architecture | Hexagonal | Organizational standard |
-| Database | PostgreSQL per module | Service isolation |
+| Architecture | {{pattern}} | {{why_chosen}} |
+| Database | {{db_choice}} | {{why_chosen}} |
+
+*Choose pattern based on project needs — see "Architecture Style Selection" below*
 
 ### 3. System Context
 
@@ -124,9 +128,40 @@ Reference in architecture:
 → Unit: `Task`
 ```
 
-## Architecture Principles
+## Architecture Style Selection
 
-### Hexagonal Architecture
+**Choose based on project context — no default!**
+
+### Style Comparison
+
+| Style | Best For | Team Size | Complexity |
+|-------|----------|-----------|------------|
+| **Layered** | Simple CRUD apps, MVPs | 1-3 devs | Low |
+| **Hexagonal** | Testable business logic, many integrations | 3-10 devs | Medium |
+| **Clean Architecture** | Complex domain, long-term maintainability | 5+ devs | Medium-High |
+| **Microservices** | Independent scaling, multiple teams | 10+ devs | High |
+| **Vertical Slices** | Feature teams, rapid iteration | Any | Medium |
+
+### Layered Architecture
+
+```
+┌─────────────────────────────┐
+│       Presentation          │  ← Controllers, Views
+├─────────────────────────────┤
+│        Application          │  ← Services, DTOs
+├─────────────────────────────┤
+│          Domain             │  ← Entities, Business Logic
+├─────────────────────────────┤
+│       Infrastructure        │  ← DB, External APIs
+└─────────────────────────────┘
+
+Dependencies: Top → Bottom (each layer depends on layer below)
+```
+
+**Use when:** Simple CRUD, small team, fast delivery needed
+**Avoid when:** Complex business rules, many external integrations
+
+### Hexagonal (Ports & Adapters)
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -142,16 +177,284 @@ Reference in architecture:
 │        Adapters (HTTP, DB, Kafka, External)         │
 └─────────────────────────────────────────────────────┘
 
-Dependency Direction: Infrastructure → Application → Domain
+Dependencies: Outside → Inside (Infrastructure → Application → Domain)
 ```
 
-### Module Boundaries
+**Use when:** Many integrations, need to swap implementations, testability critical
+**Avoid when:** Simple apps, overhead not justified
 
-Each module must have:
+### Clean Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   Frameworks & Drivers               │
+│  ┌───────────────────────────────────────────────┐  │
+│  │            Interface Adapters                  │  │
+│  │  ┌───────────────────────────────────────┐    │  │
+│  │  │          Application Business          │    │  │
+│  │  │  ┌─────────────────────────────────┐  │    │  │
+│  │  │  │    Enterprise Business Rules    │  │    │  │
+│  │  │  │         (Entities)              │  │    │  │
+│  │  │  └─────────────────────────────────┘  │    │  │
+│  │  │        (Use Cases)                    │    │  │
+│  │  └───────────────────────────────────────┘    │  │
+│  │   Controllers, Gateways, Presenters           │  │
+│  └───────────────────────────────────────────────┘  │
+│              Web, DB, UI, External                   │
+└─────────────────────────────────────────────────────┘
+
+Dependency Rule: Source code dependencies point INWARD only
+```
+
+**Use when:** Complex domain, multiple UIs, long-term project
+**Avoid when:** MVP, tight deadlines
+
+### Vertical Slices
+
+```
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│  Feature A  │  │  Feature B  │  │  Feature C  │
+│ ┌─────────┐ │  │ ┌─────────┐ │  │ ┌─────────┐ │
+│ │ Handler │ │  │ │ Handler │ │  │ │ Handler │ │
+│ │ Logic   │ │  │ │ Logic   │ │  │ │ Logic   │ │
+│ │ Data    │ │  │ │ Data    │ │  │ │ Data    │ │
+│ └─────────┘ │  │ └─────────┘ │  │ └─────────┘ │
+└─────────────┘  └─────────────┘  └─────────────┘
+       │               │               │
+       └───────────────┴───────────────┘
+                 Shared Kernel
+```
+
+**Use when:** Feature teams, CQRS, rapid delivery
+**Avoid when:** Heavy cross-feature dependencies
+
+---
+
+## Module Boundaries
+
+Regardless of architecture style, each module must have:
+
 - **Single responsibility** - One business capability
 - **Explicit data ownership** - Clear which entities it owns
 - **Defined interfaces** - API contracts for communication
-- **No cross-module imports** - Communicate via Kafka/HTTP only
+- **Loose coupling** - Communicate via events/APIs, not direct imports
+
+**Communication patterns:**
+
+| Pattern | Use When | Example |
+|---------|----------|---------|
+| Direct call (in-process) | Same deployment, sync needed | Service → Repository |
+| REST/gRPC | Cross-service, request-response | Order → Inventory check |
+| Events (Kafka/RabbitMQ) | Async, decoupled, eventual consistency | OrderPlaced → Notification |
+| Shared DB (avoid) | Legacy, temporary | — migrate away |
+
+---
+
+## Architectural Patterns
+
+### Pattern Selection Matrix
+
+| Pattern | Use When | Avoid When |
+|---------|----------|------------|
+| **Modular Monolith** | MVP, small team, unclear boundaries | High scale needs, multiple teams |
+| **Microservices** | Clear boundaries, independent scaling | Small team, shared data |
+| **CQRS** | Different read/write models, complex queries | Simple CRUD |
+| **Event Sourcing** | Audit trail critical, temporal queries | Simple state, storage concerns |
+| **Saga** | Distributed transactions, compensation needed | Single DB, simple workflows |
+
+### CQRS (Command Query Responsibility Segregation)
+
+```
+┌─────────────┐      ┌─────────────┐
+│   Command   │      │    Query    │
+│   (Write)   │      │   (Read)    │
+└──────┬──────┘      └──────┬──────┘
+       │                    │
+       ▼                    ▼
+┌─────────────┐      ┌─────────────┐
+│ Write Model │      │ Read Model  │
+│ (normalized)│      │(denormalized│
+└──────┬──────┘      └──────┬──────┘
+       │    Sync/Event      │
+       └────────────────────┘
+```
+
+**When to use:**
+- Read/write ratio > 10:1
+- Complex query requirements
+- Different consistency needs
+
+**Trade-offs:**
+| Benefit | Cost |
+|---------|------|
+| Optimized read performance | Eventual consistency |
+| Independent scaling | Data sync complexity |
+| Simpler query logic | More infrastructure |
+
+### Event Sourcing
+
+```
+┌──────────┐    ┌──────────┐    ┌──────────┐
+│ Command  │───►│  Event   │───►│  State   │
+│          │    │  Store   │    │ (derived)│
+└──────────┘    └──────────┘    └──────────┘
+                     │
+                     ▼ Replay
+               ┌──────────┐
+               │Projection│
+               └──────────┘
+```
+
+**When to use:**
+- Full audit trail required
+- Temporal queries ("state at time X")
+- Complex domain with many state transitions
+
+**Trade-offs:**
+| Benefit | Cost |
+|---------|------|
+| Complete audit history | Storage growth |
+| Time-travel queries | Query complexity |
+| Event replay for debugging | Schema evolution |
+
+### Saga Pattern (Distributed Transactions)
+
+```
+┌────────┐    ┌────────┐    ┌────────┐
+│ Step 1 │───►│ Step 2 │───►│ Step 3 │
+└────────┘    └────────┘    └────────┘
+     │             │             │
+     ▼             ▼             ▼
+Compensate 1  Compensate 2  Compensate 3
+     ▲             ▲             │
+     └─────────────┴─────────────┘
+              (on failure)
+```
+
+**Types:**
+| Type | Coordination | Use When |
+|------|--------------|----------|
+| Choreography | Events | Simple flows, few services |
+| Orchestration | Central orchestrator | Complex flows, many services |
+
+**Example: Order Saga**
+1. Reserve inventory → (compensate: release inventory)
+2. Charge payment → (compensate: refund)
+3. Ship order → (compensate: cancel shipment)
+
+### Resilience Patterns
+
+| Pattern | Problem Solved | Implementation |
+|---------|----------------|----------------|
+| **Circuit Breaker** | Cascading failures | Open after N failures, half-open retry |
+| **Retry with Backoff** | Transient failures | Exponential backoff + jitter |
+| **Bulkhead** | Resource exhaustion | Isolate thread pools/connections |
+| **Timeout** | Hanging requests | Set max wait time |
+| **Fallback** | Service unavailable | Default response, cached data |
+
+**Circuit Breaker States:**
+```
+        success
+    ┌───────────────┐
+    │               │
+    ▼    N failures │
+┌────────┐     ┌────────┐
+│ CLOSED │────►│  OPEN  │
+└────────┘     └────────┘
+    ▲               │
+    │   timeout     ▼
+    │          ┌─────────┐
+    └──────────│HALF-OPEN│
+      success  └─────────┘
+```
+
+---
+
+## Trade-off Analysis
+
+### Decision Matrix Template
+
+When choosing between options, use weighted scoring:
+
+| Criteria | Weight | Option A | Option B | Option C |
+|----------|--------|----------|----------|----------|
+| Performance | 30% | 4 (1.2) | 3 (0.9) | 5 (1.5) |
+| Complexity | 25% | 3 (0.75) | 5 (1.25) | 2 (0.5) |
+| Team expertise | 20% | 5 (1.0) | 3 (0.6) | 2 (0.4) |
+| Maintainability | 15% | 4 (0.6) | 4 (0.6) | 3 (0.45) |
+| Cost | 10% | 3 (0.3) | 4 (0.4) | 5 (0.5) |
+| **Total** | | **3.85** | **3.75** | **3.35** |
+
+*Scores: 1-5, higher is better*
+
+### Common Trade-offs
+
+| Decision | Option A | Option B | Key Factor |
+|----------|----------|----------|------------|
+| Monolith vs Microservices | Simple ops, shared DB | Independent deploy, complexity | Team size, scale needs |
+| SQL vs NoSQL | ACID, complex queries | Flexible schema, horizontal scale | Data structure, consistency |
+| Sync vs Async | Simple, immediate | Resilient, decoupled | Latency tolerance |
+| REST vs gRPC | Universal, cacheable | Performance, streaming | Client types |
+| Polling vs Webhooks | Simple, reliable | Real-time, efficient | Latency requirements |
+
+---
+
+## Quality Attribute Scenarios
+
+### Performance Scenario Template
+
+```
+Source:       [Who/what triggers]
+Stimulus:     [What happens]
+Environment:  [Under what conditions]
+Artifact:     [What part of system]
+Response:     [What system does]
+Measure:      [How to verify]
+```
+
+### Example Scenarios
+
+**Performance:**
+| Element | Value |
+|---------|-------|
+| Source | 1000 concurrent users |
+| Stimulus | Submit search query |
+| Environment | Normal operation |
+| Artifact | Search API |
+| Response | Return results |
+| Measure | 95th percentile < 200ms |
+
+**Availability:**
+| Element | Value |
+|---------|-------|
+| Source | Any user |
+| Stimulus | Request any API |
+| Environment | Peak load |
+| Artifact | Core services |
+| Response | Respond successfully |
+| Measure | 99.9% uptime monthly |
+
+**Security:**
+| Element | Value |
+|---------|-------|
+| Source | Unauthenticated user |
+| Stimulus | Access protected resource |
+| Environment | Normal operation |
+| Artifact | API Gateway |
+| Response | Return 401, log attempt |
+| Measure | 100% unauthorized blocked |
+
+### NFR → Architecture Mapping
+
+| NFR Type | Architectural Tactics |
+|----------|----------------------|
+| **Performance** | Caching, CDN, read replicas, async processing |
+| **Scalability** | Horizontal scaling, sharding, queue-based load leveling |
+| **Availability** | Redundancy, health checks, circuit breakers, multi-AZ |
+| **Security** | Auth gateway, encryption, WAF, rate limiting |
+| **Maintainability** | Modular design, clear interfaces, documentation |
+
+---
 
 ### Reference Format
 

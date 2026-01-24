@@ -1,6 +1,6 @@
 ---
 name: unit-writing
-description: How to document modules, domains, services, and entities with structured folder-based approach
+description: Use when documenting modules, domains, services, or entities - creating index.md, data-model.md, API specs, or event schemas for architectural components
 license: MIT
 compatibility: opencode
 metadata:
