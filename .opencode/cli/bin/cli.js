@@ -255,10 +255,25 @@ program
           message: 'Enable auto-indexing? (reindex files on save)',
           when: (answers) => answers.install_vectorizer,
           default: true
+        },
+        {
+          type: 'checkbox',
+          name: 'mcp_servers',
+          message: 'Select MCP servers to enable:',
+          choices: [
+            { name: 'context7 - Library docs for npm, Go, Python (recommended)', value: 'context7', checked: true },
+            { name: 'sequential-thinking - Enhanced reasoning for complex tasks', value: 'sequential-thinking', checked: false },
+            { name: 'playwright - Browser automation and testing', value: 'playwright', checked: false },
+            { name: 'chrome-devtools - Chrome debugging and inspection', value: 'chrome-devtools', checked: false },
+            { name: 'atlassian - Jira/Confluence integration', value: 'atlassian', checked: false },
+            { name: 'github - GitHub repos, issues, PRs', value: 'github', checked: false },
+            { name: 'postgres - PostgreSQL database queries', value: 'postgres', checked: false }
+          ]
         }
       ]);
       
       config = { ...config, ...answers };
+      config.mcp_servers = answers.mcp_servers || [];
     } else {
       // Apply CLI flags for non-interactive mode
       if (options.tdd) config.methodology = 'tdd';
@@ -486,6 +501,28 @@ program
         const changelogTemplate = path.join(targetDir, 'skills/changelog/template.md');
         if (await fs.pathExists(changelogTemplate)) {
           await fs.copy(changelogTemplate, changelogPath);
+        }
+      }
+      
+      // Save MCP server selections (only if user made selections)
+      if (config.mcp_servers && config.mcp_servers.length > 0) {
+        spinner.text = 'Configuring MCP servers...';
+        const mcpEnabledPath = path.join(targetDir, 'mcp', 'enabled.yaml');
+        
+        // Don't overwrite existing enabled.yaml if updating
+        if (!isUpdate || !await fs.pathExists(mcpEnabledPath)) {
+          let mcpContent = `# Enabled MCP Servers
+# Your personal selection of MCP servers
+# This file is NOT modified by updates
+
+`;
+          for (const server of config.mcp_servers) {
+            mcpContent += `${server}:
+  enabled: true
+
+`;
+          }
+          await fs.writeFile(mcpEnabledPath, mcpContent);
         }
       }
 
