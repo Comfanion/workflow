@@ -235,13 +235,41 @@ program
     const spinner = ora('Initializing OpenCode Workflow...').start();
 
     try {
-      // If updating, create backup and remove old directory
+      // If updating, preserve vectorizer and indexes
+      const vectorizerDir = path.join(targetDir, 'vectorizer');
+      const vectorsDir = path.join(targetDir, 'vectors');
+      const vectorizerNodeModules = path.join(vectorizerDir, 'node_modules');
+      const tempNodeModules = path.join(process.cwd(), '.vectorizer-node_modules-temp');
+      const tempVectors = path.join(process.cwd(), '.vectors-temp');
+      
+      let hadVectorizer = false;
+      let hadVectors = false;
+      
       if (await fs.pathExists(targetDir)) {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
         const backupDir = path.join(process.cwd(), `.opencode.backup-${timestamp}`);
         
+        // Check what we need to preserve
+        hadVectorizer = await fs.pathExists(vectorizerNodeModules);
+        hadVectors = await fs.pathExists(vectorsDir);
+        
+        // Preserve vectorizer node_modules (100MB+, don't backup)
+        if (hadVectorizer) {
+          spinner.text = 'Preserving vectorizer dependencies...';
+          await fs.move(vectorizerNodeModules, tempNodeModules, { overwrite: true });
+        }
+        
+        // Preserve vector indexes
+        if (hadVectors) {
+          spinner.text = 'Preserving vector indexes...';
+          await fs.move(vectorsDir, tempVectors, { overwrite: true });
+        }
+        
+        // Create backup (without node_modules and vectors)
         spinner.text = 'Creating backup...';
-        await fs.copy(targetDir, backupDir);
+        await fs.copy(targetDir, backupDir, {
+          filter: (src) => !src.includes('node_modules') && !src.includes('vectors')
+        });
         
         spinner.text = 'Removing old .opencode/...';
         await fs.remove(targetDir);
@@ -253,6 +281,27 @@ program
       
       // Copy .opencode structure (fresh, no old files)
       await fs.copy(OPENCODE_SRC, targetDir);
+      
+      // Copy updated vectorizer source files
+      if (await fs.pathExists(VECTORIZER_SRC)) {
+        spinner.text = 'Updating vectorizer...';
+        const newVectorizerDir = path.join(targetDir, 'vectorizer');
+        await fs.ensureDir(newVectorizerDir);
+        await fs.copy(path.join(VECTORIZER_SRC, 'index.js'), path.join(newVectorizerDir, 'index.js'));
+        await fs.copy(path.join(VECTORIZER_SRC, 'package.json'), path.join(newVectorizerDir, 'package.json'));
+      }
+      
+      // Restore vectorizer node_modules
+      if (hadVectorizer) {
+        spinner.text = 'Restoring vectorizer dependencies...';
+        await fs.move(tempNodeModules, path.join(targetDir, 'vectorizer', 'node_modules'), { overwrite: true });
+      }
+      
+      // Restore vector indexes
+      if (hadVectors) {
+        spinner.text = 'Restoring vector indexes...';
+        await fs.move(tempVectors, path.join(targetDir, 'vectors'), { overwrite: true });
+      }
       
       // Update config.yaml with user values
       spinner.text = 'Configuring...';
@@ -332,8 +381,16 @@ program
 
       spinner.succeed(chalk.green('OpenCode Workflow initialized!'));
 
-      // Install vectorizer if requested
-      if (config.install_vectorizer) {
+      // Show what was preserved
+      if (hadVectorizer) {
+        console.log(chalk.green('✅ Vectorizer updated (dependencies preserved)'));
+      }
+      if (hadVectors) {
+        console.log(chalk.green('✅ Vector indexes preserved'));
+      }
+
+      // Install vectorizer if requested (and not already installed)
+      if (config.install_vectorizer && !hadVectorizer) {
         await installVectorizer(targetDir);
       }
 
