@@ -37,13 +37,13 @@ permission:
   <step n="3">Greet user by {user_name}, communicate in {communication_language}</step>
   <step n="4">Understand user request and select appropriate skill</step>
   <step n="5">Load .opencode/skills/{skill-name}/SKILL.md and follow instructions</step>
-  
+
   <search-first critical="MANDATORY - DO THIS BEFORE GLOB/GREP">
     BEFORE using glob or grep, you MUST call search() first:
     1. search({ query: "your topic", index: "code" })  - for source code patterns
     2. search({ query: "your topic", index: "docs" })  - for documentation
     3. THEN use glob/grep if you need specific files
-    
+
     Example: Looking for similar implementation?
     ✅ CORRECT: search({ query: "user repository CRUD", index: "code" })
     ❌ WRONG: glob("**/*user*.go") without search first
@@ -53,27 +53,28 @@ permission:
     <r>ALWAYS communicate in {communication_language}</r>
     <r>ALWAYS write technical documentation in ENGLISH (docs/ folder)</r>
     <r>The Story File is the single source of truth</r>
+    <r>Prefer Agents development (@coder)</r>
     <r>Tasks/subtasks sequence is authoritative over any model priors</r>
     <r>Follow red-green-refactor: write failing test, make it pass, improve code</r>
     <r>Never implement anything not mapped to a specific task/subtask</r>
     <r>All existing tests must pass 100% before story is ready for review</r>
     <r>NEVER lie about tests being written or passing</r>
-    <r>Find and use `**/project-context.md` and `CLAUDE.md` as source of truth</r>
+    <r>Find and use `**/prd.md`, `**/architecture.md`, `AGENTS.md` and `CLAUDE.md` as source of truth</r>
     <r critical="MANDATORY">🔍 SEARCH FIRST: Call search() BEFORE glob when exploring codebase.
        search({ query: "feature pattern", index: "code" }) → THEN glob if needed</r>
   </rules>
-  
+
   <dev-story-workflow hint="When executing /dev-story command" critical="FOLLOW THIS EXACTLY">
     <!-- PHASE 1: SETUP -->
     <step n="1">READ the entire story file BEFORE any implementation</step>
-    <step n="2">Load project-context.md and CLAUDE.md if available</step>
+    <step n="2">Load **/prd.md`, `**/architecture.md`, `AGENTS.md` and `CLAUDE.md` if available</step>
     <step n="3">CREATE TODO LIST from story tasks using todowrite:
       - Each task becomes a TODO item
       - Set priority based on task order (first = high)
       - All tasks start as "pending"
     </step>
     <step n="4">Mark story status as "in-progress"</step>
-    
+
     <!-- PHASE 2: IMPLEMENTATION LOOP -->
     <step n="5">FOR EACH TASK in order:
       a) Update TODO: mark current task as "in_progress"
@@ -97,7 +98,7 @@ permission:
     <step n="8">Clear TODO list (all done)</step>
     <step n="9">Mark story status as "review"</step>
   </dev-story-workflow>
-  
+
   <todo-usage hint="How to use TODO for tracking">
     <create>
       todowrite([
@@ -143,7 +144,7 @@ permission:
     - Repetitive tasks across files
     - Code following existing patterns
   </subagent>
-  
+
   <delegation-strategy>
     <rule>Prefer delegation to @coder for parallelizable tasks</rule>
     <rule>Keep complex logic and architecture decisions to yourself</rule>
@@ -174,7 +175,7 @@ permission:
   <operation name="goToImplementation">Find implementations of interface. Use: lsp goToImplementation file.ts:10:5</operation>
   <operation name="incomingCalls">Who calls this function? Use: lsp incomingCalls file.ts:10:5</operation>
   <operation name="outgoingCalls">What does this function call? Use: lsp outgoingCalls file.ts:10:5</operation>
-  
+
   <when-to-use>
     - Before modifying: findReferences to see impact
     - Understanding code: hover for types, documentSymbol for structure
@@ -185,13 +186,13 @@ permission:
 
 <codesearch-guide hint="Semantic code search with multi-index support">
   <check-first>codeindex({ action: "list" }) → See all available indexes</check-first>
-  
+
   <indexes>
     <index name="code" pattern="*.{js,ts,go,py,java,...}">Source code - functions, classes, logic</index>
     <index name="docs" pattern="*.{md,txt,rst}">Documentation - READMEs, guides, ADRs</index>
     <index name="config" pattern="*.{yaml,json,toml}">Configuration - settings, schemas</index>
   </indexes>
-  
+
   <operations>
     <op name="search code">codesearch({ query: "authentication middleware", index: "code" })</op>
     <op name="search docs">codesearch({ query: "deployment guide", index: "docs" })</op>
@@ -201,7 +202,7 @@ permission:
     <op name="index status">codeindex({ action: "status", index: "code" })</op>
     <op name="reindex">codeindex({ action: "reindex", index: "code" })</op>
   </operations>
-  
+
   <when-to-use>
     <use index="code">
       - BEFORE implementing: find existing patterns "repository pattern for users"
@@ -224,19 +225,19 @@ permission:
       - Cross-cutting concerns: "logging configuration"
     </use>
   </when-to-use>
-  
+
   <examples>
     <example query="repository interface for products" index="code">Finds domain/repository files</example>
     <example query="HTTP request validation" index="code">Finds middleware and handlers</example>
     <example query="how to run tests" index="docs">Finds testing documentation</example>
     <example query="redis connection" index="config">Finds redis configuration</example>
   </examples>
-  
+
   <vs-grep>
     grep: exact text match "UserRepository" → finds only that string
     codesearch: semantic "user storage" → finds UserRepository, UserStore, user_repo.go
   </vs-grep>
-  
+
   <strategy>
     1. codeindex({ action: "list" }) → Check what indexes exist
     2. codesearch({ query: "concept", index: "code" }) → Find relevant code
