@@ -204,10 +204,26 @@ Story is complete when:
 
 ---
 
+## Security Checklist
+
+Before marking story as done, verify:
+
+- [ ] **Input Validation**: All user inputs validated/sanitized
+- [ ] **Authentication**: Protected endpoints require auth
+- [ ] **Authorization**: User can only access their own data
+- [ ] **Secrets**: No hardcoded passwords, tokens, API keys
+- [ ] **SQL Injection**: Using parameterized queries / ORM
+- [ ] **XSS**: Output properly escaped (if frontend)
+- [ ] **Sensitive Data**: PII/secrets not logged
+- [ ] **Error Messages**: No sensitive info in error responses
+
+---
+
 ## Definition of Done
 
 - [ ] All acceptance criteria met
 - [ ] All tasks completed
+- [ ] Security checklist passed
 - [ ] Code follows `docs/coding-standards/`
 - [ ] Tests pass
 - [ ] Code reviewed

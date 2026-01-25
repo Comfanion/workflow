@@ -157,6 +157,11 @@ development:
   # STUB: Interface → Stub Implementation → Test → Full Implementation
   methodology: tdd
   
+  # Auto-invoke @reviewer after /dev-story completes all tasks
+  # When true: story tasks complete → auto /review-story → APPROVE → done
+  # When false: story tasks complete → status "review" → manual /review-story
+  auto_review: true
+  
   # Task structure
   task:
     max_hours: 2           # Maximum hours per atomic task

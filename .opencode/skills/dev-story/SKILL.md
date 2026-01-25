@@ -489,11 +489,57 @@ Read from `config.yaml → development.methodology`:
     - Tasks completed: {{completed_tasks_count}}
     - Tests added: {{new_tests_count}}
     - Files changed: {{changed_files_count}}
-    
-    **Next Steps:**
-    - Run `code-review` skill for peer review
-    - After approval, mark story as "done"
   </output>
+  
+  <!-- AUTO-INVOKE: @reviewer for code review -->
+  <goto step="8">Automatic code review</goto>
+</step>
+```
+
+### Step 8: Automatic Code Review (by @reviewer)
+
+```xml
+<step n="8" goal="Automatic security and quality review before done">
+  <critical>ALWAYS invoke @reviewer after all tasks complete</critical>
+  
+  <action>Invoke @reviewer agent with story path</action>
+  <action>@reviewer uses GPT-5.2 Codex for deep analysis</action>
+  
+  <invoke agent="reviewer">
+    <param name="story_path">{{story_path}}</param>
+    <param name="files_changed">{{file_list}}</param>
+    <param name="focus">security, correctness, test coverage</param>
+  </invoke>
+  
+  <check if="reviewer verdict = APPROVE">
+    <action>Mark story status as "done"</action>
+    <output>✅ Code review passed! Story complete.</output>
+  </check>
+  
+  <check if="reviewer verdict = CHANGES_REQUESTED">
+    <action>Create follow-up tasks from review findings</action>
+    <action>Add tasks to story file</action>
+    <output>
+      🔄 **Code Review: Changes Requested**
+      
+      Review found {{issues_count}} issues to fix.
+      New tasks added to story.
+      
+      Run dev-story again to fix issues.
+    </output>
+    <goto step="4">Fix review issues</goto>
+  </check>
+  
+  <check if="reviewer verdict = BLOCKED">
+    <action>Mark story status as "blocked"</action>
+    <output>
+      ❌ **Code Review: Blocked**
+      
+      Critical issues found. See review for details.
+      Cannot proceed until blocking issues resolved.
+    </output>
+    <halt reason="Blocked by code review"/>
+  </check>
 </step>
 ```
 
@@ -519,6 +565,7 @@ Read from `config.yaml → development.methodology`:
 
 - [ ] All tasks/subtasks marked complete
 - [ ] Implementation satisfies every AC
+- [ ] Security checklist passed
 - [ ] Unit tests added for core functionality
 - [ ] Integration tests added when required
 - [ ] All tests pass (no regressions)
@@ -526,4 +573,5 @@ Read from `config.yaml → development.methodology`:
 - [ ] File List includes all changes
 - [ ] Dev Agent Record complete
 - [ ] Change Log updated
-- [ ] Status set to "review"
+- [ ] **@reviewer approved** (auto-invoked after Step 7)
+- [ ] Status set to "done"
