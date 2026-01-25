@@ -45,6 +45,7 @@ const DEFAULT_PRESETS = {
 // Will be populated from config.yaml if available
 let INDEX_PRESETS = { ...DEFAULT_PRESETS };
 let GLOBAL_IGNORE = [];
+let EMBEDDING_MODEL = 'Xenova/all-MiniLM-L6-v2';  // Default: fast model
 
 /**
  * Load index configuration from config.yaml
@@ -60,6 +61,13 @@ async function loadConfig(projectRoot) {
     if (!vectorizerMatch) return;
     
     const section = vectorizerMatch[1];
+    
+    // Parse embedding model
+    const modelMatch = section.match(/^\s{2}model:\s*["']?([^"'\n]+)["']?/m);
+    if (modelMatch) {
+      EMBEDDING_MODEL = modelMatch[1].trim();
+      if (DEBUG) console.log('[vectorizer] Using model from config:', EMBEDDING_MODEL);
+    }
     
     // Parse global exclude
     const excludeMatch = section.match(/^\s{2}exclude:\s*\n((?:\s{4}-\s+.+\n?)*)/m);
@@ -148,11 +156,14 @@ class CodebaseIndexer {
 
   async loadModel() {
     if (!this.model) {
-      if (DEBUG) console.log('[vectorizer] Loading embedding model...');
-      this.model = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
+      if (DEBUG) console.log(`[vectorizer] Loading embedding model: ${EMBEDDING_MODEL}...`);
+      // Model options:
+      // - Xenova/all-MiniLM-L6-v2: fast, 384 dims, ~10 files/10sec
+      // - Xenova/bge-base-en-v1.5: quality, 768 dims, ~3 files/10sec
+      this.model = await pipeline('feature-extraction', EMBEDDING_MODEL, {
         progress_callback: DEBUG ? undefined : null  // Suppress progress bar unless DEBUG
       });
-      if (DEBUG) console.log('[vectorizer] Model loaded');
+      if (DEBUG) console.log(`[vectorizer] Model loaded: ${EMBEDDING_MODEL}`);
     }
     return this.model;
   }
@@ -485,6 +496,7 @@ class CodebaseIndexer {
     return { 
       indexName: this.indexName,
       description: preset?.description || 'Custom index',
+      model: EMBEDDING_MODEL,
       fileCount, 
       chunkCount 
     };
@@ -553,4 +565,9 @@ class CodebaseIndexer {
   }
 }
 
-export { CodebaseIndexer, INDEX_PRESETS };
+// Getter for current embedding model (after config loaded)
+function getEmbeddingModel() {
+  return EMBEDDING_MODEL;
+}
+
+export { CodebaseIndexer, INDEX_PRESETS, getEmbeddingModel };

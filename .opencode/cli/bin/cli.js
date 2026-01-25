@@ -124,6 +124,7 @@ program
       install_vectorizer: true,   // Vectorizer ON by default
       vectorizer_enabled: true,
       vectorizer_auto_index: true,
+      vectorizer_model: 'Xenova/bge-small-en-v1.5',  // Default: balanced (quality + speed)
       project_name: path.basename(process.cwd())
     };
     
@@ -146,6 +147,7 @@ program
           // Parse vectorizer settings
           const vectorizerEnabledMatch = existingContent.match(/vectorizer:[\s\S]*?enabled:\s*(true|false)/);
           const vectorizerAutoIndexMatch = existingContent.match(/vectorizer:[\s\S]*?auto_index:\s*(true|false)/);
+          const vectorizerModelMatch = existingContent.match(/vectorizer:[\s\S]*?model:\s*["']?([^"'\n]+)["']?/);
           
           if (nameMatch) config.user_name = nameMatch[1];
           if (langMatch) config.communication_language = langMatch[1];
@@ -155,6 +157,7 @@ program
           if (jiraProjMatch) config.jira_project = jiraProjMatch[1];
           if (vectorizerEnabledMatch) config.vectorizer_enabled = vectorizerEnabledMatch[1] === 'true';
           if (vectorizerAutoIndexMatch) config.vectorizer_auto_index = vectorizerAutoIndexMatch[1] === 'true';
+          if (vectorizerModelMatch) config.vectorizer_model = vectorizerModelMatch[1].trim();
           
           isUpdate = true;
         } catch (e) {
@@ -248,6 +251,27 @@ program
           name: 'install_vectorizer',
           message: 'Install vectorizer? (semantic code search, ~100MB)',
           default: true
+        },
+        {
+          type: 'list',
+          name: 'vectorizer_model',
+          message: 'Embedding model for semantic search:',
+          when: (answers) => answers.install_vectorizer,
+          choices: [
+            { 
+              name: 'MiniLM-L6 (Fast)    - ~10 files/10sec, 384 dims, good quality', 
+              value: 'Xenova/all-MiniLM-L6-v2' 
+            },
+            { 
+              name: 'BGE-small (Balanced) - ~9 files/10sec, 384 dims, better quality', 
+              value: 'Xenova/bge-small-en-v1.5' 
+            },
+            { 
+              name: 'BGE-base (Quality)   - ~3 files/10sec, 768 dims, best quality', 
+              value: 'Xenova/bge-base-en-v1.5' 
+            }
+          ],
+          default: 'Xenova/bge-small-en-v1.5'
         },
         {
           type: 'confirm',
@@ -448,6 +472,23 @@ program
           `$1 ${config.vectorizer_enabled}`)
         .replace(/(# Auto-index files.*\n\s+auto_index:)\s*(true|false)/, 
           `$1 ${config.vectorizer_auto_index}`);
+      
+      // Add/update vectorizer model
+      if (config.vectorizer_model) {
+        if (configContent.includes('model:') && configContent.match(/vectorizer:[\s\S]*?model:/)) {
+          // Update existing model setting
+          configContent = configContent.replace(
+            /(vectorizer:[\s\S]*?)model:\s*["']?[^"'\n]+["']?/,
+            `$1model: "${config.vectorizer_model}"`
+          );
+        } else {
+          // Add model setting after auto_index
+          configContent = configContent.replace(
+            /(auto_index:\s*(true|false))/,
+            `$1\n  \n  # Embedding model for semantic search\n  # Options: Xenova/all-MiniLM-L6-v2 (fast), Xenova/bge-base-en-v1.5 (quality)\n  model: "${config.vectorizer_model}"`
+          );
+        }
+      }
       
       await fs.writeFile(configPath, configContent);
       
