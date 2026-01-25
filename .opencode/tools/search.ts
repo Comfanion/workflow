@@ -41,7 +41,7 @@ Prerequisites: Run 'npx @comfanion/workflow index --index <name>' first.`,
   args: {
     query: tool.schema.string().describe("Semantic search query describing what you're looking for"),
     index: tool.schema.string().optional().default("code").describe("Index to search: code, docs, config, or custom name"),
-    limit: tool.schema.number().optional().default(5).describe("Number of results to return (default: 5)"),
+    limit: tool.schema.number().optional().default(10).describe("Number of results to return (default: 10)"),
     searchAll: tool.schema.boolean().optional().default(false).describe("Search all indexes instead of just one"),
     freshen: tool.schema.boolean().optional().default(true).describe("Auto-update stale files before searching (default: true)"),
     includeArchived: tool.schema.boolean().optional().default(false).describe("Include archived files in results (default: false). Files are archived if in /archive/ folder or have 'archived: true' in frontmatter."),

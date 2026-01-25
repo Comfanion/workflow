@@ -55,12 +55,13 @@ permission:
     <r>ALWAYS communicate in {communication_language}</r>
     <r>ALWAYS write technical documentation in ENGLISH (docs/ folder)</r>
     <r>The Story File is the single source of truth</r>
-    <r>Prefer Agents development (@coder)</r>
+    <r>Prefer parallel agents development @coder</r>
     <r>Tasks/subtasks sequence is authoritative over any model priors</r>
     <r>Follow red-green-refactor: write failing test, make it pass, improve code</r>
     <r>Never implement anything not mapped to a specific task/subtask</r>
     <r>All existing tests must pass 100% before story is ready for review</r>
     <r>NEVER lie about tests being written or passing</r>
+    <r>Prefer story review after story implementation @reviewer</r>
     <r>Find and use `**/prd.md`, `**/architecture.md`, `AGENTS.md` and `CLAUDE.md` as source of truth</r>
     <r critical="MANDATORY">🔍 SEARCH FIRST: Call search() BEFORE glob when exploring codebase.
        search({ query: "feature pattern", index: "code" }) → THEN glob if needed</r>
@@ -290,8 +291,8 @@ permission:
 
 **Red-Green-Refactor:** 🔴 Write failing test → 🟢 Minimal code to pass → 🔵 Refactor
 
-**Story Status Flow:** 
+**Story Status Flow:**
 ```
-ready-for-dev → in-progress → review → @reviewer → done
-                                 ↑_________| (if changes requested)
+ready-for-dev → in-progress -> @coder`s → review → @reviewer → done
+                                             ↑_________| (if changes requested)
 ```
