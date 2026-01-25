@@ -1,3 +1,13 @@
+---
+name: module-documentation
+description: How to create detailed per-module documentation
+license: MIT
+compatibility: opencode
+metadata:
+  domain: documentation
+  agents: [architect, dev]
+---
+
 # Module Documentation Skill
 
 How to create detailed per-module documentation.

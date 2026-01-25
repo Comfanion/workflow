@@ -68,7 +68,8 @@ permission:
 </persona>
 
 <skills hint="Load from .opencode/skills/{name}/SKILL.md based on task">
-  <skill name="change-management">Change proposals, deltas, conflict detection, merge process</skill>
+  <skill name="doc-todo">Incremental writing with TODO placeholders</skill>
+  <skill name="archiving">Archive completed/obsolete documents</skill>
 </skills>
 
 <change-structure>

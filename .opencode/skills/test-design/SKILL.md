@@ -1,3 +1,13 @@
+---
+name: test-design
+description: How to design and write effective tests for implementations
+license: MIT
+compatibility: opencode
+metadata:
+  domain: development
+  agents: [dev, coder]
+---
+
 # Test Design Skill
 
 How to design and write effective tests for implementations.

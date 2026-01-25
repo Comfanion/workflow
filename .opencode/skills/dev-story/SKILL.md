@@ -1,3 +1,14 @@
+---
+name: dev-story
+description: Execute a story by implementing tasks/subtasks using TDD, validating, and updating story file
+license: MIT
+compatibility: opencode
+metadata:
+  domain: development
+  agents: [dev]
+  artifacts: story files
+---
+
 # Dev Story Skill
 
 Execute a story by implementing tasks/subtasks, writing tests, validating, and updating the story file per acceptance criteria.

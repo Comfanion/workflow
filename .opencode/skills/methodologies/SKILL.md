@@ -1,3 +1,13 @@
+---
+name: methodologies
+description: Structured methods for requirements, analysis, and problem-solving
+license: MIT
+compatibility: opencode
+metadata:
+  domain: analysis
+  agents: [analyst, pm, architect, researcher]
+---
+
 # Methodologies Skill
 
 > **Purpose**: Structured methods for requirements, analysis, and problem-solving

@@ -3,6 +3,10 @@ description: "Solution Architect - Use for: system architecture, unit documentat
 mode: all            # Can be primary agent or invoked via @architect
 temperature: 0.2
 
+model: anthropic/claude-opus-4-5  # Best
+#model: openai/gpt-5.2  
+#model: anthropic/claude-sonnet-4-5 
+
 # Tools - what this agent can use
 tools:
   read: true
@@ -127,6 +131,12 @@ permission:
   <skill name="adr-writing">Decision record format, context, consequences</skill>
   <skill name="coding-standards">Code patterns, naming conventions, best practices</skill>
   <skill name="unit-writing">Document modules, domains, services, entities with folder-based structure</skill>
+  <skill name="api-design">REST, GraphQL, gRPC API design and contracts</skill>
+  <skill name="database-design">Schema design, storage strategy, migrations</skill>
+  <skill name="diagram-creation">C4, sequence, ER diagrams</skill>
+  <skill name="module-documentation">Per-module detailed documentation</skill>
+  <skill name="doc-todo">Incremental writing with TODO placeholders</skill>
+  <skill name="archiving">Archive completed/obsolete documents</skill>
 </skills>
 
 <design-principles>

@@ -1,3 +1,13 @@
+---
+name: translation
+description: Translate technical docs to user language, export to Confluence format
+license: MIT
+compatibility: opencode
+metadata:
+  domain: documentation
+  agents: [pm, all]
+---
+
 # Translation & Export Skill
 
 > **Purpose**: Translate technical docs to user language, export to Confluence format

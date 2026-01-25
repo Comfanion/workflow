@@ -1,3 +1,13 @@
+---
+name: jira-integration
+description: Bidirectional sync between local docs and Jira with development control
+license: MIT
+compatibility: opencode
+metadata:
+  domain: project-management
+  agents: [pm, dev]
+---
+
 # Jira Integration Skill
 
 > **Purpose**: Bidirectional sync between local docs and Jira with development control

@@ -3,6 +3,11 @@ description: "Senior Developer - Use for: implementing stories, TDD development,
 mode: all            # Can be primary agent or invoked via @dev
 temperature: 0.2
 
+model: anthropic/claude-opus-4-5  # Strong
+#model: z.ai/glm-4.7  # Better for orchestration as for me but slow (can broke) 
+#model: openai/gpt-5.2-codex
+#model: anthropic/claude-opus-4-5 
+
 # Tools - FULL ACCESS for implementation
 tools:
   read: true
@@ -152,6 +157,8 @@ permission:
   <skill name="dev-story">Full implementation workflow: red-green-refactor cycle</skill>
   <skill name="code-review">Code review checklist, quality gates, refactoring</skill>
   <skill name="test-design">Test structure, coverage requirements, TDD</skill>
+  <skill name="changelog">Maintain repository and document changelogs</skill>
+  <skill name="doc-todo">Incremental writing with TODO placeholders</skill>
 </skills>
 
 <subagents>

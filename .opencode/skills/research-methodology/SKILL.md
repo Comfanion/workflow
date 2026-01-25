@@ -1,3 +1,13 @@
+---
+name: research-methodology
+description: How to conduct thorough technical, market, domain, and competitive research
+license: MIT
+compatibility: opencode
+metadata:
+  domain: research
+  agents: [researcher]
+---
+
 # Research Methodology Skill
 
 How to conduct thorough technical, market, domain, and competitive research.

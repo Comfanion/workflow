@@ -6,6 +6,11 @@ mode: subagent
 # model: deepseek/deepseek-chat  # Uncomment when available
 temperature: 0.1
 
+model: anthropic/claude-haiku-4-5  # Fast + Quality
+#model: z.ai/glm-4.7  # Slow but cheap
+#model: openai/gpt-5.2-codex
+#model: anthropic/claude-opus-4-5 
+
 # Tools - FULL ACCESS for fast execution
 tools:
   read: true

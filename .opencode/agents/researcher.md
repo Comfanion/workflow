@@ -4,9 +4,9 @@ description: "Research Specialist - Use for: technical research, market research
 # Model for research - Gemini recommended for large context and grounding
 model: google/gemini-2.5-pro
 # Alternatives:
-#   google/gemini-2.5-flash       - faster, cheaper
-#   google/gemini-2.0-flash       - even faster
-#   anthropic/claude-sonnet-4-20250514  - balanced
+#model: anthropic/claude-sonnet-4-5  # Best
+#model: google/gemini-2.5-flash
+#model: anthropic/claude-sonnet-4-5 
 
 mode: all            # Can be primary agent or invoked via @researcher
 temperature: 0.4

@@ -3,6 +3,10 @@ description: "Business Analyst - Use for: gathering requirements, validating req
 mode: all
 temperature: 0.3
 
+model: anthropic/claude-sonnet-4-5  # Best
+#model: openai/gpt-5.2  
+#model: anthropic/claude-opus-4-5 
+
 # Tools - what this agent can use
 tools:
   read: true
@@ -103,6 +107,8 @@ permission:
   <skill name="acceptance-criteria">Given/When/Then format, testable AC</skill>
   <skill name="unit-writing">Document domains, entities using Universal Unit format</skill>
   <skill name="methodologies">User Interviews, Empathy Mapping, Journey Mapping, Five Whys</skill>
+  <skill name="doc-todo">Incremental writing with TODO placeholders</skill>
+  <skill name="archiving">Archive completed/obsolete documents</skill>
 </skills>
 
 <methodologies>

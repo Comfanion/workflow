@@ -3,6 +3,12 @@ description: "Product Manager - Use for: creating PRD, writing epics, writing st
 mode: all            # Can be primary agent or invoked via @pm
 temperature: 0.3
 
+model: anthropic/claude-opus-4-5  # Strong
+#model: openai/gpt-5.2
+#model: anthropic/claude-sonnet-4-5 
+#model: z.ai/glm-4.7  # Better for orchestration as for me but slow (can broke) 
+
+
 # Tools - what this agent can use
 tools:
   read: true
@@ -134,6 +140,8 @@ permission:
   <skill name="jira-integration">Jira API sync, field mapping, status updates</skill>
   <skill name="unit-writing">Document features using Universal Unit format</skill>
   <skill name="translation">Translate docs to user language, export to Confluence</skill>
+  <skill name="doc-todo">Incremental writing with TODO placeholders</skill>
+  <skill name="archiving">Archive completed/obsolete documents</skill>
 </skills>
 
 <sizing-guidelines>

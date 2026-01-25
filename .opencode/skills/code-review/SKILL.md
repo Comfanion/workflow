@@ -1,3 +1,13 @@
+---
+name: code-review
+description: How to perform thorough code reviews for implemented stories
+license: MIT
+compatibility: opencode
+metadata:
+  domain: development
+  agents: [reviewer, dev]
+---
+
 # Code Review Skill
 
 How to perform thorough code reviews for implemented stories.

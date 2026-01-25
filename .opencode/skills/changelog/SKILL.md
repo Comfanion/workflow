@@ -1,3 +1,13 @@
+---
+name: changelog
+description: Maintain changelogs for repository and documents
+license: MIT
+compatibility: opencode
+metadata:
+  domain: documentation
+  agents: [dev, all]
+---
+
 # Changelog Skill
 
 > **Purpose**: Maintain changelogs for repository and documents

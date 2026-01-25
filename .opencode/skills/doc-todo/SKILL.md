@@ -1,3 +1,13 @@
+---
+name: doc-todo
+description: Incremental document writing with TODO placeholders
+license: MIT
+compatibility: opencode
+metadata:
+  domain: documentation
+  agents: [all]
+---
+
 # Documentation TODO Skill
 
 > **Purpose**: Incremental document writing with TODO placeholders
