@@ -25,13 +25,13 @@ This command invokes the **Dev** agent (Rick).
 
 ### Phase 1: Setup
 1. Find or load story file
-2. Load project context (CLAUDE.md, project-context.md)
+2. Load project context (CLAUDE.md, docs/prd.md, docs/architecture.md)
 3. **Create TODO list from story tasks** (for progress tracking)
 4. Mark story as `in-progress`
 
 ### Phase 2: Implementation (for each task)
 5. **Mark task as `in_progress` in TODO**
-6. Delegate to @coder:
+6. Delegate to @coder`s (call agents in one message or multi-agent-call):
    - 🔴 RED: Write failing test
    - 🟢 GREEN: Implement minimal code to pass
    - 🔵 REFACTOR: Improve while keeping tests green

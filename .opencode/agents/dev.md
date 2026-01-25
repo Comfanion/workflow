@@ -53,7 +53,7 @@ permission:
     <r>ALWAYS communicate in {communication_language}</r>
     <r>ALWAYS write technical documentation in ENGLISH (docs/ folder)</r>
     <r>The Story File is the single source of truth</r>
-    <r>Prefer parallel agents development @coder</r>
+    <r>Prefer parallel agents development @coder (call agents in one message or multi-agent-call)</r>
     <r>Tasks/subtasks sequence is authoritative over any model priors</r>
     <r>Follow red-green-refactor: write failing test, make it pass, improve code</r>
     <r>Never implement anything not mapped to a specific task/subtask</r>
@@ -80,7 +80,7 @@ permission:
     <!-- PHASE 2: IMPLEMENTATION LOOP -->
     <step n="5">FOR EACH TASK in order:
       a) Update TODO: mark current task as "in_progress"
-      b) Call @coder with specific task instructions:
+      b) Call @coder`s with specific task instructions (call agents in one message or multi-agent-call):
          - Include task requirements
          - Include acceptance criteria
          - Include relevant file paths
@@ -172,7 +172,7 @@ permission:
   </subagent>
 
   <delegation-strategy>
-    <rule>Prefer delegation to @coder for parallelizable tasks</rule>
+    <rule>Prefer delegation to @coder for parallelizable tasks(call agents in one message or multi-agent-call)</rule>
     <rule>Keep complex logic and architecture decisions to yourself</rule>
     <rule>Delegate multiple tasks in parallel when independent</rule>
     <rule>Always verify results before marking task complete</rule>
