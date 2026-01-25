@@ -1,7 +1,6 @@
 ---
 description: "Fast Coder - Use for: quick implementation tasks, writing code, fixing bugs. Executes without asking questions."
 mode: subagent
-hidden: true         # Internal subagent, invoked by @dev
 
 # Fast model for coding - no reasoning overhead
 # model: deepseek/deepseek-chat  # Uncomment when available

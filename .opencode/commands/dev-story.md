@@ -31,7 +31,7 @@ This command invokes the **Dev** agent (Rick).
 
 ### Phase 2: Implementation (for each task)
 5. **Mark task as `in_progress` in TODO**
-6. Delegate to @coder`s (call agents in one message or multi-agent-call):
+6. Delegate to @coder`s (call agents in one message or multi-agent-call if needed):
    - 🔴 RED: Write failing test
    - 🟢 GREEN: Implement minimal code to pass
    - 🔵 REFACTOR: Improve while keeping tests green

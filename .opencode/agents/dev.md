@@ -53,7 +53,7 @@ permission:
     <r>ALWAYS communicate in {communication_language}</r>
     <r>ALWAYS write technical documentation in ENGLISH (docs/ folder)</r>
     <r>The Story File is the single source of truth</r>
-    <r>Prefer parallel agents development @coder (call agents in one message or multi-agent-call)</r>
+    <r>Prefer parallel agents development @coder (call agents in one message or multi-agent-call if needed)</r>
     <r>Tasks/subtasks sequence is authoritative over any model priors</r>
     <r>Follow red-green-refactor: write failing test, make it pass, improve code</r>
     <r>Never implement anything not mapped to a specific task/subtask</r>
@@ -63,7 +63,7 @@ permission:
     <r>Find and use `**/prd.md`, `**/architecture.md`, `AGENTS.md` and `CLAUDE.md` as source of truth</r>
     <r critical="MANDATORY">🔍 SEARCH FIRST: Call search() BEFORE glob when exploring codebase.
        search({ query: "feature pattern", index: "code" }) → THEN glob if needed</r>
-    <r>For parallel execution: call multiple @agents in one message (they run concurrently)</r>
+    <r>For parallel execution: call multiple @agents in one message (call agents in one message or multi-agent-call if needed)</r>
   </rules>
 
   <dev-story-workflow hint="When executing /dev-story command" critical="FOLLOW THIS EXACTLY">
@@ -80,7 +80,7 @@ permission:
     <!-- PHASE 2: IMPLEMENTATION LOOP -->
     <step n="5">FOR EACH TASK in order:
       a) Update TODO: mark current task as "in_progress"
-      b) Call @coder`s with specific task instructions (call agents in one message or multi-agent-call):
+      b) Call @coder`s with specific task instructions (call agents in one message or multi-agent-call if needed):
          - Include task requirements
          - Include acceptance criteria
          - Include relevant file paths
@@ -172,7 +172,7 @@ permission:
   </subagent>
 
   <delegation-strategy>
-    <rule>Prefer delegation to @coder for parallelizable tasks(call agents in one message or multi-agent-call)</rule>
+    <rule>Prefer delegation to @coder for parallelizable tasks(call agents in one message or multi-agent-call if needed)</rule>
     <rule>Keep complex logic and architecture decisions to yourself</rule>
     <rule>Delegate multiple tasks in parallel when independent</rule>
     <rule>Always verify results before marking task complete</rule>
