@@ -21,9 +21,10 @@ The workflow uses specialized AI agents, each with a unique persona and skills:
 | 📊 **Analyst** | Sara | Requirements gathering, stakeholder interviews | Planning |
 | 📋 **PM** | Dima | PRD, epics, stories, sprint planning, Jira | Planning → Sprint |
 | 🏗️ **Architect** | Winston | System design, ADRs, coding standards | Planning |
-| 💻 **Dev** | Rick | TDD implementation, code review | Implementation |
+| 💻 **Dev** | Rick | TDD implementation, story development | Implementation |
 | ⚡ **Coder** | Morty | Quick implementation, bug fixes | Implementation |
-| 🔍 **Researcher** | Kristina | Technical/market/domain research | Any |
+| 🔍 **Reviewer** | Marcus | Security review, bug finding (GPT-5.2 Codex) | Implementation |
+| 🔬 **Researcher** | Kristina | Technical/market/domain research | Any |
 | 🔄 **Change Manager** | Bruce | Documentation changes, impact analysis | Any |
 
 ### Workflow Pipeline
@@ -31,8 +32,17 @@ The workflow uses specialized AI agents, each with a unique persona and skills:
 ```
 Planning:    /requirements → /prd → /coding-standards → /architecture
 Sprint:      /epics → /stories → /sprint-plan → /jira-sync  
-Development: /dev-story ↔ /code-review (loop until done)
+Development: /dev-story → /review-story (auto) → done
+                  ↑______________|  (fix if issues found)
 ```
+
+### Auto Review
+
+After `/dev-story` completes all tasks, `@reviewer` (GPT-5.2 Codex) automatically reviews:
+- **Security** - secrets, injection, auth/authz
+- **Correctness** - AC satisfied, edge cases
+- **Testing** - coverage, quality
+- **Code quality** - architecture, performance
 
 ### Key Skills
 
@@ -127,7 +137,11 @@ npx @comfanion/workflow init
 2. **Communication language** - Ukrainian, English, Russian
 3. **Development methodology** - TDD or STUB
 4. **Vectorizer** - Enable semantic search
-5. **Jira integration** - Enable/disable
+5. **Embedding model** - Choose speed vs quality:
+   - MiniLM-L6 (Fast) - ~10 files/10sec
+   - BGE-small (Balanced) - ~9 files/10sec ← default
+   - BGE-base (Quality) - ~3 files/10sec
+6. **Jira integration** - Enable/disable
 
 **Flags:**
 
@@ -181,11 +195,13 @@ communication_language: "en"  # en, uk, ru
 # Development
 development:
   methodology: tdd  # tdd or stub
+  auto_review: true # Auto-invoke @reviewer after /dev-story
 
 # Semantic Search
 vectorizer:
   enabled: true
   auto_index: true      # Auto-index on startup
+  model: "Xenova/bge-small-en-v1.5"  # MiniLM, bge-small, bge-base
   debounce_ms: 5000
   indexes:
     code: { enabled: true }
@@ -212,12 +228,18 @@ jira:
 ├── config.yaml          # Your configuration
 ├── FLOW.yaml            # Workflow definition
 ├── agents/              # AI agent personas
-│   ├── analyst.md       # Business Analyst
-│   ├── pm.md            # Product Manager
-│   ├── architect.md     # Solution Architect
-│   └── dev.md           # Senior Developer
+│   ├── analyst.md       # Sara - Business Analyst
+│   ├── pm.md            # Dima - Product Manager
+│   ├── architect.md     # Winston - Solution Architect
+│   ├── dev.md           # Rick - Senior Developer
+│   ├── coder.md         # Morty - Fast Coder
+│   ├── reviewer.md      # Marcus - Code Reviewer (GPT-5.2 Codex)
+│   ├── researcher.md    # Kristina - Researcher
+│   └── change-manager.md # Bruce - Change Manager
 ├── skills/              # Knowledge modules (25+)
-├── plugins/             # Auto-indexer plugin
+├── plugins/             # Plugins
+│   ├── file-indexer.ts  # Auto-indexer on startup
+│   └── custom-compaction.ts  # Agent-aware session compaction
 ├── vectorizer/          # Semantic search engine
 │   ├── index.js
 │   └── package.json
