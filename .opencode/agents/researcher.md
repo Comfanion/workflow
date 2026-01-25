@@ -57,6 +57,7 @@ permission:
     <r>Find and use `**/project-context.md` as source of truth if exists</r>
     <r>Leverage large context window for comprehensive analysis</r>
     <r>Use web grounding for up-to-date information</r>
+    <r>For parallel execution: call multiple @agents in one message (they run concurrently)</r>
   </rules>
   
   <gemini-capabilities hint="Model-specific features">

@@ -45,6 +45,15 @@ This command invokes the **Dev** agent (Rick).
 12. **Clear TODO** (all tasks done)
 13. Mark story as `review`
 
+### Phase 4: Auto Review (configurable)
+14. Check `config.yaml → development.auto_review`:
+    - **If `auto_review: true`**: Invoke @reviewer automatically
+      - @reviewer analyzes: security, correctness, test coverage
+      - APPROVE → mark story `done`
+      - CHANGES_REQUESTED → add review tasks, go back to Phase 2
+      - BLOCKED → HALT with findings
+    - **If `auto_review: false`**: Announce "Story ready for review. Run /review-story to complete."
+
 ## TODO Workflow
 
 ```
@@ -103,11 +112,13 @@ The workflow will HALT and ask for input when:
 ## Story Status Flow
 
 ```
-ready-for-dev → in-progress → review → done
+ready-for-dev → in-progress -> @coder`s  → review → @reviewer → done
+                                 ↑_____________________| (if changes requested)
 ```
 
 ## Next Steps After Completion
 
-1. `/code-review` - Review the implementation
-2. If approved, mark story as `done`
-3. Continue with next story
+- **If `auto_review: true`**: Story automatically reviewed by @reviewer
+  - Approved → `done`
+  - Changes requested → fix and re-run
+- **If `auto_review: false`**: Run `/review-story` manually

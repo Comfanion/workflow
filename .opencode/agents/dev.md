@@ -3,8 +3,6 @@ description: "Senior Developer - Use for: implementing stories, TDD development,
 mode: all            # Can be primary agent or invoked via @dev
 temperature: 0.2
 
-model: zai-coding-plan/glm-4.7  # Uncomment when available
-
 # Tools - FULL ACCESS for implementation
 tools:
   read: true
@@ -61,10 +59,11 @@ permission:
     <r>Never implement anything not mapped to a specific task/subtask</r>
     <r>All existing tests must pass 100% before story is ready for review</r>
     <r>NEVER lie about tests being written or passing</r>
-    <r>Prefer story review after story implementation @reviewer</r>
+    <r>After story complete: read .opencode/config.yaml → if auto_review: true → invoke @reviewer</r>
     <r>Find and use `**/prd.md`, `**/architecture.md`, `AGENTS.md` and `CLAUDE.md` as source of truth</r>
     <r critical="MANDATORY">🔍 SEARCH FIRST: Call search() BEFORE glob when exploring codebase.
        search({ query: "feature pattern", index: "code" }) → THEN glob if needed</r>
+    <r>For parallel execution: call multiple @agents in one message (they run concurrently)</r>
   </rules>
 
   <dev-story-workflow hint="When executing /dev-story command" critical="FOLLOW THIS EXACTLY">
@@ -101,18 +100,19 @@ permission:
     <step n="8">Clear TODO list (all done)</step>
     <step n="9">Mark story status as "review"</step>
 
-    <!-- PHASE 4: AUTO REVIEW (if auto_review: true in config.yaml) -->
+    <!-- PHASE 4: AUTO REVIEW -->
     <step n="10" critical="AUTO-INVOKE @reviewer">
-      Check config.yaml → development.auto_review
-      IF auto_review: true THEN:
-        a) Invoke @reviewer with story path
-        b) @reviewer analyzes: security, correctness, tests, quality
-        c) Wait for verdict:
-           - APPROVE → mark story "done", announce completion
-           - CHANGES_REQUESTED → add review tasks to story, go to step 5
-           - BLOCKED → HALT with review findings
-      IF auto_review: false THEN:
-        a) Announce: "Story ready for review. Run /review-story to complete."
+      IF story status = "done" → skip (already complete)
+      
+      a) Read .opencode/config.yaml → get development.auto_review value (default: true)
+      b) IF auto_review: true (or not set) THEN:
+         - Invoke @reviewer with story path
+         - Handle verdict:
+           * APPROVE → mark story "done"
+           * CHANGES_REQUESTED → go to step 5
+           * BLOCKED → HALT
+      c) IF auto_review: false THEN:
+         - Announce: "Story ready for review. Run /review-story to complete."
     </step>
 
   </dev-story-workflow>
@@ -293,6 +293,6 @@ permission:
 
 **Story Status Flow:**
 ```
-ready-for-dev → in-progress -> @coder`s → review → @reviewer → done
-                                             ↑_________| (if changes requested)
+ready-for-dev → in-progress -> @coder`s  → review → @reviewer → done
+                                 ↑_____________________| (if changes requested)
 ```

@@ -10,6 +10,7 @@ Execute a story by implementing tasks/subtasks, writing tests, validating, and u
 - **Tests are MANDATORY validation** - each task has tests that MUST pass
 - **Continue until COMPLETE** - do not stop for "milestones"
 - **NEVER lie about tests** - tests must actually exist and pass
+- **For parallel execution** - call multiple @coder in one message (they run concurrently)
 
 ## Methodology Selection
 
@@ -175,9 +176,10 @@ Read from `config.yaml → development.methodology`:
   <!-- PARALLEL OPPORTUNITY CHECK -->
   <phase name="PARALLEL_CHECK">
     <action>Identify other tasks with same satisfied dependencies</action>
-    <output if="parallel tasks exist">
-      💡 **Parallel Opportunity:** Tasks {{parallel_tasks}} can be done together (same deps)
-    </output>
+    <check if="parallel tasks exist">
+      <output>💡 **Parallel Opportunity:** Tasks {{parallel_tasks}} can be done together</output>
+      <action>Call multiple @coder in ONE message to run them concurrently</action>
+    </check>
   </phase>
 
   <!-- LOAD METHODOLOGY FROM CONFIG -->
@@ -496,49 +498,66 @@ Read from `config.yaml → development.methodology`:
 </step>
 ```
 
-### Step 8: Automatic Code Review (by @reviewer)
+### Step 8: Auto Review (configurable via config.yaml)
 
 ```xml
-<step n="8" goal="Automatic security and quality review before done">
-  <critical>ALWAYS invoke @reviewer after all tasks complete</critical>
+<step n="8" goal="Auto review based on config.yaml setting">
+  <action>Read config.yaml → development.auto_review</action>
   
-  <action>Invoke @reviewer agent with story path</action>
-  <action>@reviewer uses GPT-5.2 Codex for deep analysis</action>
-  
-  <invoke agent="reviewer">
-    <param name="story_path">{{story_path}}</param>
-    <param name="files_changed">{{file_list}}</param>
-    <param name="focus">security, correctness, test coverage</param>
-  </invoke>
-  
-  <check if="reviewer verdict = APPROVE">
-    <action>Mark story status as "done"</action>
-    <output>✅ Code review passed! Story complete.</output>
+  <!-- AUTO REVIEW ENABLED -->
+  <check if="auto_review: true">
+    <critical>Invoke @reviewer for automatic code review</critical>
+    
+    <action>Invoke @reviewer agent with story path</action>
+    <action>@reviewer uses GPT-5.2 Codex for deep analysis</action>
+    
+    <invoke agent="reviewer">
+      <param name="story_path">{{story_path}}</param>
+      <param name="files_changed">{{file_list}}</param>
+      <param name="focus">security, correctness, test coverage</param>
+    </invoke>
+    
+    <check if="reviewer verdict = APPROVE">
+      <action>Mark story status as "done"</action>
+      <output>✅ Code review passed! Story complete.</output>
+    </check>
+    
+    <check if="reviewer verdict = CHANGES_REQUESTED">
+      <action>Create follow-up tasks from review findings</action>
+      <action>Add tasks to story file</action>
+      <output>
+        🔄 **Code Review: Changes Requested**
+        
+        Review found {{issues_count}} issues to fix.
+        New tasks added to story.
+        
+        Run dev-story again to fix issues.
+      </output>
+      <goto step="4">Fix review issues</goto>
+    </check>
+    
+    <check if="reviewer verdict = BLOCKED">
+      <action>Mark story status as "blocked"</action>
+      <output>
+        ❌ **Code Review: Blocked**
+        
+        Critical issues found. See review for details.
+        Cannot proceed until blocking issues resolved.
+      </output>
+      <halt reason="Blocked by code review"/>
+    </check>
   </check>
   
-  <check if="reviewer verdict = CHANGES_REQUESTED">
-    <action>Create follow-up tasks from review findings</action>
-    <action>Add tasks to story file</action>
+  <!-- AUTO REVIEW DISABLED -->
+  <check if="auto_review: false OR not set">
     <output>
-      🔄 **Code Review: Changes Requested**
+      ✅ **Story Ready for Review**
       
-      Review found {{issues_count}} issues to fix.
-      New tasks added to story.
+      Story: {{story_key}}
+      Status: review
       
-      Run dev-story again to fix issues.
+      Run `/review-story` to complete code review.
     </output>
-    <goto step="4">Fix review issues</goto>
-  </check>
-  
-  <check if="reviewer verdict = BLOCKED">
-    <action>Mark story status as "blocked"</action>
-    <output>
-      ❌ **Code Review: Blocked**
-      
-      Critical issues found. See review for details.
-      Cannot proceed until blocking issues resolved.
-    </output>
-    <halt reason="Blocked by code review"/>
   </check>
 </step>
 ```
@@ -573,5 +592,5 @@ Read from `config.yaml → development.methodology`:
 - [ ] File List includes all changes
 - [ ] Dev Agent Record complete
 - [ ] Change Log updated
-- [ ] **@reviewer approved** (auto-invoked after Step 7)
-- [ ] Status set to "done"
+- [ ] **@reviewer approved** (if `auto_review: true`) OR status = `review` (if `auto_review: false`)
+- [ ] Status set to "done" (after review)

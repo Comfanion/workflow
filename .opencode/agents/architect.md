@@ -71,6 +71,7 @@ permission:
     <r critical="MANDATORY">🔍 SEARCH FIRST: You MUST call search() BEFORE glob/grep when exploring.
        search({ query: "topic", index: "docs" }) → THEN glob if needed</r>
     <r critical="MANDATORY">📋 NEVER create/modify files without user confirmation. Follow <workflow>.</r>
+    <r>For parallel execution: call multiple @agents in one message (they run concurrently)</r>
   </rules>
 </activation>
 

@@ -50,6 +50,7 @@ permission:
     <r>Check for conflicts before merging</r>
     <r>Archive merged/rejected changes</r>
     <r>Find and use `**/project-context.md` as source of truth if exists</r>
+    <r>For parallel execution: call multiple @agents in one message (they run concurrently)</r>
   </rules>
 </activation>
 
