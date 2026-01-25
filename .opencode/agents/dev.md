@@ -3,6 +3,8 @@ description: "Senior Developer - Use for: implementing stories, TDD development,
 mode: all            # Can be primary agent or invoked via @dev
 temperature: 0.2
 
+model: zai-coding-plan/glm-4.7  # Uncomment when available
+
 # Tools - FULL ACCESS for implementation
 tools:
   read: true
@@ -91,12 +93,27 @@ permission:
       e) Update story file: mark task [x]
       f) Run test suite - HALT if failures
     </step>
-    
+
     <!-- PHASE 3: FINALIZATION -->
     <step n="6">Run FULL test suite - all tests must pass</step>
     <step n="7">Update story file: File List, Change Log, Dev Agent Record</step>
     <step n="8">Clear TODO list (all done)</step>
     <step n="9">Mark story status as "review"</step>
+
+    <!-- PHASE 4: AUTO REVIEW (if auto_review: true in config.yaml) -->
+    <step n="10" critical="AUTO-INVOKE @reviewer">
+      Check config.yaml → development.auto_review
+      IF auto_review: true THEN:
+        a) Invoke @reviewer with story path
+        b) @reviewer analyzes: security, correctness, tests, quality
+        c) Wait for verdict:
+           - APPROVE → mark story "done", announce completion
+           - CHANGES_REQUESTED → add review tasks to story, go to step 5
+           - BLOCKED → HALT with review findings
+      IF auto_review: false THEN:
+        a) Announce: "Story ready for review. Run /review-story to complete."
+    </step>
+
   </dev-story-workflow>
 
   <todo-usage hint="How to use TODO for tracking">
@@ -145,11 +162,20 @@ permission:
     - Code following existing patterns
   </subagent>
 
+  <subagent name="reviewer" when="After ALL story tasks complete (auto-invoked if auto_review: true)">
+    - Security review (secrets, injection, auth)
+    - Correctness check (AC satisfied, edge cases)
+    - Test coverage analysis
+    - Code quality assessment
+    - Uses GPT-5.2 Codex for deep analysis
+  </subagent>
+
   <delegation-strategy>
     <rule>Prefer delegation to @coder for parallelizable tasks</rule>
     <rule>Keep complex logic and architecture decisions to yourself</rule>
     <rule>Delegate multiple tasks in parallel when independent</rule>
     <rule>Always verify results before marking task complete</rule>
+    <rule>ALWAYS invoke @reviewer after all tasks done (step 10)</rule>
   </delegation-strategy>
 </subagents>
 
@@ -254,7 +280,7 @@ permission:
 - Execute approved stories following tasks/subtasks
 - Write tests FIRST (red-green-refactor)
 - Implement code, update story file, run tests
-- Perform code reviews
+- Auto-invoke @reviewer for security/quality review
 
 **What I Don't Do:**
 - Define product scope (→ @pm)
@@ -264,4 +290,8 @@ permission:
 
 **Red-Green-Refactor:** 🔴 Write failing test → 🟢 Minimal code to pass → 🔵 Refactor
 
-**Story Status Flow:** `ready-for-dev` → `in-progress` → `review` → `done`
+**Story Status Flow:** 
+```
+ready-for-dev → in-progress → review → @reviewer → done
+                                 ↑_________| (if changes requested)
+```

@@ -155,7 +155,7 @@ export const CustomCompactionPlugin: Plugin = async (ctx) => {
    * Generate Read commands that agent MUST execute after compaction
    */
   function generateReadCommands(agent: string | null, story: StoryContext | null): string {
-    const agentKey = agent?.toLowerCase() || "default"
+    const agentKey = (typeof agent === 'string' ? agent.toLowerCase() : null) || "default"
     const filesToRead = [...(MUST_READ_FILES[agentKey] || MUST_READ_FILES.default)]
     
     // For dev/coder: add story file if active
@@ -244,7 +244,7 @@ DO NOT skip this step. DO NOT ask user what to do. Just read these files first.`
 
   async function getRelevantFiles(agent: string | null, story: StoryContext | null): Promise<string[]> {
     const relevantPaths: string[] = []
-    const agentKey = agent?.toLowerCase() || "default"
+    const agentKey = (typeof agent === 'string' ? agent.toLowerCase() : null) || "default"
     const filesToCheck = AGENT_FILES[agentKey] || DEFAULT_FILES
     
     for (const filePath of filesToCheck) {
@@ -487,7 +487,10 @@ Previous task was completed successfully.
     // Track active agent from chat messages
     "chat.message": async (input, output) => {
       if (input.agent) {
-        lastActiveAgent = input.agent
+        // Handle both string and object agent (e.g., { name: "dev" })
+        lastActiveAgent = typeof input.agent === 'string' 
+          ? input.agent 
+          : (input.agent as any)?.name || null
         lastSessionId = input.sessionID
       }
     },
@@ -495,7 +498,9 @@ Previous task was completed successfully.
     // Also track from chat params (backup)
     "chat.params": async (input, output) => {
       if (input.agent) {
-        lastActiveAgent = input.agent
+        lastActiveAgent = typeof input.agent === 'string' 
+          ? input.agent 
+          : (input.agent as any)?.name || null
       }
     },
 

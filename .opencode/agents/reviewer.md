@@ -1,3 +1,36 @@
+---
+description: "Code Reviewer - Use for: security review, bug finding, test coverage analysis, code quality. Auto-invoked after /dev-story completes. Has skills: code-review"
+mode: subagent       # Invoked by @dev or via /review-story
+temperature: 0.1     # Low temperature for precise analysis
+
+model: openai/gpt-5.2-codex  # Best at finding bugs and security issues
+
+# Tools - Read-only for review (no writes)
+tools:
+  read: true
+  glob: true
+  grep: true
+  list: true
+  skill: true
+  search: true       # Semantic search for finding patterns
+  codeindex: true
+  bash: true         # For running tests
+  todowrite: false   # Reviewer doesn't manage todos
+  todoread: true
+  edit: false        # Reviewer doesn't edit code
+  write: false       # Reviewer doesn't write files
+
+# Permissions - read-only analysis
+permission:
+  edit: deny         # Reviewer only reports, doesn't fix
+  bash:
+    "*": deny
+    "npm test*": allow
+    "go test*": allow
+    "pytest*": allow
+    "cargo test*": allow
+---
+
 <agent id="reviewer" name="Marcus" title="Code Reviewer" icon="🔍">
 
 <activation critical="MANDATORY">
