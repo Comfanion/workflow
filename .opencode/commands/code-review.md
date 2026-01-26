@@ -7,20 +7,6 @@ agent: dev
 
 Review implemented code for quality, correctness, and adherence to standards.
 
-## Usage
-
-```
-/code-review [story-path]
-```
-
-## Arguments
-
-- `story-path` (optional): Path to story file to review. If not provided, finds stories in `review` status.
-
-## Agent
-
-This command invokes the **Dev** agent (Rick) in review mode.
-
 ## Process
 
 1. Load story file and implementation
@@ -77,16 +63,6 @@ Updates story file with:
 - [ ] Input validation present
 - [ ] No SQL injection risks
 - [ ] Proper authentication/authorization
-
-## Example
-
-```bash
-# Review stories in 'review' status
-/code-review
-
-# Review specific story
-/code-review docs/sprint-artifacts/sprint-1/stories/1-1-user-auth.md
-```
 
 ## After Review
 

@@ -5,32 +5,6 @@ agent: architect
 
 # Diagram Creation
 
-## Arguments
-$ARGUMENTS
-
-Format: `[scope] [type]`
-
-**Scope:**
-- "system" - System-wide diagram
-- "[module-name]" - Module-specific diagram
-
-**Type:**
-- "c4-context" - C4 Level 1: System context
-- "c4-container" - C4 Level 2: Containers/services
-- "c4-component" - C4 Level 3: Module components
-- "sequence [flow-name]" - Sequence diagram for a flow
-- "erd" - Entity relationship diagram
-- "flow [process-name]" - Flowchart
-- "state [entity-name]" - State machine
-
-**Examples:**
-- `/diagram system c4-context`
-- `/diagram catalog c4-component`
-- `/diagram catalog sequence product-import`
-- `/diagram catalog erd`
-- `/diagram order flow checkout-process`
-- `/diagram offer state lifecycle`
-
 ## Check Existing Diagrams
 
 !`ls -la docs/diagrams/ 2>/dev/null || echo "No diagrams yet"`

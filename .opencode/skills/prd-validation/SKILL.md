@@ -126,8 +126,8 @@ For each FR in PRD:
 ## Next Steps
 
 After fixing issues:
-- Re-run `/validate prd`
-- If PASS, proceed to `/architecture`
+- Re-run validation
+- If PASS, proceed to architecture design
 ```
 
 ## If QA Artifact Missing

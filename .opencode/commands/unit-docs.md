@@ -9,14 +9,6 @@ skills_loaded:
 
 Create structured documentation for any logical piece of the system using the Universal Unit format.
 
-## Arguments
-
-$ARGUMENTS
-
-- `[unit-type] [unit-name]`: Create unit doc (e.g., `entity Task`, `module catalog`)
-- `list`: List existing unit docs
-- `validate [unit-name]`: Validate unit doc completeness
-
 ## Supported Unit Types
 
 | Type | When to Use | Example |
@@ -150,21 +142,4 @@ Suggest:
 - `/unit-docs [type] [name]` - Document related units
 - `/stories {epic-id}` - Reference unit in story tasks
 
-## Examples
 
-```bash
-# Document a core entity
-/unit-docs entity Task
-
-# Document a service
-/unit-docs service NotificationService
-
-# Document a module
-/unit-docs module catalog
-
-# List all units
-/unit-docs list
-
-# Validate a unit
-/unit-docs validate Task
-```

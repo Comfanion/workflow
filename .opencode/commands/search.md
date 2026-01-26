@@ -7,17 +7,6 @@ agent: crawler
 
 Semantic search across the codebase using vectorizer.
 
-## Arguments
-$ARGUMENTS
-
-## Examples
-
-```
-/search authentication middleware
-/search how users are stored
-/search error handling patterns
-```
-
 ## Your Task
 
 Perform **multiple semantic searches** to find the best results for user's query.

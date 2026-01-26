@@ -28,22 +28,22 @@ Check: ls docs/sprint-artifacts/backlog/epic-*.md 2>/dev/null || ls docs/sprint-
 
 | Check | Action if Missing |
 |-------|-------------------|
-| No epics in backlog or sprints | **STOP** → Run `/epics` first to create epics from PRD |
-| Epics exist but no stories | Epics can be planned, stories created later with `/stories` |
-| PRD missing | **STOP** → Run `/prd` first |
+| No epics in backlog or sprints | **STOP** → Create epics from PRD first |
+| Epics exist but no stories | Epics can be planned, stories created later |
+| PRD missing | **STOP** → Create PRD first |
 
 ### Dependency Chain
 
 ```
-/prd → /architecture → /epics → /sprint-plan
-                          ↑
-                    YOU ARE HERE
-                    (need epics first!)
+PRD → Architecture → Epics → Sprint Plan
+                       ↑
+                 YOU ARE HERE
+                 (need epics first!)
 ```
 
 If user asks for sprint planning without epics:
 1. Inform them epics are required
-2. Offer to create epics first with `/epics`
+2. Offer to create epics first
 3. Only proceed with sprint planning after epics exist
 
 ## Sprint Duration

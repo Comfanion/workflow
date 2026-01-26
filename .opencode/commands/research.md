@@ -5,29 +5,6 @@ agent: researcher
 
 # Research Command
 
-## Arguments
-$ARGUMENTS
-
-Format: `[type] [topic]`
-
-**Types:**
-- "technical" - Technology evaluation
-- "market" - Market/competitor analysis
-- "domain" - Business domain research
-- "integration" - External system/API research
-- "pattern" - Architecture/design patterns
-
-**Examples:**
-- `/research technical message-queues`
-- `/research market competitor-analysis`
-- `/research domain e-commerce-regulations`
-- `/research integration stripe-api`
-- `/research pattern cqrs-event-sourcing`
-
-**Other commands:**
-- `/research list` - Show all research
-- `/research update [path]` - Update existing research
-
 ## Check Existing Research
 
 !`tree docs/research/ 2>/dev/null || echo "No research yet"`

@@ -11,123 +11,112 @@ metadata:
 
 # Dev Story Skill
 
-Details for implementing stories. For workflow overview, see `/dev-story` command.
+How to transform story tasks into executable instructions for @coder.
 
-## Critical Rules
+## Task Transformation
 
-- **Story File is the single source of truth** - tasks sequence is authoritative
-- **Respect task dependencies** - never start blocked tasks
-- **Tests are MANDATORY** - each task has tests that MUST pass
-- **NEVER lie about tests** - tests must actually exist and pass
-- **For parallel execution** - call multiple @coder in one message
+Story task is a specification. @coder needs executable instruction with full context.
 
-## Methodology (from config.yaml)
+### Add Context
 
-| Methodology | Flow | Validation |
-|-------------|------|------------|
-| **TDD** | Interface → Test (RED) → Impl (GREEN) → Refactor | Test must FAIL first, then PASS |
-| **STUB** | Interface → Stub → Test → Real Impl | Test against stub, then real |
+@coder doesn't see the full story. Include:
+- **Existing files** - actual paths to domain entities, interfaces, services that exist
+- **Patterns to follow** - link to existing similar code ("follow pattern from X")
+- **What was done** - results of previous tasks that this task depends on
+- **Imports** - what packages to use
 
-## Task Implementation
+### Add Implementation Details
 
-### Dependency Check
+Story has Code Sketch. Expand it:
+- Actual method signatures with types
+- Error handling approach
+- Logging requirements
+- Validation rules
 
-```xml
-<phase name="DEPENDENCY_CHECK">
-  <action>Parse task summary table from story file</action>
-  <action>Read "Depends On" column for current task</action>
-  <check if="dependencies not complete">
-    <action>SKIP this task, find next ready task</action>
-  </check>
-</phase>
+### Add Verification
+
+Story has "Done when". Make it concrete:
+- Specific test commands to run
+- Expected output format
+- Files that must compile
+
+## Formulating Task for @coder
+
+Structure:
+```
+## Task: [Name] (Task IDs)
+
+[One line goal]
+
+### Skills
+- Use `doc-todo` for TODO comments
+
+### Context
+- [Existing file]: [What it contains, what to use from it]
+- [Another file]: [Description]
+- Existing pattern: [Path to similar code to follow]
+
+### Output Files
+- [Path to create/modify]
+
+### Requirements
+[Numbered list of what to implement with signatures/details]
+
+### Implementation Pattern
+[Code example or reference to existing code]
+
+### Error Handling
+[How to handle errors]
+
+### Done When
+- [ ] [Specific checkable item]
+- [ ] [Another item]
+- [ ] File compiles
+- [ ] Tests pass
 ```
 
-### Parallel Opportunity
+## Parallel Tasks
 
-```xml
-<phase name="PARALLEL_CHECK">
-  <action>Identify tasks with same satisfied dependencies</action>
-  <check if="parallel tasks exist">
-    <action>Call multiple @coder in ONE message</action>
-  </check>
-</phase>
-```
+When delegating multiple tasks in one message:
+1. Each task gets full context (don't assume @coder remembers)
+2. Clearly separate tasks with headers
+3. No shared state between parallel tasks
+4. Tasks must work on different files
 
-### TDD Cycle
+## Task Boundaries
 
-```xml
-<check if="methodology is TDD">
-  <phase name="RED">
-    <action>Write test for task deliverables</action>
-    <action>Run test - MUST FAIL</action>
-  </phase>
+**Good task:**
+- Logically complete unit (service, handler, entity, feature)
+- Clear single responsibility
+- Can be tested independently
 
-  <phase name="GREEN">
-    <action>Implement MINIMAL code to pass test</action>
-    <action>Run test - MUST PASS</action>
-  </phase>
+**Consider splitting when:**
+- Multiple unrelated responsibilities
+- No logical connection between parts
 
-  <phase name="REFACTOR">
-    <action>Improve code structure</action>
-    <action>Run test - MUST STILL PASS</action>
-  </phase>
-</check>
-```
+**Consider combining when:**
+- Tasks too granular to be meaningful
+- Same file, same concern
 
-### STUB Cycle
+## Common Patterns
 
-```xml
-<check if="methodology is STUB">
-  <phase name="STUB">
-    <action>Write stub implementation (mock data)</action>
-  </phase>
+### New Service
+Context: domain entities, repository interface, existing service example
+Requirements: interface, constructor, methods
+Pattern: existing service structure
 
-  <phase name="TEST">
-    <action>Write tests against stub</action>
-    <action>Run test - MUST PASS with stub</action>
-  </phase>
+### New Handler
+Context: service interface, DTOs, existing handler example
+Requirements: handler struct, methods, error mapping
+Pattern: existing handler structure
 
-  <phase name="REAL">
-    <action>Replace stub with real implementation</action>
-    <action>Run test - MUST STILL PASS</action>
-  </phase>
-</check>
-```
+### New Tests
+Context: code to test, existing test examples
+Requirements: test scenarios, mocks
+Pattern: existing test structure
 
-## Task Validation
+## Methodology
 
-```xml
-<validation>
-  <check>ALL tests for this task EXIST and PASS 100%</check>
-  <check>Implementation matches EXACTLY what task specifies</check>
-  <check>Related acceptance criteria satisfied</check>
-  <check>Full test suite - NO regressions</check>
-</validation>
-
-<check if="ALL pass">
-  <action>Mark task [x] in story file</action>
-  <action>Update File List</action>
-</check>
-
-<check if="ANY fails">
-  <action>DO NOT mark task complete</action>
-  <action>Fix issues first</action>
-</check>
-```
-
-## HALT Conditions
-
-- Task dependencies not satisfied
-- Additional dependencies need user approval
-- 3 consecutive implementation failures
-- Required configuration missing
-
-## Definition of Done
-
-- [ ] All tasks marked [x]
-- [ ] Implementation satisfies every AC
-- [ ] Unit tests added
-- [ ] Integration tests (if required)
-- [ ] All tests pass
-- [ ] File List complete
-- [ ] Change Log updated
+Include in task based on config.yaml:
+- **TDD**: "Write failing test first, then implement"
+- **STUB**: "Create stub first, write tests, then real implementation"

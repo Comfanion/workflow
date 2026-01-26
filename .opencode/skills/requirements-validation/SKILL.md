@@ -127,8 +127,8 @@ Scan for ambiguous language:
 ## Next Steps
 
 After fixing issues:
-- Re-run `/validate requirements`
-- If PASS, proceed to `/prd`
+- Re-run validation
+- If PASS, proceed to PRD creation
 ```
 
 ## Output

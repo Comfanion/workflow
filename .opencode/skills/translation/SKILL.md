@@ -239,7 +239,7 @@ Kafka, Redis, PostgreSQL, MongoDB
 </workflow>
 ```
 
-### Command: `/export-confluence`
+### Batch Export
 
 Batch export all configured documents:
 

@@ -7,20 +7,6 @@ agent: dev
 
 Implement a story using red-green-refactor cycle with TODO tracking.
 
-## Usage
-
-```
-/dev-story [story-path]
-```
-
-## Arguments
-
-- `story-path` (optional): Path to specific story file. If not provided, finds next `ready-for-dev` story from sprint-status.yaml.
-
-## Agent
-
-This command invokes the **Dev** agent (Rick).
-
 ## Process
 
 ### Phase 1: Setup
@@ -99,16 +85,6 @@ The workflow will HALT and ask for input when:
 - 3 consecutive implementation failures
 - Required configuration is missing
 - Ambiguous requirements need clarification
-
-## Example
-
-```bash
-# Find next ready story automatically
-/dev-story
-
-# Implement specific story
-/dev-story docs/sprint-artifacts/sprint-1/stories/1-1-user-auth.md
-```
 
 ## Story Status Flow
 

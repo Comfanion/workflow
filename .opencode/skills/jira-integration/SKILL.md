@@ -362,7 +362,7 @@ Agent manages the full development lifecycle:
 | From | To | Trigger | Agent Action |
 |------|----|---------|--------------|
 | backlog | planned | Sprint planning | Update Jira status |
-| planned | in_progress | `/dev-story` starts | Create branch, update status |
+| planned | in_progress | Dev starts work | Create branch, update status |
 | in_progress | review | PR created | Link PR, update status |
 | review | in_progress | Review failed | Update status, add comment |
 | review | qa | Review passed | Update status |

@@ -56,14 +56,6 @@ permission:
   </step>
   <step n="8">Report completion or errors</step>
 
-  <lint-commands hint="Common linter commands">
-    <js>npx eslint --fix {files} OR npx biome check --write {files}</js>
-    <ts>npx eslint --fix {files} OR npx tsc --noEmit</ts>
-    <go>gofmt -w {files} && golangci-lint run {files}</go>
-    <py>ruff check --fix {files} OR black {files}</py>
-    <rust>cargo fmt && cargo clippy --fix</rust>
-  </lint-commands>
-
   <rules>
     <r>DO NOT ask clarifying questions - execute or fail</r>
     <r>DO NOT refactor beyond task scope</r>

@@ -7,20 +7,6 @@ agent: reviewer
 
 Review a completed story using @reviewer agent (GPT-5.2 Codex) for deep security and quality analysis.
 
-## Usage
-
-```
-/review-story [story-path]
-```
-
-## Arguments
-
-- `story-path` (optional): Path to story file. If not provided, finds stories in `review` status.
-
-## Agent
-
-This command invokes the **Reviewer** agent (Marcus) with GPT-5.2 Codex model - best at finding bugs and security issues.
-
 ## When to Use
 
 1. **After `/dev-story`** completes all tasks (auto-invoked if `auto_review: true`)
@@ -102,16 +88,6 @@ In `.opencode/config.yaml`:
 development:
   methodology: tdd
   auto_review: true   # Auto-invoke @reviewer after /dev-story completes
-```
-
-## Example
-
-```bash
-# Review stories in 'review' status
-/review-story
-
-# Review specific story
-/review-story docs/sprint-artifacts/sprint-1/stories/story-01-user-auth.md
 ```
 
 ## Flow with /dev-story

@@ -13,18 +13,6 @@ Skip the full workflow for small changes (L0-L1 scale):
 - Configuration changes
 - Small refactors
 
-## Arguments
-$ARGUMENTS
-
-Description of the change to make.
-
-Example:
-```
-/quick Fix login button not working on mobile
-/quick Add dark mode toggle to settings
-/quick Update API endpoint for user service
-```
-
 ## Quick Mode Criteria
 
 Automatically used when:

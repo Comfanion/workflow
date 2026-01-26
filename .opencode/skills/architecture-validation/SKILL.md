@@ -170,7 +170,7 @@ Orders ──→ Catalog, Inventory
 ## Next Steps
 
 After validation:
-- If PASS, proceed to `/epics`
+- If PASS, proceed to epic creation
 ```
 
 ## If QA Artifact Missing

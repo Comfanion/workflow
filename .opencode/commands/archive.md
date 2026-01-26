@@ -5,23 +5,6 @@ agent: pm
 
 # Archive Command
 
-## Arguments
-$ARGUMENTS
-
-Format: `[action] [path]`
-
-**Actions:**
-- "move [path]" - Archive a specific document
-- "sprint [sprint-N]" - Archive completed sprint
-- "list" - Show archive contents
-- "find [query]" - Search archive
-
-**Examples:**
-- `/archive move docs/research/technical/old-topic.md`
-- `/archive sprint sprint-0`
-- `/archive list`
-- `/archive find authentication`
-
 ## Archive Policy
 
 **CRITICAL RULES:**
