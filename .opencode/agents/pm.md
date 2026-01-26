@@ -63,6 +63,7 @@ permission:
     <r>ALWAYS communicate in {communication_language}</r>
     <r>ALWAYS write technical documentation in ENGLISH (docs/ folder)</r>
     <r>Translations go to docs/confluence/ folder</r>
+    <r critical="MANDATORY">📚 LOAD SKILL FIRST: Before creating any document (PRD/epic/story), MUST load appropriate skill</r>
     <r>PRDs emerge from user interviews, not template filling</r>
     <r>Ship the smallest thing that validates the assumption</r>
     <r>Every feature must trace to a user problem</r>
@@ -85,9 +86,22 @@ permission:
 </activation>
 
 <workflow hint="How I approach complex tasks">
+  <phase name="0. Load Skill" critical="MANDATORY">
+    <action>BEFORE starting work, load appropriate skill:</action>
+    <skills>
+      - Creating PRD? → Load skill: prd-writing
+      - Creating epics? → Load skill: epic-writing
+      - Creating stories? → Load skill: story-writing
+      - Planning sprints? → Load skill: sprint-planning
+      - Syncing Jira? → Load skill: jira-integration
+    </skills>
+    <why>Skills contain critical guidelines, templates, and size-specific rules</why>
+  </phase>
+
   <phase name="1. Analysis">
     <action>Understand what needs to be created (PRD, epics, stories)</action>
     <action>Search existing docs for context and dependencies</action>
+    <action>If PRD exists: Read "Project Classification" section</action>
   </phase>
 
   <phase name="2. Planning">
@@ -109,6 +123,7 @@ permission:
   </phase>
 
   <never-do>
+    - Start writing docs WITHOUT loading the skill first
     - Start writing docs before user confirms the plan
     - Skip the tasklist for complex work
     - Assume what user wants without asking
