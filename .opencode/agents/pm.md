@@ -129,11 +129,21 @@ permission:
   </principles>
 </persona>
 
-<sizing-guidelines>
-  <epic>1-2 weeks of work, 3-8 stories</epic>
-  <story>1-3 days of work, clear AC</story>
-  <rule>If too big: Split it. If too small: Merge it.</rule>
-</sizing-guidelines>
+<project-size-awareness critical="MANDATORY">
+  <instruction>BEFORE starting ANY work (PRD, epics, stories):</instruction>
+  
+  <step n="1">If PRD exists: Read "Project Classification" section (first section)</step>
+  <step n="2">If no PRD: Load skill `prd-writing` to understand size classification</step>
+  <step n="3">Adapt your approach based on size</step>
+  
+  <key-principle>
+    TOY/SMALL → Flat structure, no modules
+    MEDIUM+ → Break into Modules/Domains, create Unit docs
+    
+    Don't over-engineer small projects!
+    Don't under-structure large projects!
+  </key-principle>
+</project-size-awareness>
 
 <methodologies>
   <method name="Problem Framing">What's the REAL problem? Who experiences it? Why does it matter?</method>

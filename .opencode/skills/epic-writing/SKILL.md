@@ -22,6 +22,93 @@ Use this skill when you need to:
 
 Use template at: `@.opencode/skills/epic-writing/template.md`
 
+## CRITICAL: What is an Epic?
+
+**Epic scope changes with project size!** Read PRD's Project Classification first.
+
+| Project Size | Epic = | Example | Stories |
+|--------------|--------|---------|---------|
+| **TOY** | Major feature | "Game Logic", "UI Rendering", "Scoring" | 3-8 tasks |
+| **SMALL** | Feature area | "User Authentication", "Post Management" | 5-12 tasks |
+| **MEDIUM** | **Module/Unit** | "Order Management Module", "Payment Module" | 8-15 features |
+| **LARGE** | **Domain** | "Order Domain", "Payment Domain" | 10-20 features |
+| **ENTERPRISE** | **Bounded Context** | "Core Banking Context" | 15-30 features |
+
+**For MEDIUM+ projects:**
+- Each Epic = One Module from PRD
+- Epic should reference Unit documentation: `→ Unit: docs/units/order-management/`
+- Stories within epic are features of that module
+- Epic owns a set of FRs (e.g., FR-ORD-001 through FR-ORD-015)
+
+**Example - MEDIUM E-commerce:**
+```
+Epic: Order Management Module
+  → Unit: docs/units/order-management/
+  → FRs: FR-ORD-001 to FR-ORD-012
+  → Stories:
+    - Customer can create order
+    - System validates inventory
+    - Order status workflow
+    - Order history view
+    ...
+```
+
+**Example - TOY Tetris:**
+```
+Epic: Game Logic
+  → Stories:
+    - Implement block rotation
+    - Add collision detection
+    - Clear full lines
+    - Increase fall speed
+  → No Unit docs needed
+  → Simple AC: "Game logic works correctly"
+```
+
+**Example - SMALL Blog:**
+```
+Epic: Post Management
+  → Stories:
+    - User can create post
+    - User can edit post
+    - User can delete post
+    - User can publish/unpublish
+    - Posts show in list
+  → No Unit docs (flat structure)
+  → AC: "Users can manage posts through full lifecycle"
+```
+
+---
+
+## Epic Depth by Project Size
+
+**CRITICAL:** Epic structure changes with project size!
+
+**TOY/SMALL:**
+- Simple overview (1-2 paragraphs)
+- No Units Affected section (no modules)
+- Simple AC checklist
+- Stories listed as bullet points
+- No Technical Decisions section
+- No Risks section
+
+**MEDIUM:**
+- Detailed overview with business value
+- **Units Affected section** (references Unit docs)
+- Comprehensive AC
+- Stories in table with dependencies
+- Technical Decisions with ADR links
+- Risks identified
+
+**LARGE/ENTERPRISE:**
+- Complete overview with strategic context
+- **Multiple Units Affected** (cross-domain)
+- Exhaustive AC with compliance
+- Stories with estimates and confidence levels
+- All Technical Decisions documented
+- Risks with mitigation plans
+- Security considerations
+
 ## Epic Structure (v2)
 
 ### 1. Header

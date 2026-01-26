@@ -2,7 +2,7 @@
 # This file defines the complete workflow pipeline for AI-assisted development
 
 name: documentation-workflow
-version: "3.0"
+version: "3.1"
 description: |
   End-to-end workflow from research to implementation and review.
   
@@ -12,6 +12,11 @@ description: |
   - Skills: Knowledge (HOW to do things)
   
   Config: .opencode/config.yaml
+  
+  Project Size Classification:
+  - Defined in PRD (first section, mandatory)
+  - Agents read PRD to understand project size
+  - Size determines depth of all artifacts (PRD, Architecture, Epics, Stories)
 
 # =============================================================================
 # CONFIGURATION

@@ -30,6 +30,132 @@ Always check project standards: `@CLAUDE.md`
 
 Use template at: `@.opencode/skills/architecture-design/template.md`
 
+## CRITICAL: Adapt Depth to Project Size
+
+**BEFORE writing architecture, read PRD's Project Classification section!**
+
+Your architecture document size should match project size:
+
+| Project Size | Target Lines | Diagrams | ADRs | Focus |
+|--------------|--------------|----------|------|-------|
+| **TOY** | 200-500 | C4 Context + Container | None | Core components only |
+| **SMALL** | 500-1000 | + C4 Component | 2-3 major decisions | Clear module boundaries |
+| **MEDIUM** | 1000-2000 | + Sequences + ER | 5-10 significant | Complete system design |
+| **LARGE** | 2000-4000 | + Deployment + State | 10-20 all decisions | Multiple files OK |
+| **ENTERPRISE** | 4000+ | All diagrams | 20+ per domain | Per-domain files |
+
+**Examples:**
+
+**TOY (Tetris - 350 lines):**
+```
+Executive Summary (50 lines)
+System Context diagram (ASCII)
+3 Modules: GameEngine, Renderer, ScoreManager
+Data Model: GameState object (no DB)
+Tech Stack: HTML5 Canvas, Vanilla JS
+```
+
+**SMALL (Blog - 800 lines):**
+```
+Executive Summary
+Decision Summary (pattern choice)
+C4 Context + Container + Component
+5 Modules: Auth, Posts, Comments, Media, Admin
+ER Diagram (users, posts, comments)
+2-3 ADRs (why SQLite, why server-side rendering)
+```
+
+**MEDIUM (E-commerce - 1500 lines):**
+```
+Full C4 model
+8 Modules across 3 domains
+Complete ER diagram
+Sequence diagrams for checkout flow
+5-10 ADRs
+Integration points documented
+```
+
+**Don't over-engineer small projects!** If PRD says "toy", keep it under 500 lines.
+
+---
+
+## Module/Unit Breakdown by Size
+
+**CRITICAL:** Read PRD's Project Classification to determine module strategy.
+
+| Project Size | Module Strategy | Structure |
+|--------------|-----------------|-----------|
+| **TOY** | No modules | Flat components (GameEngine, Renderer, ScoreManager) |
+| **SMALL** | No modules | Flat components (AuthService, PostService, CommentService) |
+| **MEDIUM** | **YES - Modules** | 3-5 modules (OrderModule, InventoryModule, PaymentModule) |
+| **LARGE** | **YES - Domains** | 5-10 domains (OrderDomain, PaymentDomain, UserDomain) |
+| **ENTERPRISE** | **YES - Bounded Contexts** | 10+ contexts with subdomains |
+
+**For MEDIUM+ projects:**
+
+1. **Identify Modules from PRD:**
+   - Read PRD's Executive Summary → "Key Domains"
+   - Each domain = Module in architecture
+   - Example: PRD lists "Order Management, Inventory, Payment" → 3 modules
+
+2. **Document Each Module:**
+   - Create section per module in architecture.md
+   - Define module boundaries (what's in, what's out)
+   - Define module's internal services
+   - Define module's data ownership
+   - Define module's API (what other modules can call)
+
+3. **Create Unit Documentation:**
+   - For each module, create `docs/units/module-name/index.md`
+   - Use `unit-writing` skill
+   - Include: data model, API spec, events (if event-driven)
+
+4. **Module Communication:**
+   - Document how modules interact
+   - Synchronous (REST/GraphQL) or Asynchronous (events)
+   - Integration diagram showing module dependencies
+
+**Example - MEDIUM E-commerce (3 modules):**
+
+```markdown
+## Modules Overview
+
+### Order Management Module
+
+**Purpose:** Handles order lifecycle from creation to fulfillment
+
+**Internal Services:**
+- OrderService: CRUD operations
+- OrderWorkflowService: Status transitions
+- OrderValidationService: Business rules
+
+**Data Ownership:**
+- orders table
+- order_items table
+- order_history table
+
+**API (exposed to other modules):**
+- `POST /orders` - Create order
+- `GET /orders/{id}` - Get order details
+- `PUT /orders/{id}/status` - Update status
+
+**Events Published:**
+- OrderCreated
+- OrderPaid
+- OrderShipped
+
+→ Unit: `docs/units/order-management/`
+
+### Payment Module
+...
+
+### Inventory Module
+...
+```
+
+**TOY/SMALL projects - NO modules:**
+Just list components/services in flat structure.
+
 ## Architecture Document Structure (v2)
 
 ### 1. Executive Summary

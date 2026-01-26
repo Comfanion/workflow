@@ -28,7 +28,7 @@ tools:
 permission:
   edit: allow        # Can write documentation
   bash:
-    "*": ask
+    "*": allow
     "ls *": allow
     "cat *": allow
     "tree *": allow

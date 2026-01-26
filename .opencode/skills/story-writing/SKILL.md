@@ -22,6 +22,35 @@ Use this skill when you need to:
 
 Use template at: `@.opencode/skills/story-writing/template.md`
 
+## CRITICAL: Story Depth by Project Size
+
+**Read PRD's Project Classification to understand appropriate depth!**
+
+| Project Size | Story Depth | AC Detail | Tasks | Example |
+|--------------|-------------|-----------|-------|---------|
+| **TOY** | Simple | Basic Given/When/Then | 1-3 tasks, no subtasks | "Implement block rotation" |
+| **SMALL** | Moderate | Given/When/Then + edge cases | 2-5 tasks, optional subtasks | "User can create post" |
+| **MEDIUM** | Detailed | Comprehensive Given/When/Then | 3-8 tasks, subtasks recommended | "Customer can place order" |
+| **LARGE** | Comprehensive | All scenarios + edge cases | 5-10 tasks, subtasks required | "Process payment with retry logic" |
+| **ENTERPRISE** | Exhaustive | All scenarios + compliance | 8-15 tasks, subtasks + estimates | "Execute trade with audit trail" |
+
+**Key differences:**
+
+**TOY/SMALL:**
+- Simple AC: "Given block at top, When user presses rotate, Then block rotates 90°"
+- Tasks are straightforward: "Add rotation logic", "Add tests"
+- No Required Reading section needed (no coding standards yet)
+
+**MEDIUM:**
+- Detailed AC with edge cases: "Given order with out-of-stock item, When customer submits, Then show error"
+- Tasks reference coding standards and Unit docs
+- Required Reading section mandatory
+
+**LARGE/ENTERPRISE:**
+- Exhaustive AC with compliance: "Given payment failure, When retry limit reached, Then log to audit, notify customer, update order status"
+- Tasks include security considerations
+- Multiple review stages
+
 ## MANDATORY: Read Before Writing
 
 **Before writing ANY story, read these documents:**

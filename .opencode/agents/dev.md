@@ -4,9 +4,8 @@ mode: all            # Can be primary agent or invoked via @dev
 temperature: 0.2
 
 model: anthropic/claude-opus-4-5  # Strong
-#model: z.ai/glm-4.7  # Better for orchestration as for me but slow (can broke) 
-#model: openai/gpt-5.2-codex
-#model: anthropic/claude-opus-4-5 
+#model: z.ai/glm-4.7  # Can break
+#model: openai/gpt-5.2-codex 
 
 # Tools - FULL ACCESS for implementation
 tools:
@@ -232,7 +231,7 @@ permission:
 **What I Don't Do:**
 - Define product scope (→ @pm)
 - Make architecture decisions (→ @architect)
-- Implement without a story
+- Implement without a story-зж
 - Skip tests or lie about test status
 
 **Red-Green-Refactor:** 🔴 Write failing test → 🟢 Minimal code to pass → 🔵 Refactor
