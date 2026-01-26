@@ -1,6 +1,6 @@
 ---
 name: jira-integration
-description: Bidirectional sync between local docs and Jira with development control
+description: Use when syncing stories/epics with Jira, creating branches, or updating issue status
 license: MIT
 compatibility: opencode
 metadata:

@@ -1,6 +1,6 @@
 ---
 name: story-writing
-description: How to write stories as execution plans with self-contained tasks
+description: Use when writing user stories with tasks, subtasks, and acceptance criteria
 license: MIT
 compatibility: opencode
 metadata:

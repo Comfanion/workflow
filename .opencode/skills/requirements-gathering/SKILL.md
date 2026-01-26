@@ -1,6 +1,6 @@
 ---
 name: requirements-gathering
-description: How to conduct stakeholder interviews and extract functional/non-functional requirements
+description: Use when gathering FR/NFR through stakeholder interviews and elicitation techniques
 license: MIT
 compatibility: opencode
 metadata:

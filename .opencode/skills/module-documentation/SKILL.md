@@ -1,6 +1,6 @@
 ---
 name: module-documentation
-description: How to create detailed per-module documentation
+description: Use when documenting a module, service, or domain with detailed specs
 license: MIT
 compatibility: opencode
 metadata:

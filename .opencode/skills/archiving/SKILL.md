@@ -1,22 +1,11 @@
 ---
-description: Manages document lifecycle - archives outdated docs while preserving history
-mode: subagent
-model: anthropic/claude-sonnet-4-20250514
-temperature: 0.1
-tools:
-  write: true
-  edit: true
-  bash: true
-permission:
-  bash:
-    "*": deny
-    "ls *": allow
-    "cat *": allow
-    "tree *": allow
-    "mkdir *": allow
-    "mv *": allow
-    "cp *": allow
-    "date *": allow
+name: archiving
+description: Use when archiving outdated documents while preserving history
+license: MIT
+compatibility: opencode
+metadata:
+  domain: documentation
+  agents: [all]
 ---
 
 # Document Archivist

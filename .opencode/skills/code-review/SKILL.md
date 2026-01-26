@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: How to perform thorough code reviews for implemented stories
+description: Use when reviewing code for security, correctness, and quality before merge
 license: MIT
 compatibility: opencode
 metadata:
@@ -23,8 +23,7 @@ Ensure code quality, correctness, and adherence to project standards before merg
 ```
 1. Load the story file completely
 2. Identify all acceptance criteria
-3. Load CLAUDE.md for coding standards
-4. Load project-context.md if exists
+3. Load docs/coding-standards/*.md for coding standards
 5. Review File List section for changed files
 ```
 

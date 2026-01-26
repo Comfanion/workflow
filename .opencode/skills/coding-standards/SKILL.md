@@ -1,22 +1,12 @@
 ---
-description: Creates and maintains coding standards as modular documentation (multiple files, each <2000 lines)
-mode: subagent
-model: anthropic/claude-sonnet-4-20250514
-temperature: 0.2
-tools:
-  write: true
-  edit: true
-  bash: true
-permission:
-  bash:
-    "*": deny
-    "ls *": allow
-    "cat *": allow
-    "tree *": allow
-    "wc -l *": allow
-    "go version": allow
-    "node --version": allow
-    "python --version": allow
+name: coding-standards
+description: Use when establishing coding standards, patterns, naming conventions, and best practices
+license: MIT
+compatibility: opencode
+metadata:
+  domain: software-architecture
+  agents: [architect]
+  artifacts: docs/coding-standards/*.md
 ---
 
 # Coding Standards Architect

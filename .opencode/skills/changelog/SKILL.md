@@ -1,6 +1,6 @@
 ---
 name: changelog
-description: Maintain changelogs for repository and documents
+description: Use when updating CHANGELOG.md after code changes or document modifications
 license: MIT
 compatibility: opencode
 metadata:

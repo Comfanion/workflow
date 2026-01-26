@@ -1,6 +1,6 @@
 ---
 name: epic-writing
-description: How to write epics with proper structure, acceptance criteria, and PRD traceability
+description: Use when creating epics from PRD with acceptance criteria and story breakdown
 license: MIT
 compatibility: opencode
 metadata:

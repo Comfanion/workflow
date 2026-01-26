@@ -1,6 +1,6 @@
 ---
 name: translation
-description: Translate technical docs to user language, export to Confluence format
+description: Use when translating docs to user language or exporting to Confluence format
 license: MIT
 compatibility: opencode
 metadata:

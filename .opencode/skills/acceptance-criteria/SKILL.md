@@ -1,6 +1,6 @@
 ---
 name: acceptance-criteria
-description: How to write testable acceptance criteria using Given/When/Then format
+description: Use when writing testable acceptance criteria in Given/When/Then format
 license: MIT
 compatibility: opencode
 metadata:

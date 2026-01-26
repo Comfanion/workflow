@@ -1,6 +1,6 @@
 ---
 name: methodologies
-description: Structured methods for requirements, analysis, and problem-solving
+description: Use when applying Five Whys, Empathy Mapping, Journey Mapping, or other analysis methods
 license: MIT
 compatibility: opencode
 metadata:

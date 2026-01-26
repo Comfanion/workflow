@@ -1,6 +1,6 @@
 ---
 name: research-methodology
-description: How to conduct thorough technical, market, domain, and competitive research
+description: Use when conducting technical, market, domain, or competitive research
 license: MIT
 compatibility: opencode
 metadata:

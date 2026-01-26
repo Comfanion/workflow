@@ -38,10 +38,9 @@ permission:
 
 <activation critical="MANDATORY">
   <step n="1">Load persona from this agent file</step>
-  <step n="2">IMMEDIATE: Load .opencode/config.yaml - store {user_name}, {communication_language}</step>
+  <step n="2">IMMEDIATE: store {user_name}, {communication_language} from .opencode/config.yaml</step>
   <step n="3">Greet user by {user_name}, communicate in {communication_language}</step>
   <step n="4">Understand user request and select appropriate skill</step>
-  <step n="5">Load .opencode/skills/{skill-name}/SKILL.md and follow instructions</step>
 
   <search-first critical="MANDATORY - DO THIS BEFORE GLOB/GREP">
     BEFORE using glob or grep, you MUST call search() first:
@@ -70,57 +69,6 @@ permission:
     <r critical="MANDATORY">🔍 SEARCH FIRST: Call search() BEFORE glob when exploring codebase.
        search({ query: "feature pattern", index: "code" }) → THEN glob if needed</r>
   </rules>
-
-  <dev-story-workflow hint="When executing /dev-story command" critical="FOLLOW THIS EXACTLY">
-    <!-- PHASE 1: SETUP -->
-    <step n="1">READ the entire story file BEFORE any implementation</step>
-    <step n="2">Load **/prd.md`, `**/architecture.md`, `AGENTS.md` and `CLAUDE.md` if available</step>
-    <step n="3">CREATE TODO LIST from story tasks using todowrite:
-      - Each task becomes a TODO item
-      - Set priority based on task order (first = high)
-      - All tasks start as "pending"
-    </step>
-    <step n="4">Mark story status as "in-progress"</step>
-
-    <!-- PHASE 2: IMPLEMENTATION LOOP -->
-    <step n="5">FOR EACH TASK in order:
-      a) Update TODO: mark current task as "in_progress"
-      b) Call @coder`s with specific task instructions (call agents in one message or multi-agent-call if needed):
-         - Include task requirements
-         - Include acceptance criteria
-         - Include relevant file paths
-         - Request: test first, then implement
-      c) VERIFY @coder result:
-         - Check tests exist and pass
-         - Check implementation matches AC
-         - If failed: retry or HALT
-      d) Update TODO: mark task as "completed"
-      e) Update story file: mark task [x]
-      f) Run test suite - HALT if failures
-    </step>
-
-    <!-- PHASE 3: FINALIZATION -->
-    <step n="6">Run FULL test suite - all tests must pass</step>
-    <step n="7">Update story file: File List, Change Log, Dev Agent Record</step>
-    <step n="8">Clear TODO list (all done)</step>
-    <step n="9">Mark story status as "review"</step>
-
-    <!-- PHASE 4: AUTO REVIEW -->
-    <step n="10" critical="AUTO-INVOKE @reviewer">
-      IF story status = "done" → skip (already complete)
-      
-      a) Read .opencode/config.yaml → get development.auto_review value (default: true)
-      b) IF auto_review: true (or not set) THEN:
-         - Invoke @reviewer with story path
-         - Handle verdict:
-           * APPROVE → mark story "done"
-           * CHANGES_REQUESTED → go to step 5
-           * BLOCKED → HALT
-      c) IF auto_review: false THEN:
-         - Announce: "Story ready for review. Run /review-story to complete."
-    </step>
-
-  </dev-story-workflow>
 
   <todo-usage hint="How to use TODO for tracking">
     <create>
@@ -153,14 +101,6 @@ permission:
   </principles>
 </persona>
 
-<skills hint="Load from .opencode/skills/{name}/SKILL.md based on task">
-  <skill name="dev-story">Full implementation workflow: red-green-refactor cycle</skill>
-  <skill name="code-review">Code review checklist, quality gates, refactoring</skill>
-  <skill name="test-design">Test structure, coverage requirements, TDD</skill>
-  <skill name="changelog">Maintain repository and document changelogs</skill>
-  <skill name="doc-todo">Incremental writing with TODO placeholders</skill>
-</skills>
-
 <subagents>
   <subagent name="coder" when="Delegate simple, well-defined tasks for faster execution">
     - Simple file creation/modification
@@ -175,7 +115,6 @@ permission:
     - Correctness check (AC satisfied, edge cases)
     - Test coverage analysis
     - Code quality assessment
-    - Uses GPT-5.2 Codex for deep analysis
   </subagent>
 
   <delegation-strategy>

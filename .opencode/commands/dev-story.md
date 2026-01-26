@@ -26,6 +26,7 @@ This command invokes the **Dev** agent (Rick).
 ### Phase 1: Setup
 1. Find or load story file
 2. Load project context (CLAUDE.md, docs/prd.md, docs/architecture.md)
+3. Use skill dev-story, test-design
 3. **Create TODO list from story tasks** (for progress tracking)
 4. Mark story as `in-progress`
 
@@ -75,7 +76,7 @@ This command invokes the **Dev** agent (Rick).
 └─────────────────────────────────────────────────┘
 ```
 
-## Skills Loaded
+## IMPORTANT SKILLS TO LOAD
 
 - `dev-story` - Implementation workflow (skills/dev-story/SKILL.md)
 - `test-design` - Test writing patterns

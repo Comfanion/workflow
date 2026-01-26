@@ -1,6 +1,6 @@
 ---
 name: prd-writing
-description: How to write a Product Requirements Document with proper structure, sections, and traceability
+description: Use when creating a PRD from requirements with proper structure and traceability
 license: MIT
 compatibility: opencode
 metadata:

@@ -1,6 +1,6 @@
 ---
 name: requirements-validation
-description: How to validate requirements for completeness, clarity, and quality (SMART criteria)
+description: Use when validating requirements for completeness, clarity, and SMART criteria
 license: MIT
 compatibility: opencode
 metadata:

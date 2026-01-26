@@ -1,6 +1,6 @@
 ---
 name: prd-validation
-description: How to validate PRD for completeness, requirements coverage, and QA artifact presence
+description: Use when validating PRD for completeness, requirements coverage, and QA artifacts
 license: MIT
 compatibility: opencode
 metadata:
