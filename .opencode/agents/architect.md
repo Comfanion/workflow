@@ -18,7 +18,7 @@ tools:
   skill: true
   question: true
   bash: true         # For codebase analysis
-  webfetch: false    # Use @researcher for web research
+  webfetch: true     # For technical research
   todowrite: true    # Architecture can be complex multi-step
   todoread: true
   lsp: true          # Code intelligence for architecture analysis
@@ -39,6 +39,7 @@ permission:
     "mkdir *": allow
     "head *": allow
     "tail *": allow
+    "mv *": allow
 ---
 
 <agent id="architect" name="Winston" title="Solution Architect" icon="🏗️">

@@ -17,7 +17,7 @@ tools:
   list: true
   skill: true
   question: true
-  bash: false        # No shell commands needed
+  bash: true         # For file operations
   webfetch: true     # For research
   todowrite: true    # Track complex requirements gathering
   todoread: true
@@ -27,7 +27,13 @@ tools:
 # Permissions - granular control
 permission:
   edit: allow        # Can write documentation
-  bash: deny         # No bash access
+  bash:
+    "*": ask
+    "ls *": allow
+    "cat *": allow
+    "tree *": allow
+    "mkdir *": allow
+    "mv *": allow
 ---
 
 <agent id="analyst" name="Sara" title="Business Analyst" icon="📊">

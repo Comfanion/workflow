@@ -20,7 +20,7 @@ tools:
   skill: true
   question: true
   bash: true         # Limited bash for directory ops
-  webfetch: false    # Use @researcher for web research
+  webfetch: true     # For product research
   todowrite: true    # PM tracks complex planning tasks
   todoread: true
   search: true       # PREFERRED: Semantic search for docs/PRD/architecture
@@ -35,6 +35,7 @@ permission:
     "cat *": allow
     "tree *": allow
     "mkdir *": allow
+    "mv *": allow
     "git branch*": allow
     "git status": allow
     "git log*": allow
