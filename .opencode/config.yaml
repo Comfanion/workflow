@@ -198,6 +198,53 @@ development:
         - LINK        # Add links/references
 
 # =============================================================================
+# EPIC WORKFLOW (/dev-epic command)
+# =============================================================================
+epic_workflow:
+  # Auto-compact between stories (saves context, continues next story)
+  # When true: story done → compact → restore context → next story
+  # When false: story done → ask user to continue
+  auto_compact: true
+  
+  # Auto-fix code review issues
+  # When true: review failed → @coder fixes → re-review → continue
+  # When false: review failed → HALT, ask user
+  auto_fix: true
+  
+  # Max fix attempts before HALT (prevents infinite loops)
+  max_fix_attempts: 3
+  
+  # Pause between stories for manual review
+  # When true: story done → show summary → ask to continue
+  # When false: story done → immediately start next story
+  pause_between_stories: false
+  
+  # Run integration tests after each story
+  # When true: story done → run integration tests → continue
+  # When false: skip per-story integration tests
+  test_after_each_story: false
+  
+  # Run integration tests after epic complete
+  # When true: all stories done → run epic integration tests
+  # When false: skip epic integration tests
+  test_after_epic: true
+  
+  # Compaction strategy
+  compaction:
+    # Save epic state to sprint-status.yaml
+    save_epic_state: true
+    
+    # Files to preserve in context after compaction
+    preserve_files:
+      - "CLAUDE.md"
+      - "AGENTS.md"
+      - "docs/prd.md"
+      - "docs/architecture.md"
+      - "docs/coding-standards/README.md"
+      - "docs/coding-standards/patterns.md"
+      # Epic file and next story added dynamically
+
+# =============================================================================
 # CHANGELOG
 # =============================================================================
 changelog:

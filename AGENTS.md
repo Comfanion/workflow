@@ -2,6 +2,8 @@
 
 Instructions for AI coding agents working in this repository.
 
+HERE IS .opencode/ , not .claude
+
 ## Project Overview
 
 **Repository:** `/Users/evgeniystepanchuk/work/ai-wf/`

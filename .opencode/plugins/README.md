@@ -52,10 +52,11 @@ Checks for updates and shows a toast notification if a newer version is availabl
 
 ### custom-compaction.ts
 
-Intelligent session compaction that preserves flow context.
+Intelligent session compaction that preserves flow context with epic workflow support.
 
 **Features:**
 - Tracks todo list and story task status
+- **Epic workflow state preservation** (new!)
 - Identifies critical documentation files for context
 - Generates smart continuation prompts
 - Differentiates between completed and interrupted tasks
@@ -68,8 +69,31 @@ Intelligent session compaction that preserves flow context.
 |----------|-------------------|
 | **Task Completed** | Summary of completed work, next steps, validation reminders |
 | **Task Interrupted** | Current task, what was done, resume instructions, file list |
+| **Epic in Progress** | Epic state file, current story, next action, minimal context |
+
+**Epic Workflow Support:**
+
+When `/dev-epic` is running, the plugin:
+1. Finds active epic state file in `sprint-N/.sprint-state/epic-XX-state.yaml`
+2. Reads current story from epic state
+3. Generates minimal read commands:
+   - Epic state file (progress tracking)
+   - Next story file (what to do)
+   - CLAUDE.md, PRD, Architecture (context)
+4. Agent resumes automatically without re-reading completed stories
+
+**Epic State File Location:**
+```
+docs/sprint-artifacts/
+  sprint-1/
+    .sprint-state/
+      epic-01-state.yaml    # Tracks epic-01 progress
+      epic-02-state.yaml    # Tracks epic-02 progress
+```
 
 **Critical Files Passed to Context:**
+
+**For regular /dev-story:**
 - `CLAUDE.md` - Project coding standards
 - `AGENTS.md` - Agent definitions
 - `project-context.md` - Project overview
@@ -78,6 +102,13 @@ Intelligent session compaction that preserves flow context.
 - `docs/architecture.md` - System architecture
 - `docs/coding-standards/*.md` - Coding patterns
 - Active story file (if in progress)
+
+**For /dev-epic workflow:**
+- Epic state file (e.g., `sprint-1/.sprint-state/epic-01-state.yaml`)
+- Next story file (from epic state)
+- `CLAUDE.md`, `AGENTS.md`, `docs/prd.md`, `docs/architecture.md`
+- ❌ **NOT** completed story files (saves context!)
+- ❌ **NOT** epic file (info in state file)
 
 ## Installation
 

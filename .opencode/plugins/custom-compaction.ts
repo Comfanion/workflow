@@ -44,6 +44,7 @@ interface SessionContext {
   story: StoryContext | null
   relevantFiles: string[]
   activeAgent: string | null
+  activeCommand: string | null  // /dev-story, /dev-epic, /dev-sprint
 }
 
 // Base files ALL agents need after compaction (to remember who they are)
@@ -116,6 +117,7 @@ const MUST_READ_FILES: Record<string, string[]> = {
     "CLAUDE.md",
     "docs/prd.md",
     "docs/architecture.md",
+    // epic state path added dynamically (if in epic workflow)
     // story path added dynamically
   ],
   coder: [
@@ -173,13 +175,28 @@ export const CustomCompactionPlugin: Plugin = async (ctx) => {
   /**
    * Generate Read commands that agent MUST execute after compaction
    */
-  function generateReadCommands(agent: string | null, story: StoryContext | null): string {
+  async function generateReadCommands(agent: string | null, story: StoryContext | null, activeCommand: string | null): Promise<string> {
     const agentKey = (typeof agent === 'string' ? agent.toLowerCase() : null) || "default"
     const filesToRead = [...(MUST_READ_FILES[agentKey] || MUST_READ_FILES.default)]
     
-    // For dev/coder: add story file if active
-    if ((agentKey === "dev" || agentKey === "coder") && story) {
-      filesToRead.unshift(story.path)  // Story first!
+    // For dev/coder: add command file first
+    if ((agentKey === "dev" || agentKey === "coder") && activeCommand) {
+      const commandFile = activeCommand.replace("/", "") + ".md"
+      filesToRead.unshift(`.opencode/commands/${commandFile}`)
+    }
+    
+    // For dev/coder: add epic state file if in epic workflow
+    if ((agentKey === "dev" || agentKey === "coder")) {
+      const epicState = await getActiveEpicState()
+      if (epicState) {
+        // Epic state file (has all context)
+        filesToRead.unshift(epicState.statePath.replace(directory + "/", ""))
+      }
+      
+      // Then story file if active
+      if (story) {
+        filesToRead.unshift(story.path)  // Story first!
+      }
     }
     
     const commands = filesToRead.map((f, i) => `${i + 1}. Read("${f}")`).join("\n")
@@ -203,8 +220,158 @@ DO NOT skip this step. DO NOT ask user what to do. Just read these files first.`
     }
   }
 
+  interface EpicState {
+    statePath: string
+    epicId: string
+    epicTitle: string
+    status: string
+    currentStoryIndex: number
+    totalStories: number
+    nextAction: string | null
+    nextStoryPath: string | null
+    completedCount: number
+    pendingCount: number
+  }
+
+  async function getActiveEpicState(): Promise<EpicState | null> {
+    try {
+      // Search for epic state files in all sprint folders
+      const sprintArtifactsPath = join(directory, "docs", "sprint-artifacts")
+      const entries = await readdir(sprintArtifactsPath)
+      
+      for (const entry of entries) {
+        if (entry.startsWith("sprint-")) {
+          const statePath = join(sprintArtifactsPath, entry, ".sprint-state")
+          try {
+            const stateFiles = await readdir(statePath)
+            for (const stateFile of stateFiles) {
+              if (stateFile.endsWith("-state.yaml")) {
+                const fullPath = join(statePath, stateFile)
+                const content = await readFile(fullPath, "utf-8")
+                
+                // Check if this epic is in-progress
+                if (content.includes("status: \"in-progress\"") || content.includes("status: in-progress")) {
+                  // Parse epic state
+                  const epicIdMatch = content.match(/epic_id:\s*["']?([^"'\n]+)["']?/i)
+                  const epicTitleMatch = content.match(/epic_title:\s*["']?([^"'\n]+)["']?/i)
+                  const statusMatch = content.match(/status:\s*["']?([^"'\n]+)["']?/i)
+                  const currentIndexMatch = content.match(/current_story_index:\s*(\d+)/i)
+                  const totalStoriesMatch = content.match(/total_stories:\s*(\d+)/i)
+                  const nextActionMatch = content.match(/next_action:\s*["']?([^"'\n]+)["']?/i)
+                  
+                  // Count completed/pending stories
+                  const completedSection = content.match(/completed_stories:([\s\S]*?)(?=pending_stories:|$)/i)
+                  const pendingSection = content.match(/pending_stories:([\s\S]*?)(?=\n\w+:|$)/i)
+                  
+                  const completedCount = completedSection 
+                    ? (completedSection[1].match(/- path:/g) || []).length 
+                    : 0
+                  const pendingCount = pendingSection 
+                    ? (pendingSection[1].match(/- path:/g) || []).length 
+                    : 0
+                  
+                  // Extract next story path from next_action
+                  let nextStoryPath: string | null = null
+                  if (nextActionMatch) {
+                    const actionText = nextActionMatch[1]
+                    const storyFileMatch = actionText.match(/story-[\w-]+\.md/i)
+                    if (storyFileMatch) {
+                      // Find full path in pending_stories
+                      const pathMatch = content.match(new RegExp(`path:\\s*["']?([^"'\\n]*${storyFileMatch[0]}[^"'\\n]*)["']?`, 'i'))
+                      if (pathMatch) {
+                        nextStoryPath = pathMatch[1]
+                      }
+                    }
+                  }
+                  
+                  return {
+                    statePath: fullPath.replace(directory + "/", ""),
+                    epicId: epicIdMatch?.[1] || "unknown",
+                    epicTitle: epicTitleMatch?.[1] || "Unknown Epic",
+                    status: statusMatch?.[1] || "in-progress",
+                    currentStoryIndex: currentIndexMatch ? parseInt(currentIndexMatch[1]) : 0,
+                    totalStories: totalStoriesMatch ? parseInt(totalStoriesMatch[1]) : 0,
+                    nextAction: nextActionMatch?.[1] || null,
+                    nextStoryPath,
+                    completedCount,
+                    pendingCount
+                  }
+                }
+              }
+            }
+          } catch {
+            // No .sprint-state folder in this sprint
+          }
+        }
+      }
+      return null
+    } catch {
+      return null
+    }
+  }
+
   async function getActiveStory(): Promise<StoryContext | null> {
     try {
+      // First, try to find epic state file
+      const epicState = await getActiveEpicState()
+      if (epicState) {
+        // Parse epic state to get current story
+        const storyPathMatch = epicState.content.match(/next_action:\s*["']?Execute\s+(.+?)["']?$/m)
+        if (storyPathMatch) {
+          const storyFileName = storyPathMatch[1]
+          // Find story file
+          const sprintMatch = epicState.statePath.match(/sprint-(\d+)/)
+          if (sprintMatch) {
+            const storyPath = `docs/sprint-artifacts/sprint-${sprintMatch[1]}/stories/${storyFileName}`
+            const storyContent = await readFile(join(directory, storyPath), "utf-8")
+            
+            const titleMatch = storyContent.match(/^#\s+(.+)/m)
+            const statusMatch = storyContent.match(/\*\*Status:\*\*\s*(\w+)/i)
+            
+            const completedTasks: string[] = []
+            const pendingTasks: string[] = []
+            let currentTask: string | null = null
+            
+            // Parse tasks with more detail
+            const taskRegex = /- \[([ x])\]\s+\*\*T(\d+)\*\*[:\s]+(.+?)(?=\n|$)/g
+            let match
+            while ((match = taskRegex.exec(storyContent)) !== null) {
+              const [, checked, taskId, taskName] = match
+              const taskInfo = `T${taskId}: ${taskName.trim()}`
+              if (checked === "x") {
+                completedTasks.push(taskInfo)
+              } else {
+                if (!currentTask) currentTask = taskInfo
+                pendingTasks.push(taskInfo)
+              }
+            }
+            
+            // Parse acceptance criteria
+            const acceptanceCriteria: string[] = []
+            const acSection = storyContent.match(/## Acceptance Criteria[\s\S]*?(?=##|$)/i)
+            if (acSection) {
+              const acRegex = /- \[([ x])\]\s+(.+?)(?=\n|$)/g
+              while ((match = acRegex.exec(acSection[0])) !== null) {
+                const [, checked, criteria] = match
+                acceptanceCriteria.push(`${checked === "x" ? "✅" : "⬜"} ${criteria.trim()}`)
+              }
+            }
+
+            return {
+              path: storyPath,
+              title: titleMatch?.[1] || "Unknown Story",
+              status: statusMatch?.[1] || "unknown",
+              currentTask,
+              completedTasks,
+              pendingTasks,
+              acceptanceCriteria,
+              fullContent: storyContent
+            }
+          }
+        }
+      }
+      
+      // Fallback: try old sprint-status.yaml format
       const sprintStatusPath = join(directory, "docs", "sprint-artifacts", "sprint-status.yaml")
       const content = await readFile(sprintStatusPath, "utf-8")
       
@@ -300,21 +467,72 @@ DO NOT skip this step. DO NOT ask user what to do. Just read these files first.`
     return relevantPaths
   }
 
+  async function detectActiveCommand(todos: TaskStatus[], epicState: EpicState | null): Promise<string | null> {
+    // Detect command from TODO structure
+    if (todos.length === 0) return null
+    
+    // Check if TODOs are epics (sprint mode)
+    const hasEpicTodos = todos.some(t => t.content.toLowerCase().includes("epic"))
+    if (hasEpicTodos) return "/dev-sprint"
+    
+    // Check if TODOs are stories (epic mode)
+    const hasStoryTodos = todos.some(t => t.content.toLowerCase().includes("story"))
+    if (hasStoryTodos || epicState) return "/dev-epic"
+    
+    // Regular story mode
+    return "/dev-story"
+  }
+
   async function buildContext(agent: string | null): Promise<SessionContext> {
     const [todos, story] = await Promise.all([
       getTodoList(),
       getActiveStory()
     ])
     
+    const epicState = await getActiveEpicState()
     const relevantFiles = await getRelevantFiles(agent, story)
+    const activeCommand = await detectActiveCommand(todos, epicState)
 
-    return { todos, story, relevantFiles, activeAgent: agent }
+    return { todos, story, relevantFiles, activeAgent: agent, activeCommand }
   }
 
-  function formatDevContext(ctx: SessionContext): string {
+  async function formatDevContext(ctx: SessionContext): Promise<string> {
     const sections: string[] = []
     
-    if (ctx.story) {
+    // Check if we're in epic workflow
+    const epicState = await getActiveEpicState()
+    
+    if (epicState) {
+      // Epic/Sprint workflow mode - show epic progress
+      const progress = epicState.totalStories > 0 
+        ? ((epicState.completedCount / epicState.totalStories) * 100).toFixed(0) 
+        : 0
+
+      sections.push(`## 🎯 Epic Workflow: ${epicState.epicTitle}
+
+**Epic ID:** ${epicState.epicId}
+**Epic State:** \`${epicState.statePath}\` ← READ THIS FIRST
+**Progress:** ${progress}% (${epicState.completedCount}/${epicState.totalStories} stories)
+
+### Next Action (DO THIS NOW)
+\`\`\`
+${epicState.nextAction || "All stories complete - run epic integration tests"}
+\`\`\`
+
+${epicState.nextStoryPath ? `**Next Story:** \`${epicState.nextStoryPath}\` ← READ THIS SECOND` : ""}
+
+### Epic Progress
+**Completed Stories:** ${epicState.completedCount}
+**Pending Stories:** ${epicState.pendingCount}
+**Current Index:** ${epicState.currentStoryIndex}
+
+---
+
+💡 **Note:** If this is part of /dev-sprint, after epic completes:
+1. Update sprint-status.yaml (mark epic done)
+2. Continue to next epic automatically`)
+    } else if (ctx.story) {
+      // Regular story mode
       const s = ctx.story
       const total = s.completedTasks.length + s.pendingTasks.length
       const progress = total > 0 ? (s.completedTasks.length / total * 100).toFixed(0) : 0
@@ -433,13 +651,13 @@ ${ctx.relevantFiles.map(f => `- \`${f}\``).join("\n")}`)
     return sections.join("\n\n---\n\n")
   }
 
-  function formatContext(ctx: SessionContext): string {
+  async function formatContext(ctx: SessionContext): Promise<string> {
     const agent = ctx.activeAgent?.toLowerCase()
     
     switch (agent) {
       case "dev":
       case "coder":
-        return formatDevContext(ctx)
+        return await formatDevContext(ctx)
       case "architect":
         return formatArchitectContext(ctx)
       case "pm":
@@ -453,12 +671,15 @@ ${ctx.relevantFiles.map(f => `- \`${f}\``).join("\n")}`)
     }
   }
 
-  function formatInstructions(ctx: SessionContext): string {
+  async function formatInstructions(ctx: SessionContext): Promise<string> {
     const agent = ctx.activeAgent?.toLowerCase()
     const hasInProgressTasks = ctx.todos.some(t => t.status === "in_progress")
     const hasInProgressStory = ctx.story?.status === "in-progress"
+    
+    // Check if we're in epic workflow
+    const epicState = await getActiveEpicState()
 
-    if (!hasInProgressTasks && !hasInProgressStory) {
+    if (!hasInProgressTasks && !hasInProgressStory && !epicState) {
       return `## Status: COMPLETED ✅
 
 Previous task was completed successfully.
@@ -469,7 +690,67 @@ Previous task was completed successfully.
 3. Ask user for next task`
     }
 
-    // Dev-specific instructions
+    // Sprint workflow instructions
+    if (ctx.activeCommand === "/dev-sprint" && (agent === "dev" || agent === "coder")) {
+      const nextEpicTodo = ctx.todos.find(t => t.status === "in_progress" && t.content.toLowerCase().includes("epic"))
+      return `## Status: SPRINT IN PROGRESS 🔄
+
+**Active Command:** ${ctx.activeCommand}
+**Active Agent:** @${agent}
+**Next Epic:** ${nextEpicTodo?.content || "check TODO"}
+
+### Resume Protocol (AUTOMATIC - DO NOT ASK USER)
+1. **Read command:** \`.opencode/commands/dev-sprint.md\`
+2. **Read sprint-status.yaml**
+3. **Find next epic** from TODO or sprint-status.yaml
+4. **Execute epic** via /dev-epic workflow
+5. **After epic done:**
+   - Update sprint-status.yaml (mark epic done)
+   - Update TODO (mark epic completed, next epic in_progress)
+   - Continue next epic automatically
+
+### DO NOT
+- Ask user what to do (TODO + sprint-status.yaml tell you)
+- Re-read completed epics
+- Wait for confirmation between epics (auto-continue)
+
+### IMPORTANT
+This is /dev-sprint autopilot mode. Execute epics sequentially until sprint done.`
+    }
+
+    // Epic workflow instructions
+    if ((ctx.activeCommand === "/dev-epic" || epicState) && (agent === "dev" || agent === "coder")) {
+      return `## Status: EPIC IN PROGRESS 🔄
+
+**Active Command:** ${ctx.activeCommand || "/dev-epic"}
+**Active Agent:** @${agent}
+**Epic:** ${epicState?.epicTitle || "check epic state"}
+**Next Action:** ${epicState?.nextAction || "check TODO"}
+
+### Resume Protocol (AUTOMATIC - DO NOT ASK USER)
+1. **Read command:** \`.opencode/commands/dev-epic.md\`
+2. **Read epic state:** \`${epicState?.statePath || "find in .sprint-state/"}\`
+3. **Read next story:** \`${epicState?.nextStoryPath || "check epic state"}\`
+4. **Load skill:** \`.opencode/skills/dev-story/SKILL.md\`
+5. **Execute story** following /dev-story workflow
+6. **After story done:**
+   - Update epic state file (move story to completed)
+   - Update TODO (mark story completed, next story in_progress)
+   - Increment current_story_index
+   - Set next_action to next story
+   - Continue next story automatically
+
+### DO NOT
+- Ask user what to do (epic state + TODO tell you)
+- Re-read completed stories
+- Re-read epic file (info in state)
+- Wait for confirmation between stories (auto-continue)
+
+### IMPORTANT
+This is /dev-epic autopilot mode. Execute stories sequentially until epic done.`
+    }
+
+    // Dev-specific instructions (regular story)
     if ((agent === "dev" || agent === "coder") && ctx.story) {
       return `## Status: IN PROGRESS 🔄
 
@@ -554,9 +835,9 @@ Previous task was completed successfully.
       await log(directory, `  todos: ${ctx.todos.length}`)
       await log(directory, `  relevantFiles: ${ctx.relevantFiles.length}`)
       
-      const context = formatContext(ctx)
-      const instructions = formatInstructions(ctx)
-      const readCommands = generateReadCommands(agent, ctx.story)
+      const context = await formatContext(ctx)
+      const instructions = await formatInstructions(ctx)
+      const readCommands = await generateReadCommands(agent, ctx.story, ctx.activeCommand)
 
       // Agent identity reminder
       const agentIdentity = agent 

@@ -254,6 +254,83 @@ pipeline:
     # IMPLEMENTATION PHASE
     # =========================================================================
     
+    - id: dev-sprint
+      name: Sprint Implementation (Full Workflow)
+      description: Implement entire sprint - all epics with auto-compaction
+      phase: implementation
+      command: /dev-sprint [sprint-number]
+      agent: dev
+      skills:
+        - dev-story
+        - test-design
+        - code-review
+      artifacts:
+        input:
+          - docs/sprint-artifacts/sprint-status.yaml
+          - docs/sprint-artifacts/backlog/epic-*.md
+          - CLAUDE.md
+        output:
+          - All epic implementations
+          - Updated sprint-status.yaml
+          - Sprint summary report
+      workflow:
+        description: |
+          Execute all epics in sprint sequentially:
+          1. Read sprint-status.yaml, find epics
+          2. For each epic: /dev-epic → compact
+          3. Continue until all epics done
+          4. Run sprint integration tests
+      config:
+        auto_compact: "config.yaml → epic_workflow.auto_compact"
+        auto_fix: "config.yaml → epic_workflow.auto_fix"
+      next: dev-epic  # Can also run individual epics
+    
+    - id: dev-epic
+      name: Epic Implementation (Full Workflow)
+      description: Implement entire epic - all stories with auto-compaction
+      phase: implementation
+      command: /dev-epic [epic-path]
+      agent: dev
+      skills:
+        - dev-story
+        - test-design
+        - code-review
+      artifacts:
+        input:
+          - docs/sprint-artifacts/backlog/epic-*.md
+          - docs/sprint-artifacts/sprint-*/.sprint-state/epic-*-state.yaml
+          - CLAUDE.md
+        output:
+          - All story implementations
+          - Epic state file (updated)
+          - Epic summary report
+      workflow:
+        description: |
+          Execute all stories in epic sequentially:
+          1. Read epic file, find stories
+          2. For each story: /dev-story → @reviewer → compact
+          3. Auto-fix review issues (max 3 attempts)
+          4. Continue until all stories done
+          5. Run epic integration tests
+        state_management:
+          location: "docs/sprint-artifacts/sprint-N/.sprint-state/epic-XX-state.yaml"
+          preserves:
+            - Current story index
+            - Completed stories
+            - Pending stories
+            - Review status
+        compaction:
+          trigger: "After each story completion"
+          restores:
+            - Epic state file (progress)
+            - Next story file (what to do)
+            - CLAUDE.md, PRD, Architecture (context)
+      config:
+        auto_compact: "config.yaml → epic_workflow.auto_compact"
+        auto_fix: "config.yaml → epic_workflow.auto_fix"
+        max_fix_attempts: "config.yaml → epic_workflow.max_fix_attempts"
+      next: dev-story  # Can also run individual stories
+    
     - id: dev-story
       name: Story Implementation
       description: Implement story using red-green-refactor cycle
