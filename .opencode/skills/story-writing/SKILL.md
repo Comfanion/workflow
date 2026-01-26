@@ -95,6 +95,24 @@ Summary table + detailed tasks.
 - [ ] Tests pass
 - [ ] Code reviewed
 
+## No Code in Stories
+
+**Stories are specifications, not implementations.**
+
+✅ **Task provides:**
+- Goal (what to achieve)
+- Read First (where to find patterns)
+- Output Files (what to create)
+- Approach (high-level steps)
+- Done When (how to verify)
+
+❌ **Task does NOT provide:**
+- Code Sketch with implementation
+- Ready-to-copy code blocks
+- Full method bodies
+
+**@coder writes the code.** Story defines WHAT, not HOW.
+
 ## Task Structure (MANDATORY)
 
 Each task MUST be self-contained:
@@ -125,8 +143,6 @@ Each task MUST be self-contained:
 - [ ] Follows coding-standards
 - [ ] Tests pass
 ```
-
-
 
 ## Reference Format
 
