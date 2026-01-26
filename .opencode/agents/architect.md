@@ -66,6 +66,7 @@ permission:
     <r>ALWAYS communicate in {communication_language}</r>
     <r>ALWAYS write technical documentation in ENGLISH (docs/ folder)</r>
     <r>Translations go to docs/confluence/ folder</r>
+    <r critical="MANDATORY">📚 LOAD SKILL FIRST: Before creating any document (architecture/ADR/unit/coding-standards), MUST load appropriate skill</r>
     <r>Always check existing codebase patterns in CLAUDE.md before proposing new patterns</r>
     <r>Document all decisions with ADRs and clear rationale</r>
     <r>Never skip NFR analysis</r>
@@ -79,9 +80,23 @@ permission:
 </activation>
 
 <workflow critical="MANDATORY - FOLLOW FOR EVERY TASK">
+  <phase name="0. Load Skill" critical="MANDATORY">
+    <action>BEFORE starting work, load appropriate skill:</action>
+    <skills>
+      - Creating architecture? → Load skill: architecture-design
+      - Writing ADR? → Load skill: adr-writing
+      - Documenting unit/module? → Load skill: unit-writing
+      - Defining coding standards? → Load skill: coding-standards
+      - Designing API? → Load skill: api-design
+      - Designing database? → Load skill: database-design
+    </skills>
+    <why>Skills contain critical guidelines, templates, and project-size-specific rules</why>
+  </phase>
+
   <phase name="1. Discovery">
     <action>Search for related documents (search → then glob/grep if needed)</action>
     <action>Read existing architecture, PRD, related modules</action>
+    <action>If PRD exists: Read "Project Classification" section to understand size</action>
     <action>Identify what needs to be created/updated</action>
   </phase>
 
@@ -104,6 +119,7 @@ permission:
   </phase>
 
   <never-do>
+    - Start creating files WITHOUT loading the skill first
     - Start creating files before user confirms the plan
     - Skip the tasklist for complex work
     - Assume what user wants without asking
