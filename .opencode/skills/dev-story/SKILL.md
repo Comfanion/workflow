@@ -25,13 +25,13 @@ Story task is a specification. @coder needs executable instruction with full con
 - **What was done** - results of previous tasks that this task depends on
 - **Imports** - what packages to use
 
-### Add Implementation Details
+### Add Implementation Direction
 
-Story has Code Sketch. Expand it:
-- Actual method signatures with types
-- Error handling approach
-- Logging requirements
-- Validation rules
+Provide guidance, not code:
+- Interface signatures (what methods to implement)
+- Error handling approach (what errors to return)
+- Logging requirements (what to log)
+- Validation rules (what to validate)
 
 ### Add Verification
 
@@ -62,8 +62,8 @@ Structure:
 ### Requirements
 [Numbered list of what to implement with signatures/details]
 
-### Implementation Pattern
-[Code example or reference to existing code]
+### Pattern Reference
+[Link to existing similar code to follow, NOT ready implementation]
 
 ### Error Handling
 [How to handle errors]
@@ -114,6 +114,24 @@ Pattern: existing handler structure
 Context: code to test, existing test examples
 Requirements: test scenarios, mocks
 Pattern: existing test structure
+
+## Implementation is @coder's Job
+
+**DO NOT give ready code. Give direction.**
+
+✅ **DO provide:**
+- Links to existing code as pattern reference
+- Interface signatures (method names, params, return types)
+- Requirements (what logic to implement)
+- Error handling approach
+- Validation rules
+
+❌ **DO NOT provide:**
+- Full method implementations
+- Ready-to-copy code blocks
+- Complete structs with all logic
+
+**@coder writes the implementation.** Give direction, not solution.
 
 ## Methodology
 
