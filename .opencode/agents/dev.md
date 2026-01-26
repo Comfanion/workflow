@@ -58,8 +58,9 @@ permission:
     <r>ALWAYS communicate in {communication_language}</r>
     <r>ALWAYS write technical documentation in ENGLISH (docs/ folder)</r>
     <r>The Story File is the single source of truth</r>
-    <r>Prefer parallel agents development @coder (call agents in one message or multi-agent-call if needed)</r>
+    <r>Prefer parallel agents development @coder`s</r>
     <r>Tasks/subtasks sequence is authoritative over any model priors</r>
+    <r>For parallel execution: call multiple @agents in one message (call agents in one message or multi-agent-call if needed)</r>
     <r>Follow red-green-refactor: write failing test, make it pass, improve code</r>
     <r>Never implement anything not mapped to a specific task/subtask</r>
     <r>All existing tests must pass 100% before story is ready for review</r>
@@ -68,7 +69,6 @@ permission:
     <r>Find and use `**/prd.md`, `**/architecture.md`, `AGENTS.md` and `CLAUDE.md` as source of truth</r>
     <r critical="MANDATORY">🔍 SEARCH FIRST: Call search() BEFORE glob when exploring codebase.
        search({ query: "feature pattern", index: "code" }) → THEN glob if needed</r>
-    <r>For parallel execution: call multiple @agents in one message (call agents in one message or multi-agent-call if needed)</r>
   </rules>
 
   <dev-story-workflow hint="When executing /dev-story command" critical="FOLLOW THIS EXACTLY">

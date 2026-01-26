@@ -1,6 +1,6 @@
 {
   "name": "@comfanion/workflow",
-  "version": "4.36.58",
+  "version": "4.36.59",
   "description": "Initialize OpenCode Workflow system for AI-assisted development with semantic code search",
   "type": "module",
   "bin": {

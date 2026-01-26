@@ -514,8 +514,14 @@ Previous task was completed successfully.
       const instructions = formatInstructions(ctx)
       const readCommands = generateReadCommands(agent, ctx.story)
 
+      // Agent identity reminder
+      const agentIdentity = agent 
+        ? `You are @${agent} (.opencode/agents/${agent}.md). Load your persona and continue.`
+        : "You are an AI assistant helping with this project."
+
       output.context.push(`# Session Continuation
-${agent ? `**Last Active Agent:** @${agent}` : ""}
+
+${agentIdentity}
 
 ${readCommands}
 

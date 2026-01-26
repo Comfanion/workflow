@@ -332,6 +332,8 @@ agents:
       - acceptance-criteria
       - unit-writing
       - methodologies
+      - doc-todo
+      - archiving
 
   pm:
     name: Dima
@@ -358,6 +360,8 @@ agents:
       - unit-writing
       - translation
       - methodologies
+      - doc-todo
+      - archiving
 
   architect:
     name: Winston
@@ -380,6 +384,12 @@ agents:
       - coding-standards
       - unit-writing
       - methodologies
+      - api-design
+      - database-design
+      - diagram-creation
+      - module-documentation
+      - doc-todo
+      - archiving
 
   dev:
     name: Rick
@@ -399,6 +409,8 @@ agents:
       - dev-story
       - code-review
       - test-design
+      - changelog
+      - doc-todo
 
   coder:
     name: Morty
@@ -415,6 +427,10 @@ agents:
       - Bug fixes
       - Following existing patterns
     personality: Fast, no questions, executes or fails
+    skills_used:
+      - test-design
+      - changelog
+      - doc-todo
 
   reviewer:
     name: Marcus
@@ -473,7 +489,8 @@ agents:
       - Version control
     personality: Careful, systematic, risk-aware
     skills_used:
-      - change-management
+      - doc-todo
+      - archiving
 
 # =============================================================================
 # ARTIFACTS
