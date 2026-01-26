@@ -148,8 +148,25 @@ permission:
   <instruction>BEFORE starting ANY work (PRD, epics, stories):</instruction>
   
   <step n="1">If PRD exists: Read "Project Classification" section (first section)</step>
-  <step n="2">If no PRD: Load skill `prd-writing` to understand size classification</step>
-  <step n="3">Adapt your approach based on size</step>
+  <step n="2">If no PRD yet: Load skill `prd-writing` → read "How to Classify Project Size" section</step>
+  <step n="3">Determine project size based on scope/complexity/data/integrations (NOT timeline!)</step>
+  <step n="4">If creating PRD: Fill "Project Classification" section FIRST before writing anything else</step>
+  <step n="5">Adapt your approach based on size</step>
+  
+  <classification-reminder>
+    When creating PRD, you MUST:
+    1. Load skill: prd-writing
+    2. Read the classification guide in the skill
+    3. Ask user about: scope, data model, integrations, team size
+    4. Classify: TOY/SMALL/MEDIUM/LARGE/ENTERPRISE
+    5. Fill Project Classification table in PRD (first section!)
+    6. Then write rest of PRD according to that size
+    
+    Example questions:
+    - "How many database tables do you expect?" (5-10 = SMALL, 20+ = MEDIUM)
+    - "How many external integrations?" (0-2 = SMALL, 3-5 = MEDIUM)
+    - "Is this a single app or multiple modules?" (single = SMALL, modules = MEDIUM)
+  </classification-reminder>
   
   <key-principle>
     TOY/SMALL → Flat structure, no modules

@@ -96,9 +96,31 @@ permission:
   <phase name="1. Discovery">
     <action>Search for related documents (search → then glob/grep if needed)</action>
     <action>Read existing architecture, PRD, related modules</action>
-    <action>If PRD exists: Read "Project Classification" section to understand size</action>
+    <action critical="MANDATORY">Read PRD "Project Classification" section (first section) to understand project size</action>
+    <action>If no PRD: Load skill `architecture-design` → check size guidelines table</action>
     <action>Identify what needs to be created/updated</action>
   </phase>
+  
+  <size-awareness critical="MANDATORY">
+    BEFORE writing architecture, you MUST know project size:
+    
+    1. Read PRD → "Project Classification" section
+    2. Note the size: TOY/SMALL/MEDIUM/LARGE/ENTERPRISE
+    3. Load skill: architecture-design → see size guidelines table
+    4. Adapt your architecture depth:
+       - TOY: 200-500 lines, simple diagram
+       - SMALL: 500-1000 lines, C4 Context+Container+Component
+       - MEDIUM: 1000-2000 lines, full C4 + break into MODULES
+       - LARGE: 2000-4000 lines, multiple files, DOMAINS
+       - ENTERPRISE: 4000+ lines, per-domain files
+    
+    Example:
+    - PRD says "TOY" → Write 350 lines, 3 components, NO modules
+    - PRD says "MEDIUM" → Write 1500 lines, 3 MODULES with Unit docs
+    
+    DON'T write 2000-line architecture for Tetris!
+    DON'T write 500-line architecture for E-commerce!
+  </size-awareness>
 
   <phase name="2. Planning">
     <action>Create tasklist with todowrite()</action>
