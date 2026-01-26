@@ -1,6 +1,25 @@
 import type { Plugin } from "@opencode-ai/plugin"
-import { readFile, access, readdir } from "fs/promises"
+import { readFile, access, readdir, appendFile } from "fs/promises"
 import { join } from "path"
+
+// Debug logging to file
+async function log(directory: string, message: string): Promise<void> {
+  const logPath = join(directory, ".opencode", "compaction.log")
+  const timestamp = new Date().toISOString()
+  try {
+    await appendFile(logPath, `[${timestamp}] ${message}\n`)
+  } catch {
+    // ignore logging errors
+  }
+}
+
+// Service agents that should be ignored
+const SERVICE_AGENTS = ["title", "compaction", "summary", "system"]
+
+function isRealAgent(agent: string | null): boolean {
+  if (!agent) return false
+  return !SERVICE_AGENTS.includes(agent.toLowerCase())
+}
 
 interface TaskStatus {
   id: string
@@ -486,29 +505,54 @@ Previous task was completed successfully.
   return {
     // Track active agent from chat messages
     "chat.message": async (input, output) => {
+      await log(directory, `chat.message: agent=${input.agent}, sessionID=${input.sessionID}`)
       if (input.agent) {
         // Handle both string and object agent (e.g., { name: "dev" })
-        lastActiveAgent = typeof input.agent === 'string' 
+        const agent = typeof input.agent === 'string' 
           ? input.agent 
           : (input.agent as any)?.name || null
-        lastSessionId = input.sessionID
+        
+        // Only track real agents, not service agents
+        if (isRealAgent(agent)) {
+          lastActiveAgent = agent
+          lastSessionId = input.sessionID
+          await log(directory, `  -> tracked agent: ${lastActiveAgent}`)
+        } else {
+          await log(directory, `  -> ignored service agent: ${agent}`)
+        }
       }
     },
 
     // Also track from chat params (backup)
     "chat.params": async (input, output) => {
+      await log(directory, `chat.params: agent=${input.agent}`)
       if (input.agent) {
-        lastActiveAgent = typeof input.agent === 'string' 
+        const agent = typeof input.agent === 'string' 
           ? input.agent 
           : (input.agent as any)?.name || null
+        
+        // Only track real agents, not service agents
+        if (isRealAgent(agent)) {
+          lastActiveAgent = agent
+          await log(directory, `  -> tracked agent: ${lastActiveAgent}`)
+        } else {
+          await log(directory, `  -> ignored service agent: ${agent}`)
+        }
       }
     },
 
     "experimental.session.compacting": async (input, output) => {
+      await log(directory, `=== COMPACTION STARTED ===`)
+      await log(directory, `  lastActiveAgent: ${lastActiveAgent}`)
+      
       // Use tracked agent or try to detect from session
       const agent = lastActiveAgent
       const ctx = await buildContext(agent)
       ctx.activeAgent = agent
+      
+      await log(directory, `  story: ${ctx.story?.path || 'none'}`)
+      await log(directory, `  todos: ${ctx.todos.length}`)
+      await log(directory, `  relevantFiles: ${ctx.relevantFiles.length}`)
       
       const context = formatContext(ctx)
       const instructions = formatInstructions(ctx)
@@ -532,12 +576,17 @@ ${context}
 ---
 
 ${instructions}`)
+      
+      await log(directory, `  -> output.context pushed (${output.context.length} items)`)
+      await log(directory, `=== COMPACTION DONE ===`)
     },
 
     event: async ({ event }) => {
+      await log(directory, `event: ${event.type}`)
       if (event.type === "session.idle") {
         const story = await getActiveStory()
         if (story && story.pendingTasks.length === 0) {
+          await log(directory, `  -> Story complete: ${story.title}`)
           console.log(`[compaction] Story complete: ${story.title}`)
         }
       }

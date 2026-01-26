@@ -15,30 +15,44 @@ How to transform story tasks into executable instructions for @coder.
 
 ## Task Transformation
 
-Story task is a specification. @coder needs executable instruction with full context.
+Story task is specification with Approach steps. Transform it into executable instruction with full context.
 
-### Add Context
+### Step 1: Read Required Reading
 
-@coder doesn't see the full story. Include:
-- **Existing files** - actual paths to domain entities, interfaces, services that exist
-- **Patterns to follow** - link to existing similar code ("follow pattern from X")
-- **What was done** - results of previous tasks that this task depends on
+Story has "Required Reading" and task has "Read First":
+1. Open each linked document
+2. Find the specific sections mentioned
+3. Extract patterns, signatures, constraints
+
+### Step 2: Find Existing Code
+
+From "Read First" paths:
+1. Read existing similar code (e.g., "existing service example")
+2. Note the structure, imports, error handling
+3. This becomes "Pattern Reference" for @coder
+
+### Step 3: Build Context
+
+@coder doesn't see story. Provide:
+- **Existing files** - actual paths with what they contain
+- **Patterns to follow** - link to existing similar code
+- **What was done** - results of previous tasks this depends on
 - **Imports** - what packages to use
 
-### Add Implementation Direction
+### Step 4: Add Direction
 
-Provide guidance, not code:
-- Interface signatures (what methods to implement)
+Story has "Approach" with high-level steps. Expand with:
+- Interface signatures (method names, params, return types)
 - Error handling approach (what errors to return)
-- Logging requirements (what to log)
 - Validation rules (what to validate)
+- Constraints from documentation
 
-### Add Verification
+### Step 5: Make Verification Concrete
 
-Story has "Done when". Make it concrete:
+Story has "Done when". Add:
 - Specific test commands to run
-- Expected output format
 - Files that must compile
+- Test coverage expectations
 
 ## Formulating Task for @coder
 

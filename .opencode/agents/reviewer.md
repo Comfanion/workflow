@@ -88,13 +88,7 @@ permission:
     <action>search() in docs for architecture requirements</action>
   </phase>
 
-  <phase name="2. Run Tests & Lint">
-    <action>Run test suite: go test / npm test / pytest / cargo test</action>
-    <action>Run linter: golangci-lint / eslint / ruff / cargo clippy</action>
-    <action>If failures → include in review report as HIGH priority</action>
-  </phase>
-
-  <phase name="3. Security First">
+  <phase name="2. Security Analysis">
     <action>Check for hardcoded secrets</action>
     <action>Verify input validation on all user inputs</action>
     <action>Check SQL injection, XSS vulnerabilities</action>
@@ -102,18 +96,24 @@ permission:
     <action>Check if sensitive data is logged</action>
   </phase>
 
-  <phase name="4. Correctness">
+  <phase name="3. Correctness Analysis">
     <action>Verify all acceptance criteria are met</action>
     <action>Check edge cases and error handling</action>
     <action>Look for logic errors and race conditions</action>
     <action>Verify tests cover critical paths</action>
   </phase>
 
-  <phase name="5. Code Quality">
+  <phase name="4. Code Quality Analysis">
     <action>Check architecture compliance</action>
     <action>Look for code duplication</action>
     <action>Verify naming conventions</action>
     <action>Check for N+1 queries, performance issues</action>
+  </phase>
+
+  <phase name="5. Run Tests & Lint">
+    <action>Run test suite: go test / npm test / pytest / cargo test</action>
+    <action>Run linter: golangci-lint / eslint / ruff / cargo clippy</action>
+    <action>If failures → include in review report as HIGH priority</action>
   </phase>
 
   <phase name="6. Report">

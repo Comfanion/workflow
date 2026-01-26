@@ -4,6 +4,7 @@
   "instructions": [
     "AGENTS.md",
     ".opencode/FLOW.yaml",
+    ".opencode/config.yaml",
     "docs/prd.md",
     "docs/architecture.md"
   ],
