@@ -106,6 +106,12 @@ permission:
   - New patterns needed (→ @dev)
 </when-not-to-use>
 
+<skills hint="Load from .opencode/skills/{name}/SKILL.md when needed">
+  <skill name="test-design">Test structure, coverage requirements</skill>
+  <skill name="changelog">Update changelogs after code changes</skill>
+  <skill name="doc-todo">TODO placeholders in code comments</skill>
+</skills>
+
 </agent>
 
 ## Quick Reference
