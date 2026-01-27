@@ -70,7 +70,7 @@ Use template at: `@.opencode/skills/story-writing/template.md`
 id: {{PREFIX}}-S{{E}}-{{N}}
 epic: {{PREFIX}}-E{{E}}
 status: draft | ready | in_progress | review | done
-size: S | M | L
+size: S | M | L   # Prefer S→M or M. S=2-4 tasks, M=4-8 tasks, L=8+ tasks
 ```
 
 ### 2. Goal

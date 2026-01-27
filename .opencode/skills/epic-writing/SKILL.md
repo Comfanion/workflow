@@ -183,6 +183,8 @@ Table + dependency diagram:
 | S01-01 | Task Domain | M | → Unit: `Task` | ⬜ |
 | S01-02 | Task Repository | M | → Unit: `Task` | ⬜ |
 
+**Size Guide:** Prefer S→M or M. (S=2-4 tasks, M=4-8 tasks, L=8+ tasks)
+
 ```
 S01 ──► S02 ──► S03
 ```

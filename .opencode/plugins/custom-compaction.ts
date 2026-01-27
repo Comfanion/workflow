@@ -54,20 +54,18 @@ const BASE_FILES = [
 ]
 
 // Agent-specific file priorities (added to BASE_FILES)
+// These are OPTIONAL files for context, not mandatory
 const AGENT_FILES: Record<string, string[]> = {
   dev: [
     ...BASE_FILES,
     "docs/coding-standards/README.md",
     "docs/coding-standards/patterns.md",
-    "docs/coding-standards/testing.md",
-    "docs/prd.md",
-    "docs/architecture.md",
+    // NO prd.md, NO architecture.md - too large, story has context
     // story path added dynamically
   ],
   coder: [
     ...BASE_FILES,
     "docs/coding-standards/patterns.md",
-    "docs/coding-standards/testing.md",
   ],
   architect: [
     ...BASE_FILES,
@@ -111,20 +109,19 @@ const DEFAULT_FILES = [
 ]
 
 // Files agent MUST Read after compaction (commands generated)
+// MINIMAL CONTEXT: ~70KB for dev, not 200KB+
+// Note: coding-standards/README.md is standard path created by /coding-standards command
 const MUST_READ_FILES: Record<string, string[]> = {
   dev: [
     "AGENTS.md",
     "CLAUDE.md",
-    "docs/prd.md",
-    "docs/architecture.md",
-    // epic state path added dynamically (if in epic workflow)
-    // story path added dynamically
+    "docs/coding-standards/README.md",  // if exists
+    // story/epic state path added dynamically
   ],
   coder: [
     "AGENTS.md",
     "CLAUDE.md",
-    "docs/prd.md",
-    "docs/architecture.md",
+    "docs/coding-standards/README.md",
   ],
   architect: [
     "AGENTS.md",
@@ -136,7 +133,6 @@ const MUST_READ_FILES: Record<string, string[]> = {
     "AGENTS.md",
     "CLAUDE.md",
     "docs/prd.md",
-    "docs/architecture.md",
   ],
   analyst: [
     "AGENTS.md",
@@ -150,8 +146,6 @@ const MUST_READ_FILES: Record<string, string[]> = {
   default: [
     "AGENTS.md",
     "CLAUDE.md",
-    "docs/prd.md",
-    "docs/architecture.md",
   ],
 }
 

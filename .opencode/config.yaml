@@ -164,7 +164,6 @@ development:
   
   # Task structure
   task:
-    max_hours: 2           # Maximum hours per atomic task
     include_tests: true    # Each task includes test as validation
     require_interface: true # Interface defined before implementation
 

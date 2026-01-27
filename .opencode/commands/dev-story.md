@@ -13,8 +13,17 @@ Implement a story using red-green-refactor cycle with TODO tracking.
 1. Find or load story file
 2. Load project context (CLAUDE.md, docs/prd.md, docs/architecture.md)
 3. Use skill dev-story, test-design
-3. **Create TODO list from story tasks** (for progress tracking)
-4. Mark story as `in-progress`
+4. **Create TODO list for full scope of work** (tasks + tests + review):
+   - Parse story file, extract all tasks
+   - Add each task to TODO
+   - **If `config.yaml → development.auto_review: true`**: Add review task to TODO
+   ```
+   [ ] Task 1: Create User entity
+   [ ] Task 2: Add repository
+   [ ] Task 3: Write integration tests
+   [ ] Code review by @reviewer    ← if auto_review: true
+   ```
+5. Mark story as `in-progress`
 
 ### Phase 2: Implementation (for each task)
 5. **Mark task as `in_progress` in TODO**

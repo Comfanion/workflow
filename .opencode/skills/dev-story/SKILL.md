@@ -11,53 +11,71 @@ metadata:
 
 # Dev Story Skill
 
-How to transform story tasks into executable instructions for @coder.
+<workflow name="dev-story">
 
-## Task Transformation
+  <phase name="1-context" title="Load Minimal Context">
+    <read>
+      <file>CLAUDE.md</file>
+      <file>docs/coding-standards/README.md</file>
+      <file>docs/coding-standards/patterns.md</file>
+      <file>{story-file}</file>
+    </read>
+    <skip reason="too large, story has context">
+      <file>docs/prd.md</file>
+      <file>docs/architecture.md</file>
+    </skip>
+    <goal>~70KB context, not 200KB+</goal>
+  </phase>
 
-Story task is specification with Approach steps. Transform it into executable instruction with full context.
+  <phase name="2-transform" title="Transform Story Task → Executable Instruction">
+    <step n="1" name="read-docs">
+      Story has "Required Reading", task has "Read First".
+      Open each → find sections → extract patterns, signatures, constraints.
+    </step>
+    <step n="2" name="find-patterns">
+      From "Read First" paths, find existing similar code.
+      Note structure, imports, error handling → becomes "Pattern Reference".
+    </step>
+    <step n="3" name="build-context">
+      @coder doesn't see story. Provide:
+      - Existing files (paths + what they contain)
+      - Patterns to follow (link to similar code)
+      - What was done (results of previous tasks)
+      - Imports (what packages to use)
+    </step>
+    <step n="4" name="add-direction">
+      Story has "Approach". Expand with:
+      - Interface signatures (method names, params, return types)
+      - Error handling (what errors to return)
+      - Validation rules
+    </step>
+    <step n="5" name="verification">
+      Story has "Done when". Add:
+      - Specific test commands
+      - Files that must compile
+      - Test coverage expectations
+    </step>
+  </phase>
 
-### Step 1: Read Required Reading
+  <phase name="3-delegate" title="Delegate to @coder">
+    <action>Formulate task using template below</action>
+    <action>Call @coder with full context</action>
+    <rule>@coder writes code. Give direction, NOT solution.</rule>
+  </phase>
 
-Story has "Required Reading" and task has "Read First":
-1. Open each linked document
-2. Find the specific sections mentioned
-3. Extract patterns, signatures, constraints
+  <phase name="4-verify" title="Verify & Mark Done">
+    <action>Run tests</action>
+    <action>Check "Done when" criteria</action>
+    <action>Mark task ✅ in story file</action>
+    <next>Next task or story complete</next>
+  </phase>
 
-### Step 2: Find Existing Code
+</workflow>
 
-From "Read First" paths:
-1. Read existing similar code (e.g., "existing service example")
-2. Note the structure, imports, error handling
-3. This becomes "Pattern Reference" for @coder
+## Task Template for @coder
 
-### Step 3: Build Context
-
-@coder doesn't see story. Provide:
-- **Existing files** - actual paths with what they contain
-- **Patterns to follow** - link to existing similar code
-- **What was done** - results of previous tasks this depends on
-- **Imports** - what packages to use
-
-### Step 4: Add Direction
-
-Story has "Approach" with high-level steps. Expand with:
-- Interface signatures (method names, params, return types)
-- Error handling approach (what errors to return)
-- Validation rules (what to validate)
-- Constraints from documentation
-
-### Step 5: Make Verification Concrete
-
-Story has "Done when". Add:
-- Specific test commands to run
-- Files that must compile
-- Test coverage expectations
-
-## Formulating Task for @coder
-
-Structure:
-```
+<template name="coder-task">
+```markdown
 ## Task: [Name] (Task IDs)
 
 [One line goal]
@@ -66,89 +84,67 @@ Structure:
 - Use `doc-todo` for TODO comments
 
 ### Context
-- [Existing file]: [What it contains, what to use from it]
-- [Another file]: [Description]
-- Existing pattern: [Path to similar code to follow]
+- [Existing file]: [what to use from it]
+- Existing pattern: [path to similar code]
 
 ### Output Files
-- [Path to create/modify]
+- [path/to/create.ext]
 
 ### Requirements
-[Numbered list of what to implement with signatures/details]
+1. [What to implement with signatures]
+2. [Another requirement]
 
 ### Pattern Reference
-[Link to existing similar code to follow, NOT ready implementation]
+→ [path/to/similar/code.ext]
 
 ### Error Handling
 [How to handle errors]
 
 ### Done When
-- [ ] [Specific checkable item]
-- [ ] [Another item]
 - [ ] File compiles
 - [ ] Tests pass
+- [ ] [Specific criterion]
 ```
+</template>
 
-## Parallel Tasks
+<rules name="delegation">
+  <rule name="parallel">
+    Each task gets full context. No shared state. Different files only.
+  </rule>
+  <rule name="no-code">
+    Give direction, NOT solution. @coder writes implementation.
+  </rule>
+  <rule name="methodology">
+    TDD: "Write failing test first, then implement"
+    STUB: "Create stub first, write tests, then implement"
+  </rule>
+</rules>
 
-When delegating multiple tasks in one message:
-1. Each task gets full context (don't assume @coder remembers)
-2. Clearly separate tasks with headers
-3. No shared state between parallel tasks
-4. Tasks must work on different files
+<task-boundaries>
+  <good>Logically complete unit (service, handler, entity). Single responsibility. Testable independently.</good>
+  <split-when>Multiple unrelated responsibilities. No logical connection.</split-when>
+  <combine-when>Too granular. Same file, same concern.</combine-when>
+</task-boundaries>
 
-## Task Boundaries
+<patterns>
+  <pattern name="new-service">
+    Context: domain entities, repository interface, existing service
+    Requirements: interface, constructor, methods
+    Pattern: existing service structure
+  </pattern>
+  <pattern name="new-handler">
+    Context: service interface, DTOs, existing handler
+    Requirements: handler struct, methods, error mapping
+    Pattern: existing handler structure
+  </pattern>
+  <pattern name="new-tests">
+    Context: code to test, existing test examples
+    Requirements: test scenarios, mocks
+    Pattern: existing test structure
+  </pattern>
+</patterns>
 
-**Good task:**
-- Logically complete unit (service, handler, entity, feature)
-- Clear single responsibility
-- Can be tested independently
-
-**Consider splitting when:**
-- Multiple unrelated responsibilities
-- No logical connection between parts
-
-**Consider combining when:**
-- Tasks too granular to be meaningful
-- Same file, same concern
-
-## Common Patterns
-
-### New Service
-Context: domain entities, repository interface, existing service example
-Requirements: interface, constructor, methods
-Pattern: existing service structure
-
-### New Handler
-Context: service interface, DTOs, existing handler example
-Requirements: handler struct, methods, error mapping
-Pattern: existing handler structure
-
-### New Tests
-Context: code to test, existing test examples
-Requirements: test scenarios, mocks
-Pattern: existing test structure
-
-## Implementation is @coder's Job
-
-**DO NOT give ready code. Give direction.**
-
-✅ **DO provide:**
-- Links to existing code as pattern reference
-- Interface signatures (method names, params, return types)
-- Requirements (what logic to implement)
-- Error handling approach
-- Validation rules
-
-❌ **DO NOT provide:**
-- Full method implementations
-- Ready-to-copy code blocks
-- Complete structs with all logic
-
-**@coder writes the implementation.** Give direction, not solution.
-
-## Methodology
-
-Include in task based on config.yaml:
-- **TDD**: "Write failing test first, then implement"
-- **STUB**: "Create stub first, write tests, then real implementation"
+<critical>
+  ✅ PROVIDE: pattern references, interface signatures, requirements, error approach
+  ❌ DO NOT: full implementations, ready-to-copy code, complete structs
+</critical>

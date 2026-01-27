@@ -19,26 +19,23 @@ Automatically used when:
 - Single file or < 5 files affected
 - No new requirements needed
 - No architecture changes
-- Estimated time < 2 hours
+- T-shirt size: S or M
 
 ## Quick Workflow
 
 ```
 ┌────────────────────┐
-│ 1. Quick Doc       │  Create minimal change doc
-│    (2-5 min)       │
+│ 1. Quick Doc  [XS] │  Create minimal change doc
 └────────┬───────────┘
          │
          ▼
 ┌────────────────────┐
-│ 2. Implement       │  Make the change
-│    (varies)        │
+│ 2. Implement [S-M] │  Make the change
 └────────┬───────────┘
          │
          ▼
 ┌────────────────────┐
-│ 3. Test & Verify   │  Verify it works
-│    (5-10 min)      │
+│ 3. Test       [XS] │  Verify it works
 └────────┬───────────┘
          │
          ▼
@@ -119,7 +116,7 @@ For valid quick changes:
 ## Quick Change: [Title]
 
 **Scale:** L0 (Hotfix) / L1 (Small)
-**Estimated Time:** [X] minutes/hours
+**Size:** S / M
 
 ### Files to Modify
 
