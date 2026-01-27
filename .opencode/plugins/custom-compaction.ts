@@ -39,9 +39,20 @@ interface StoryContext {
   fullContent: string
 }
 
+interface SessionState {
+  command: string | null       // /dev-sprint, /dev-epic, /dev-story
+  agent: string | null
+  sprint: { number: number; status: string } | null
+  epic: { id: string; title: string; file: string; progress: string } | null
+  story: { id: string; title: string; file: string; current_task: string | null; completed_tasks: string[]; pending_tasks: string[] } | null
+  next_action: string | null
+  key_decisions: string[]
+}
+
 interface SessionContext {
   todos: TaskStatus[]
   story: StoryContext | null
+  sessionState: SessionState | null
   relevantFiles: string[]
   activeAgent: string | null
   activeCommand: string | null  // /dev-story, /dev-epic, /dev-sprint
@@ -169,7 +180,7 @@ export const CustomCompactionPlugin: Plugin = async (ctx) => {
   /**
    * Generate Read commands that agent MUST execute after compaction
    */
-  async function generateReadCommands(agent: string | null, story: StoryContext | null, activeCommand: string | null): Promise<string> {
+  async function generateReadCommands(agent: string | null, story: StoryContext | null, activeCommand: string | null, sessionState: SessionState | null): Promise<string> {
     const agentKey = (typeof agent === 'string' ? agent.toLowerCase() : null) || "default"
     const filesToRead = [...(MUST_READ_FILES[agentKey] || MUST_READ_FILES.default)]
     
@@ -179,17 +190,23 @@ export const CustomCompactionPlugin: Plugin = async (ctx) => {
       filesToRead.unshift(`.opencode/commands/${commandFile}`)
     }
     
-    // For dev/coder: add epic state file if in epic workflow
+    // For dev/coder: add session-state.yaml as priority read
     if ((agentKey === "dev" || agentKey === "coder")) {
-      const epicState = await getActiveEpicState()
-      if (epicState) {
-        // Epic state file (has all context)
-        filesToRead.unshift(epicState.statePath.replace(directory + "/", ""))
-      }
+      // Session state is most important — has everything
+      filesToRead.unshift(".opencode/session-state.yaml")
       
-      // Then story file if active
-      if (story) {
-        filesToRead.unshift(story.path)  // Story first!
+      // Then story file (from session state or StoryContext)
+      const storyFile = sessionState?.story?.file || story?.path
+      if (storyFile) {
+        filesToRead.unshift(storyFile)  // Story first!
+      }
+
+      // Epic state as backup (only if no session state)
+      if (!sessionState) {
+        const epicState = await getActiveEpicState()
+        if (epicState) {
+          filesToRead.unshift(epicState.statePath.replace(directory + "/", ""))
+        }
       }
     }
     
@@ -300,6 +317,78 @@ DO NOT skip this step. DO NOT ask user what to do. Just read these files first.`
       }
       return null
     } catch {
+      return null
+    }
+  }
+
+  /**
+   * PRIMARY source: session-state.yaml written by AI agent.
+   * Falls back to getActiveEpicState() + getActiveStory() if missing.
+   */
+  async function getSessionState(): Promise<SessionState | null> {
+    try {
+      const statePath = join(directory, ".opencode", "session-state.yaml")
+      const content = await readFile(statePath, "utf-8")
+      await log(directory, `  session-state.yaml found, parsing...`)
+
+      // Simple regex YAML parser for flat/nested fields
+      const str = (key: string): string | null => {
+        const m = content.match(new RegExp(`^${key}:\\s*["']?(.+?)["']?\\s*$`, 'm'))
+        return m ? m[1].trim() : null
+      }
+      const nested = (parent: string, key: string): string | null => {
+        const section = content.match(new RegExp(`^${parent}:\\s*\\n((?:  .+\\n?)*)`, 'm'))
+        if (!section) return null
+        const m = section[1].match(new RegExp(`^\\s+${key}:\\s*["']?(.+?)["']?\\s*$`, 'm'))
+        return m ? m[1].trim() : null
+      }
+      const list = (parent: string, key: string): string[] => {
+        const val = nested(parent, key)
+        if (!val) return []
+        // Handle [T1, T2] or T1, T2
+        const clean = val.replace(/^\[/, '').replace(/\]$/, '')
+        return clean.split(',').map(s => s.trim()).filter(Boolean)
+      }
+
+      // Parse key_decisions as list
+      const decisions: string[] = []
+      const decMatch = content.match(/^key_decisions:\s*\n((?:\s+-\s*.+\n?)*)/m)
+      if (decMatch) {
+        const items = decMatch[1].matchAll(/^\s+-\s*["']?(.+?)["']?\s*$/gm)
+        for (const item of items) {
+          decisions.push(item[1])
+        }
+      }
+
+      const state: SessionState = {
+        command: str('command'),
+        agent: str('agent'),
+        sprint: nested('sprint', 'number') ? {
+          number: parseInt(nested('sprint', 'number') || '0'),
+          status: nested('sprint', 'status') || 'unknown'
+        } : null,
+        epic: nested('epic', 'id') ? {
+          id: nested('epic', 'id') || '',
+          title: nested('epic', 'title') || '',
+          file: nested('epic', 'file') || '',
+          progress: nested('epic', 'progress') || ''
+        } : null,
+        story: nested('story', 'id') ? {
+          id: nested('story', 'id') || '',
+          title: nested('story', 'title') || '',
+          file: nested('story', 'file') || '',
+          current_task: nested('story', 'current_task'),
+          completed_tasks: list('story', 'completed_tasks'),
+          pending_tasks: list('story', 'pending_tasks')
+        } : null,
+        next_action: str('next_action'),
+        key_decisions: decisions
+      }
+
+      await log(directory, `  parsed: command=${state.command}, epic=${state.epic?.id}, story=${state.story?.id}`)
+      return state
+    } catch {
+      await log(directory, `  session-state.yaml not found, using fallback`)
       return null
     }
   }
@@ -433,31 +522,118 @@ DO NOT skip this step. DO NOT ask user what to do. Just read these files first.`
   }
 
   async function buildContext(agent: string | null): Promise<SessionContext> {
+    // PRIMARY: try session-state.yaml (written by AI agent)
+    const sessionState = await getSessionState()
+    
     const [todos, story] = await Promise.all([
       getTodoList(),
-      getActiveStory()
+      // If session state has story path, use it; otherwise parse files
+      sessionState?.story?.file 
+        ? readStoryFromPath(sessionState.story.file)
+        : getActiveStory()
     ])
     
     const epicState = await getActiveEpicState()
     const relevantFiles = await getRelevantFiles(agent, story)
-    const activeCommand = await detectActiveCommand(todos, epicState)
+    
+    // Command: from session state or detected from TODOs
+    const activeCommand = sessionState?.command || await detectActiveCommand(todos, epicState)
 
-    return { todos, story, relevantFiles, activeAgent: agent, activeCommand }
+    return { todos, story, sessionState, relevantFiles, activeAgent: agent, activeCommand }
+  }
+
+  /** Read and parse a story file by path */
+  async function readStoryFromPath(storyPath: string): Promise<StoryContext | null> {
+    try {
+      const storyContent = await readFile(join(directory, storyPath), "utf-8")
+      const titleMatch = storyContent.match(/^#\s+(.+)/m)
+      const statusMatch = storyContent.match(/\*\*Status:\*\*\s*(\w+)/i)
+
+      const completedTasks: string[] = []
+      const pendingTasks: string[] = []
+      let currentTask: string | null = null
+
+      const taskRegex = /- \[([ x])\]\s+\*\*T(\d+)\*\*[:\s]+(.+?)(?=\n|$)/g
+      let match
+      while ((match = taskRegex.exec(storyContent)) !== null) {
+        const [, checked, taskId, taskName] = match
+        const taskInfo = `T${taskId}: ${taskName.trim()}`
+        if (checked === "x") {
+          completedTasks.push(taskInfo)
+        } else {
+          if (!currentTask) currentTask = taskInfo
+          pendingTasks.push(taskInfo)
+        }
+      }
+
+      const acceptanceCriteria: string[] = []
+      const acSection = storyContent.match(/## Acceptance Criteria[\s\S]*?(?=##|$)/i)
+      if (acSection) {
+        const acRegex = /- \[([ x])\]\s+(.+?)(?=\n|$)/g
+        while ((match = acRegex.exec(acSection[0])) !== null) {
+          const [, checked, criteria] = match
+          acceptanceCriteria.push(`${checked === "x" ? "✅" : "⬜"} ${criteria.trim()}`)
+        }
+      }
+
+      return {
+        path: storyPath,
+        title: titleMatch?.[1] || "Unknown Story",
+        status: statusMatch?.[1] || "unknown",
+        currentTask,
+        completedTasks,
+        pendingTasks,
+        acceptanceCriteria,
+        fullContent: storyContent
+      }
+    } catch {
+      return null
+    }
   }
 
   async function formatDevContext(ctx: SessionContext): Promise<string> {
     const sections: string[] = []
-    
-    // Check if we're in epic workflow
-    const epicState = await getActiveEpicState()
-    
-    if (epicState) {
-      // Epic/Sprint workflow mode - show epic progress
-      const progress = epicState.totalStories > 0 
-        ? ((epicState.completedCount / epicState.totalStories) * 100).toFixed(0) 
-        : 0
+    const ss = ctx.sessionState
 
-      sections.push(`## 🎯 Epic Workflow: ${epicState.epicTitle}
+    // SESSION STATE available — use it (primary source)
+    if (ss) {
+      let header = `## 🎯 Session State (from session-state.yaml)\n`
+      header += `**Command:** ${ss.command || "unknown"}\n`
+      
+      if (ss.sprint) {
+        header += `**Sprint:** #${ss.sprint.number} (${ss.sprint.status})\n`
+      }
+      if (ss.epic) {
+        header += `**Epic:** ${ss.epic.id} — ${ss.epic.title}\n`
+        header += `**Epic File:** \`${ss.epic.file}\`\n`
+        header += `**Epic Progress:** ${ss.epic.progress}\n`
+      }
+      if (ss.story) {
+        header += `\n**Story:** ${ss.story.id} — ${ss.story.title}\n`
+        header += `**Story File:** \`${ss.story.file}\` ← READ THIS FIRST\n`
+        header += `**Current Task:** ${ss.story.current_task || "all done"}\n`
+        header += `**Completed:** ${ss.story.completed_tasks.join(", ") || "none"}\n`
+        header += `**Pending:** ${ss.story.pending_tasks.join(", ") || "none"}\n`
+      }
+      
+      header += `\n### Next Action (DO THIS NOW)\n\`\`\`\n${ss.next_action || "Check TODO list"}\n\`\`\`\n`
+      
+      if (ss.key_decisions.length > 0) {
+        header += `\n### Key Technical Decisions\n`
+        header += ss.key_decisions.map(d => `- ${d}`).join("\n")
+      }
+      
+      sections.push(header)
+    }
+    // FALLBACK: parse epic state file
+    else {
+      const epicState = await getActiveEpicState()
+      if (epicState) {
+        const progress = epicState.totalStories > 0 
+          ? ((epicState.completedCount / epicState.totalStories) * 100).toFixed(0) 
+          : 0
+
+        sections.push(`## 🎯 Epic Workflow: ${epicState.epicTitle}
 
 **Epic ID:** ${epicState.epicId}
 **Epic State:** \`${epicState.statePath}\` ← READ THIS FIRST
@@ -480,7 +656,10 @@ ${epicState.nextStoryPath ? `**Next Story:** \`${epicState.nextStoryPath}\` ← 
 💡 **Note:** If this is part of /dev-sprint, after epic completes:
 1. Update sprint-status.yaml (mark epic done)
 2. Continue to next epic automatically`)
-    } else if (ctx.story) {
+      }
+    }
+    
+    if (!ss && ctx.story) {
       // Regular story mode
       const s = ctx.story
       const total = s.completedTasks.length + s.pendingTasks.length
@@ -786,7 +965,7 @@ This is /dev-epic autopilot mode. Execute stories sequentially until epic done.`
       
       const context = await formatContext(ctx)
       const instructions = await formatInstructions(ctx)
-      const readCommands = await generateReadCommands(agent, ctx.story, ctx.activeCommand)
+      const readCommands = await generateReadCommands(agent, ctx.story, ctx.activeCommand, ctx.sessionState)
 
       // Agent identity reminder
       const agentIdentity = agent 

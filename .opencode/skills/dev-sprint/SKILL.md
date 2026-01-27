@@ -101,14 +101,51 @@ metadata:
     <step n="1">Run sprint integration tests (mark in TODO)</step>
     <step n="2">Set sprint status="done" in sprint-status.yaml</step>
     <step n="3">Clear sprint TODO list</step>
-    <step n="4">Report completion with summary + metrics</step>
+    <step n="4">Update .opencode/session-state.yaml (done)</step>
+    <step n="5">Report completion with summary + metrics</step>
   </phase>
 
 </workflow>
 
+## Session State (MANDATORY)
+
+After each epic/story/task completion, update `.opencode/session-state.yaml`:
+
+```yaml
+# .opencode/session-state.yaml — AI writes, compaction plugin reads
+command: /dev-sprint
+agent: dev
+
+sprint:
+  number: 2
+  status: in-progress
+
+epic:
+  id: PROJ-E04
+  title: Current Epic Title
+  file: docs/sprint-artifacts/sprint-2/epic-04-desc.md
+  progress: "3/5 stories"
+
+story:
+  id: PROJ-S04-03
+  title: Current Story Title
+  file: docs/sprint-artifacts/sprint-2/stories/story-04-03-desc.md
+  current_task: T2
+  completed_tasks: [T1]
+  pending_tasks: [T2, T3]
+
+next_action: "Continue T2 of story S04-03"
+
+key_decisions:
+  - "Decision 1"
+```
+
+This file survives compaction and tells the agent where to resume.
+
 <outputs>
   - Implementation code for all stories in sprint
   - Updated sprint-status.yaml
+  - Updated .opencode/session-state.yaml
   - Clean TODO list (all completed)
 </outputs>
 

@@ -103,14 +103,47 @@ metadata:
     <step n="2">Verify all AC from epic file (mark in TODO)</step>
     <step n="3">Set state: status="done"</step>
     <step n="4">Clear epic TODO list</step>
-    <step n="5">Report completion with summary</step>
+    <step n="5">Update .opencode/session-state.yaml (next epic or done)</step>
+    <step n="6">Report completion with summary</step>
   </phase>
 
 </workflow>
 
+## Session State (MANDATORY)
+
+After each story/task completion, update `.opencode/session-state.yaml`:
+
+```yaml
+# .opencode/session-state.yaml — AI writes, compaction plugin reads
+command: /dev-epic
+agent: dev
+
+epic:
+  id: PROJ-E01
+  title: Epic Title
+  file: docs/sprint-artifacts/sprint-1/epic-01-desc.md
+  progress: "3/5 stories"
+
+story:
+  id: PROJ-S01-03
+  title: Current Story Title
+  file: docs/sprint-artifacts/sprint-1/stories/story-01-03-desc.md
+  current_task: T2
+  completed_tasks: [T1]
+  pending_tasks: [T2, T3]
+
+next_action: "Continue T2 of story S01-03"
+
+key_decisions:
+  - "Decision 1"
+```
+
+This file survives compaction and tells the agent where to resume.
+
 <outputs>
   - Implementation code for all stories
   - Updated epic-XX-state.yaml
+  - Updated .opencode/session-state.yaml
   - Clean TODO list (all completed)
 </outputs>
 

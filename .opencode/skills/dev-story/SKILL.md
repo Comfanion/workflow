@@ -78,10 +78,37 @@ metadata:
     <action>Run tests</action>
     <action>Check "Done when" criteria</action>
     <action>Mark task ✅ in story file</action>
+    <action>Update .opencode/session-state.yaml (see format below)</action>
     <next>Next task or story complete</next>
   </phase>
 
 </workflow>
+
+## Session State (MANDATORY)
+
+After each task completion, update `.opencode/session-state.yaml`:
+
+```yaml
+# .opencode/session-state.yaml — AI writes, compaction plugin reads
+command: /dev-story
+agent: dev
+
+story:
+  id: PROJ-S01-01
+  title: Story Title
+  file: docs/sprint-artifacts/sprint-1/stories/story-01-01-desc.md
+  current_task: T3
+  completed_tasks: [T1, T2]
+  pending_tasks: [T3, T4]
+
+next_action: "Continue T3: Implement handler"
+
+key_decisions:
+  - "Decision 1"
+  - "Decision 2"
+```
+
+This file survives compaction and tells the agent where to resume.
 
 ## Task Template for @coder
 

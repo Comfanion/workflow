@@ -22,6 +22,7 @@ Thumbs.db
 
 # Local config (user-specific)
 .opencode/jira-cache.yaml
+.opencode/session-state.yaml
 
 # Logs
 *.log
