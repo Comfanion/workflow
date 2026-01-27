@@ -90,18 +90,28 @@ metadata:
     </example>
   </phase>
 
-  <phase name="3-delegate" title="Delegate to @coder">
-    <action>Formulate task using template below</action>
-    <action>Call @coder with full context</action>
-    <rule>@coder writes code. Give direction, NOT solution.</rule>
-  </phase>
-
-  <phase name="4-verify" title="Verify & Mark Done">
-    <action>Run tests</action>
-    <action>Check "Done when" criteria</action>
-    <action>Mark task ✅ in story file</action>
-    <action>Update .opencode/session-state.yaml (see format below)</action>
-    <next>Next task or story complete</next>
+  <phase name="3-execute" title="Execute Tasks — One by One or Parallel">
+    <critical>DO NOT delegate entire story to @coder in one prompt!</critical>
+    <strategy>
+      For each task in TODO:
+      1. Check task dependencies (from story file)
+      2. If independent tasks exist → delegate in parallel (different files only)
+      3. If task depends on previous → delegate ONE task, wait for result
+      4. After @coder returns → verify, mark done, then next task
+    </strategy>
+    <loop>
+      <step n="1">Pick next task(s) from TODO</step>
+      <step n="2">Transform task → executable instruction (phase 2)</step>
+      <step n="3">Delegate to @coder using template below</step>
+      <step n="4">Verify result: tests pass, files compile</step>
+      <step n="5">Mark task ✅ in story file + TODO</step>
+      <step n="6">Update .opencode/session-state.yaml</step>
+      <step n="7">Next task or story complete</step>
+    </loop>
+    <parallel-rules>
+      OK to parallel: T01 (domain) + T02 (dto) — different files, no deps
+      NOT OK: T03 (service) depends on T01 (domain) — wait for T01 first
+    </parallel-rules>
   </phase>
 
 </workflow>
@@ -168,8 +178,15 @@ This file survives compaction and tells the agent where to resume.
 </template>
 
 <rules name="delegation">
+  <rule name="task-by-task" critical="true">
+    Delegate ONE task at a time (or parallel group if independent).
+    NEVER delegate entire story as one big prompt.
+  </rule>
   <rule name="parallel">
     Each task gets full context. No shared state. Different files only.
+  </rule>
+  <rule name="verify-between">
+    After each task: run tests, verify, mark done, THEN next task.
   </rule>
   <rule name="no-code">
     Give direction, NOT solution. @coder writes implementation.

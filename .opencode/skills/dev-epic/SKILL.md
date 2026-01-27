@@ -82,9 +82,11 @@ metadata:
       
       <action name="execute-story">
         Follow /dev-story logic:
-        - Create nested TODO for tasks
-        - Implement all tasks (RED/GREEN/REFACTOR)
-        - Clear task TODO when done
+        - Read ONE story file
+        - Execute tasks ONE BY ONE (or parallel if independent)
+        - NEVER delegate entire story to @coder in one prompt
+        - After each task: verify, mark done, next task
+        - Clear task TODO when story done
       </action>
       
       <action name="mark-done">
