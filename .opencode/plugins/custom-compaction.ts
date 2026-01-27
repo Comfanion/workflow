@@ -306,83 +306,39 @@ DO NOT skip this step. DO NOT ask user what to do. Just read these files first.`
 
   async function getActiveStory(): Promise<StoryContext | null> {
     try {
-      // First, try to find epic state file
-      const epicState = await getActiveEpicState()
-      if (epicState) {
-        // Parse epic state to get current story
-        const storyPathMatch = epicState.content.match(/next_action:\s*["']?Execute\s+(.+?)["']?$/m)
-        if (storyPathMatch) {
-          const storyFileName = storyPathMatch[1]
-          // Find story file
-          const sprintMatch = epicState.statePath.match(/sprint-(\d+)/)
-          if (sprintMatch) {
-            const storyPath = `docs/sprint-artifacts/sprint-${sprintMatch[1]}/stories/${storyFileName}`
-            const storyContent = await readFile(join(directory, storyPath), "utf-8")
-            
-            const titleMatch = storyContent.match(/^#\s+(.+)/m)
-            const statusMatch = storyContent.match(/\*\*Status:\*\*\s*(\w+)/i)
-            
-            const completedTasks: string[] = []
-            const pendingTasks: string[] = []
-            let currentTask: string | null = null
-            
-            // Parse tasks with more detail
-            const taskRegex = /- \[([ x])\]\s+\*\*T(\d+)\*\*[:\s]+(.+?)(?=\n|$)/g
-            let match
-            while ((match = taskRegex.exec(storyContent)) !== null) {
-              const [, checked, taskId, taskName] = match
-              const taskInfo = `T${taskId}: ${taskName.trim()}`
-              if (checked === "x") {
-                completedTasks.push(taskInfo)
-              } else {
-                if (!currentTask) currentTask = taskInfo
-                pendingTasks.push(taskInfo)
-              }
-            }
-            
-            // Parse acceptance criteria
-            const acceptanceCriteria: string[] = []
-            const acSection = storyContent.match(/## Acceptance Criteria[\s\S]*?(?=##|$)/i)
-            if (acSection) {
-              const acRegex = /- \[([ x])\]\s+(.+?)(?=\n|$)/g
-              while ((match = acRegex.exec(acSection[0])) !== null) {
-                const [, checked, criteria] = match
-                acceptanceCriteria.push(`${checked === "x" ? "✅" : "⬜"} ${criteria.trim()}`)
-              }
-            }
+      let storyPath: string | null = null
 
-            return {
-              path: storyPath,
-              title: titleMatch?.[1] || "Unknown Story",
-              status: statusMatch?.[1] || "unknown",
-              currentTask,
-              completedTasks,
-              pendingTasks,
-              acceptanceCriteria,
-              fullContent: storyContent
-            }
+      // First, try epic state file for story path
+      const epicState = await getActiveEpicState()
+      if (epicState?.nextStoryPath) {
+        storyPath = epicState.nextStoryPath
+      }
+
+      // Fallback: try sprint-status.yaml
+      if (!storyPath) {
+        try {
+          const sprintStatusPath = join(directory, "docs", "sprint-artifacts", "sprint-status.yaml")
+          const content = await readFile(sprintStatusPath, "utf-8")
+          const inProgressMatch = content.match(/status:\s*in-progress[\s\S]*?path:\s*["']?([^"'\n]+)["']?/i)
+          if (inProgressMatch) {
+            storyPath = inProgressMatch[1]
           }
+        } catch {
+          // No sprint-status.yaml
         }
       }
-      
-      // Fallback: try old sprint-status.yaml format
-      const sprintStatusPath = join(directory, "docs", "sprint-artifacts", "sprint-status.yaml")
-      const content = await readFile(sprintStatusPath, "utf-8")
-      
-      const inProgressMatch = content.match(/status:\s*in-progress[\s\S]*?path:\s*["']?([^"'\n]+)["']?/i)
-      if (!inProgressMatch) return null
 
-      const storyPath = inProgressMatch[1]
+      if (!storyPath) return null
+
+      // Parse story file
       const storyContent = await readFile(join(directory, storyPath), "utf-8")
-      
       const titleMatch = storyContent.match(/^#\s+(.+)/m)
       const statusMatch = storyContent.match(/\*\*Status:\*\*\s*(\w+)/i)
-      
+
       const completedTasks: string[] = []
       const pendingTasks: string[] = []
       let currentTask: string | null = null
-      
-      // Parse tasks with more detail
+
       const taskRegex = /- \[([ x])\]\s+\*\*T(\d+)\*\*[:\s]+(.+?)(?=\n|$)/g
       let match
       while ((match = taskRegex.exec(storyContent)) !== null) {
@@ -395,8 +351,7 @@ DO NOT skip this step. DO NOT ask user what to do. Just read these files first.`
           pendingTasks.push(taskInfo)
         }
       }
-      
-      // Parse acceptance criteria
+
       const acceptanceCriteria: string[] = []
       const acSection = storyContent.match(/## Acceptance Criteria[\s\S]*?(?=##|$)/i)
       if (acSection) {
