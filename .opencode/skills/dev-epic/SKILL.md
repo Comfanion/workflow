@@ -42,17 +42,37 @@ metadata:
   <phase name="2-init" title="Initialize Epic">
     <step n="1">Parse epic file → extract story list</step>
     <step n="2">Create epic state: docs/sprint-artifacts/sprint-N/.sprint-state/epic-XX-state.yaml</step>
-    <step n="3">Create TODO list:
+    <step n="3">Create TODO list with IDs — stories, their tasks, and reviews:
       ```
-      [ ] Story 1: [Title]
-      [ ] Review Story 1
-      [ ] Story 2: [Title]
-      [ ] Review Story 2
+      [ ] E{N}-S01: {story title}
+        [ ] S01 T1: {task title}
+        [ ] S01 T2: {task title}
+        [ ] S01 Review: run tests, verify AC
+      [ ] E{N}-S02: {story title}
+        [ ] S02 T1: {task title}
+        [ ] S02 T2: {task title}
+        [ ] S02 Review: run tests, verify AC
       ...
-      [ ] Epic integration tests
-      [ ] Verify epic AC
+      [ ] E{N} Integration tests
+      [ ] E{N} Verify epic AC
       ```
     </step>
+    <example>
+      ```
+      [ ] E04-S01: Merge Domain Logic
+        [ ] S01 T1: MergeResult value object
+        [ ] S01 T2: Merge service — primary selection
+        [ ] S01 T3: Unit tests
+        [ ] S01 Review: run tests, verify AC
+      [ ] E04-S02: Auto Merge on Link
+        [ ] S02 T1: Event handler for link
+        [ ] S02 T2: Best-effort merge logic
+        [ ] S02 T3: Integration tests
+        [ ] S02 Review: run tests, verify AC
+      [ ] E04 Integration tests
+      [ ] E04 Verify epic AC
+      ```
+    </example>
     <step n="4">Set state: status="in-progress", next_action="Execute [first-story.md]"</step>
     <step n="5">Mark first story as in_progress in TODO</step>
   </phase>

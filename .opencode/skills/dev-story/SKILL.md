@@ -68,6 +68,28 @@ metadata:
     </step>
   </phase>
 
+  <phase name="2b-todo" title="Create TODO with IDs">
+    <critical>TODO MUST use task IDs from story file!</critical>
+    <template>
+      ```
+      [ ] S{E}-{N} T1: {task title from story}
+      [ ] S{E}-{N} T2: {task title}
+      [ ] S{E}-{N} T3: {task title}
+      ...
+      [ ] S{E}-{N} Review: run all tests, verify AC
+      ```
+    </template>
+    <example>
+      ```
+      [ ] S04-01 T1: Domain Model — MergeResult value object
+      [ ] S04-01 T2: Merge Service — primary selection logic
+      [ ] S04-01 T3: External ID reassignment
+      [ ] S04-01 T4: Unit tests for merge logic
+      [ ] S04-01 Review: run all tests, verify AC
+      ```
+    </example>
+  </phase>
+
   <phase name="3-delegate" title="Delegate to @coder">
     <action>Formulate task using template below</action>
     <action>Call @coder with full context</action>

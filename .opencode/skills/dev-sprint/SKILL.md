@@ -44,20 +44,47 @@ metadata:
 
   <phase name="2-init" title="Initialize Sprint">
     <step n="1">Parse sprint-status.yaml → extract epic list for target sprint</step>
-    <step n="2">Create master TODO list:
+    <step n="2">Create master TODO list with IDs — epics, stories, tasks, and reviews:
       ```
-      [ ] Epic 1: [Title]
-      [ ] Story 1-1: [Title]
-      [ ] Review Story 1-1
-      [ ] Story 1-2: [Title]
-      [ ] Review Story 1-2
-      [ ] Review Epic 1
-      [ ] Epic 2: [Title]
-      [ ] Story 2-1: [Title]
-      ...
+      [ ] E{N1}: {epic title}
+        [ ] E{N1}-S01: {story title}
+          [ ] S01 T1: {task title}
+          [ ] S01 T2: {task title}
+          [ ] S01 Review: run tests, verify AC
+        [ ] E{N1}-S02: {story title}
+          [ ] S02 T1: {task title}
+          [ ] S02 Review: run tests, verify AC
+        [ ] E{N1} Review: integration tests
+      [ ] E{N2}: {epic title}
+        [ ] E{N2}-S01: {story title}
+          [ ] S01 T1: {task title}
+          [ ] S01 Review: run tests, verify AC
+        [ ] E{N2} Review: integration tests
       [ ] Sprint integration tests
       ```
     </step>
+    <example>
+      ```
+      [ ] E04: Identity Merge
+        [ ] E04-S01: Merge Domain Logic
+          [ ] S01 T1: MergeResult value object
+          [ ] S01 T2: Merge service
+          [ ] S01 T3: Unit tests
+          [ ] S01 Review: run tests, verify AC
+        [ ] E04-S02: Auto Merge on Link
+          [ ] S02 T1: Event handler
+          [ ] S02 T2: Integration tests
+          [ ] S02 Review: run tests, verify AC
+        [ ] E04 Review: integration tests
+      [ ] E06: Team Management
+        [ ] E06-S01: Team CRUD
+          [ ] S01 T1: Domain model
+          [ ] S01 T2: Handler
+          [ ] S01 Review: run tests, verify AC
+        [ ] E06 Review: integration tests
+      [ ] Sprint integration tests
+      ```
+    </example>
     <step n="3">Set sprint status="in-progress" in sprint-status.yaml</step>
     <step n="4">Mark first epic as in_progress in TODO</step>
   </phase>
