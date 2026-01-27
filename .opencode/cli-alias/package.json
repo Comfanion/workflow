@@ -1,6 +1,6 @@
 {
   "name": "create-opencode-workflow",
-  "version": "4.36.27",
+  "version": "4.38.1",
   "description": "Initialize OpenCode Workflow - AI-assisted development system. Alias for @comfanion/workflow",
   "type": "module",
   "bin": {
