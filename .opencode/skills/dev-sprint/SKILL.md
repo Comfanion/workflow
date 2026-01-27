@@ -90,6 +90,7 @@ metadata:
   </phase>
 
   <phase name="3-loop" title="Epic Execution Loop">
+    <critical>Status flow: in_progress → review → done. NEVER mark done before review!</critical>
     <for-each item="epic" in="pending_epics">
       
       <action name="execute-epic">
@@ -99,14 +100,20 @@ metadata:
         - Clears epic TODO when done
       </action>
       
-      <action name="mark-done">
-        Mark epic as completed in sprint TODO
+      <action name="epic-to-review">
+        All stories done → set epic status: review
+        Mark epic TODO as "review" (NOT "done" yet!)
       </action>
       
       <action name="epic-review">
-        Mark "Review Epic" as in_progress
         Run epic integration tests
-        Mark "Review Epic" as completed
+        <if condition="TESTS_FAIL">
+          Fix → re-test (max 3 attempts)
+        </if>
+        <if condition="TESTS_PASS">
+          Set epic status: done
+          Mark epic TODO as completed
+        </if>
       </action>
       
       <action name="update-state">
@@ -117,19 +124,21 @@ metadata:
       
       <action name="compact">
         Mark next epic as in_progress in TODO
-        Wait for auto-compaction
-        Plugin reads sprint TODO → resume
+        Wait for auto-compaction → resume
       </action>
       
     </for-each>
   </phase>
 
   <phase name="4-finalize" title="Finalize Sprint">
-    <step n="1">Run sprint integration tests (mark in TODO)</step>
-    <step n="2">Set sprint status="done" in sprint-status.yaml</step>
-    <step n="3">Clear sprint TODO list</step>
-    <step n="4">Update .opencode/session-state.yaml (done)</step>
-    <step n="5">Report completion with summary + metrics</step>
+    <critical>Sprint also goes through review before done!</critical>
+    <step n="1">All epics done → set sprint status: review</step>
+    <step n="2">Run sprint integration tests (mark in TODO)</step>
+    <step n="3">If tests fail → fix → re-test</step>
+    <step n="4">All passed → set sprint status: done in sprint-status.yaml</step>
+    <step n="5">Clear sprint TODO list</step>
+    <step n="6">Update .opencode/session-state.yaml (done)</step>
+    <step n="7">Report completion with summary + metrics</step>
   </phase>
 
 </workflow>

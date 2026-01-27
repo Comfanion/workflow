@@ -114,6 +114,16 @@ metadata:
     </parallel-rules>
   </phase>
 
+  <phase name="4-review" title="Review BEFORE Done">
+    <critical>Status flow: in_progress → review → done. NEVER skip review!</critical>
+    <step n="1">All tasks done → set story status: review</step>
+    <step n="2">Run all tests, verify AC</step>
+    <step n="3">If called from /dev-epic: invoke @reviewer</step>
+    <step n="4">If fixes needed → fix → re-review (max 3 attempts)</step>
+    <step n="5">Review passed → set story status: done</step>
+    <step n="6">Update .opencode/session-state.yaml</step>
+  </phase>
+
 </workflow>
 
 ## Session State (MANDATORY)

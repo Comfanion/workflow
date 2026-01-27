@@ -78,6 +78,7 @@ metadata:
   </phase>
 
   <phase name="3-loop" title="Story Execution Loop">
+    <critical>Status flow: in_progress → review → done. NEVER mark done before review!</critical>
     <for-each item="story" in="pending_stories">
       
       <action name="execute-story">
@@ -86,21 +87,21 @@ metadata:
         - Execute tasks ONE BY ONE (or parallel if independent)
         - NEVER delegate entire story to @coder in one prompt
         - After each task: verify, mark done, next task
-        - Clear task TODO when story done
       </action>
       
-      <action name="mark-done">
-        Mark story as completed in epic TODO
+      <action name="story-to-review">
+        All tasks done → set story status: review
+        Mark story TODO as "review" (NOT "done" yet!)
       </action>
       
-      <action name="review">
-        Mark "Review Story" as in_progress
-        Invoke @reviewer
+      <action name="review-story">
+        Invoke @reviewer on story code
         <if condition="CHANGES_REQUESTED">
           Add fix tasks → re-execute → re-review (max 3 attempts)
         </if>
         <if condition="APPROVED">
-          Mark "Review Story" as completed
+          Set story status: done
+          Mark story TODO as completed
         </if>
       </action>
       
@@ -113,20 +114,22 @@ metadata:
       
       <action name="compact">
         Mark next story as in_progress in TODO
-        Wait for auto-compaction
-        Plugin reads TODO + state → resume
+        Wait for auto-compaction → resume
       </action>
       
     </for-each>
   </phase>
 
   <phase name="4-finalize" title="Finalize Epic">
-    <step n="1">Run epic integration tests (mark in TODO)</step>
-    <step n="2">Verify all AC from epic file (mark in TODO)</step>
-    <step n="3">Set state: status="done"</step>
-    <step n="4">Clear epic TODO list</step>
-    <step n="5">Update .opencode/session-state.yaml (next epic or done)</step>
-    <step n="6">Report completion with summary</step>
+    <critical>Epic also goes through review before done!</critical>
+    <step n="1">All stories done → set epic status: review</step>
+    <step n="2">Run epic integration tests (mark in TODO)</step>
+    <step n="3">Verify all AC from epic file (mark in TODO)</step>
+    <step n="4">If tests fail → fix → re-test</step>
+    <step n="5">All passed → set epic status: done</step>
+    <step n="6">Clear epic TODO list</step>
+    <step n="7">Update .opencode/session-state.yaml (next epic or done)</step>
+    <step n="8">Report completion with summary</step>
   </phase>
 
 </workflow>
