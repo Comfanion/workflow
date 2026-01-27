@@ -16,6 +16,75 @@ How to perform thorough code reviews for implemented stories.
 
 Ensure code quality, correctness, and adherence to project standards before merging.
 
+---
+
+<workflow name="code-review">
+
+  <phase name="1-prepare" title="Preparation">
+    <action>Read the story file completely</action>
+    <action>Identify all acceptance criteria</action>
+    <action>Load docs/coding-standards/*.md for coding standards</action>
+    <action>Use search() to find similar patterns in codebase to compare against</action>
+    <action>Use search() in docs for architecture requirements</action>
+    <action>Review File List section for changed files</action>
+  </phase>
+
+  <phase name="2-security" title="Security Analysis (HIGH Priority)">
+    <critical>Security issues are ALWAYS high priority</critical>
+    <check>No hardcoded secrets, API keys, passwords</check>
+    <check>All user inputs validated and sanitized</check>
+    <check>Parameterized queries (no SQL injection)</check>
+    <check>Auth required on protected endpoints</check>
+    <check>Authorization checks before data access</check>
+    <check>Sensitive data not logged</check>
+    <check>Error messages don't leak internal details</check>
+  </phase>
+
+  <phase name="3-correctness" title="Correctness Analysis (HIGH Priority)">
+    <check>All acceptance criteria satisfied</check>
+    <check>Edge cases handled</check>
+    <check>Error scenarios have proper handling</check>
+    <check>No obvious logic errors</check>
+    <check>No race conditions</check>
+  </phase>
+
+  <phase name="4-tests" title="Testing Review (HIGH Priority)">
+    <check>Unit tests exist for new code</check>
+    <check>Tests cover happy path and errors</check>
+    <check>No flaky tests</check>
+    <check>Test names are descriptive</check>
+    <check>Run test suite: go test / npm test / pytest / cargo test</check>
+    <check>If failures → include in review report as HIGH priority</check>
+  </phase>
+
+  <phase name="5-quality" title="Code Quality (MEDIUM Priority)">
+    <check>Follows project architecture</check>
+    <check>Clear naming conventions</check>
+    <check>No code duplication</check>
+    <check>Functions are focused and small</check>
+    <check>Proper error wrapping</check>
+    <check>No N+1 query issues</check>
+    <check>Run linter: golangci-lint / eslint / ruff / cargo clippy</check>
+  </phase>
+
+  <phase name="6-write-file" title="Write Findings to Story File">
+    <critical>MANDATORY: Append review to story file for history/analytics</critical>
+    <step n="1">Read story file's ## Review section</step>
+    <step n="2">Count existing ### Review #N blocks → your review is N+1</step>
+    <step n="3">Append ### Review #N block with format below</step>
+    <step n="4">NEVER overwrite previous reviews — always APPEND</step>
+  </phase>
+
+  <phase name="7-return-summary" title="Return Summary to Caller">
+    <critical>Caller (@dev) uses YOUR output, not the file. Keep it actionable.</critical>
+    <step n="1">Return SHORT summary: verdict + action items</step>
+    <step n="2">Caller will use this directly without re-reading story file</step>
+  </phase>
+
+</workflow>
+
+---
+
 ## Review Process
 
 ### 1. Preparation
@@ -212,10 +281,49 @@ func foo() error { ... }
 Append `### Review #N` block to the `## Review` section at the end of the story file.
 NEVER overwrite previous reviews — history must be preserved for analytics.
 
+## Return Summary to Caller (MANDATORY)
+
+After writing to story file, return a SHORT summary to the calling agent (@dev).
+This prevents the caller from re-reading the story file.
+
+**Format:**
+
+```
+**VERDICT: {{APPROVE | CHANGES_REQUESTED | BLOCKED}}**
+
+{{IF CHANGES_REQUESTED or BLOCKED:}}
+Action items:
+- [HIGH] `path/file.ts:42` — {{issue}} → {{fix}}
+- [MED] `path/file.ts:100` — {{issue}} → {{fix}}
+
+{{IF APPROVE:}}
+All good. No issues found.
+```
+
+**Example — Changes Requested:**
+
+```
+**VERDICT: CHANGES_REQUESTED**
+
+Action items:
+- [HIGH] `internal/user/handler.go:42` — No error handling for DB timeout → wrap with domain error
+- [MED] `internal/user/handler_test.go` — Missing duplicate email test → add TestCreateUser_DuplicateEmail
+```
+
+**Example — Approve:**
+
+```
+**VERDICT: APPROVE**
+
+All good. No issues found. Clean error wrapping, good test coverage.
+```
+
+---
+
 ## Best Practices
 
 1. **Be specific** - Point to exact file and line
 2. **Suggest solutions** - Don't just criticize
 3. **Prioritize** - Focus on important issues first
 4. **Be constructive** - Phrase feedback positively
-5. **Use different LLM** - For fresh perspective
+5. **Use search()** - Find similar patterns before reviewing
