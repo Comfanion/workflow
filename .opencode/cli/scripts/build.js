@@ -63,11 +63,14 @@ async function build() {
   console.log('  Copying .opencode/ files...');
   for (const item of OPENCODE_ITEMS) {
     const srcPath = path.join(OPENCODE_SRC, item);
-    const destPath = path.join(opencodeDir, item);
+    // npm ignores .gitignore in packages — rename to "gitignore" (no dot)
+    // cli.js init will copy it back as ".gitignore"
+    const destName = item === '.gitignore' ? 'gitignore' : item;
+    const destPath = path.join(opencodeDir, destName);
     
     if (await fs.pathExists(srcPath)) {
       await fs.copy(srcPath, destPath);
-      console.log(`    ✅ ${item}`);
+      console.log(`    ✅ ${item}${destName !== item ? ` → ${destName}` : ''}`);
     } else {
       console.log(`    ⚠️  ${item} (not found, skipping)`);
     }

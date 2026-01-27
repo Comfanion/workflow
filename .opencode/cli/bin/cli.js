@@ -373,6 +373,13 @@ program
       // Copy .opencode structure (fresh, no old files)
       await fs.copy(OPENCODE_SRC, targetDir);
       
+      // Rename "gitignore" → ".gitignore" (npm strips dotfiles from packages)
+      const gitignoreSrc = path.join(targetDir, 'gitignore');
+      const gitignoreDest = path.join(targetDir, '.gitignore');
+      if (await fs.pathExists(gitignoreSrc)) {
+        await fs.move(gitignoreSrc, gitignoreDest, { overwrite: true });
+      }
+      
       // Copy vectorizer source files
       if (await fs.pathExists(VECTORIZER_SRC)) {
         const newVectorizerDir = path.join(targetDir, 'vectorizer');
