@@ -22,6 +22,7 @@ const VERSION = packageJson.version;
 
 // Files/folders to copy for .opencode/
 const OPENCODE_ITEMS = [
+  '.gitignore',
   'config.yaml',
   'FLOW.yaml',
   'ARCHITECTURE.md',
@@ -41,7 +42,6 @@ const EXCLUDE = [
   'cli',
   'jira-cache.yaml',
   'jira-config.yaml',
-  '.gitignore',
   'USAGE-EXAMPLES.md',
   'CONSISTENCY-REPORT.md',
   'mcp/enabled.yaml'  // User config, not distributed
