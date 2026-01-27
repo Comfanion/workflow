@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "test": "bun test plugins/__tests__/",
+    "test:leak": "bun test --smol plugins/__tests__/ --test-name-pattern 'memory safety'"
+  },
   "dependencies": {
     "@opencode-ai/plugin": "1.1.36"
   }

@@ -49,23 +49,34 @@ async function getLocalVersion(directory: string): Promise<string | null> {
 
 async function getLatestVersion(): Promise<string | null> {
   return new Promise((resolve) => {
-    const timeout = setTimeout(() => resolve(null), 5000) // 5s timeout
-    
-    https.get(`https://registry.npmjs.org/${PACKAGE_NAME}/latest`, (res) => {
+    let settled = false
+    const done = (value: string | null) => {
+      if (settled) return
+      settled = true
+      clearTimeout(timeout)
+      resolve(value)
+    }
+
+    const timeout = setTimeout(() => {
+      done(null)
+      req.destroy() // Destroy socket on timeout to prevent leak
+    }, 5000)
+
+    const req = https.get(`https://registry.npmjs.org/${PACKAGE_NAME}/latest`, (res) => {
       let data = ''
-      res.on('data', chunk => data += chunk)
+      res.on('data', chunk => {
+        if (!settled) data += chunk // Stop accumulating after settled
+      })
       res.on('end', () => {
-        clearTimeout(timeout)
         try {
           const json = JSON.parse(data)
-          resolve(json.version || null)
+          done(json.version || null)
         } catch {
-          resolve(null)
+          done(null)
         }
       })
     }).on('error', () => {
-      clearTimeout(timeout)
-      resolve(null)
+      done(null)
     })
   })
 }
@@ -88,8 +99,10 @@ async function saveCache(directory: string, cache: VersionCache): Promise<void> 
 }
 
 function compareVersions(local: string, latest: string): number {
-  const localParts = local.split('.').map(Number)
-  const latestParts = latest.split('.').map(Number)
+  // Strip pre-release suffix (e.g., "4.38.1-beta.1" → "4.38.1")
+  const strip = (v: string) => v.replace(/-.*$/, '')
+  const localParts = strip(local).split('.').map(Number)
+  const latestParts = strip(latest).split('.').map(Number)
   
   for (let i = 0; i < 3; i++) {
     const l = localParts[i] || 0
@@ -111,14 +124,34 @@ async function getLanguage(directory: string): Promise<'en' | 'uk' | 'ru'> {
   try {
     const configPath = path.join(directory, '.opencode', 'config.yaml')
     const config = await fs.readFile(configPath, 'utf8')
-    if (config.includes('communication_language: Ukrainian') || config.includes('communication_language: uk')) return 'uk'
-    if (config.includes('communication_language: Russian') || config.includes('communication_language: ru')) return 'ru'
+    const match = config.match(/communication_language:\s*["']?(\w+)["']?/i)
+    const lang = match?.[1]?.toLowerCase()
+    if (lang === 'ukrainian' || lang === 'uk') return 'uk'
+    if (lang === 'russian' || lang === 'ru') return 'ru'
   } catch {}
   return 'en'
 }
 
+async function loadVersionCheckConfig(directory: string): Promise<{ enabled: boolean; checkInterval: number }> {
+  try {
+    const configPath = path.join(directory, '.opencode', 'config.yaml')
+    const content = await fs.readFile(configPath, 'utf8')
+    const section = content.match(/version_check:\s*\n([\s\S]*?)(?=\n[a-z_]+:|$)/i)
+    if (!section) return { enabled: true, checkInterval: 60 * 60 * 1000 }
+    const enabledMatch = section[1].match(/^\s+enabled:\s*(true|false)/m)
+    const intervalMatch = section[1].match(/^\s+check_interval:\s*(\d+)/m)
+    return {
+      enabled: enabledMatch ? enabledMatch[1] === 'true' : true,
+      checkInterval: intervalMatch ? parseInt(intervalMatch[1]) : 60 * 60 * 1000,
+    }
+  } catch {
+    return { enabled: true, checkInterval: 60 * 60 * 1000 }
+  }
+}
+
 export const VersionCheckPlugin: Plugin = async ({ directory, client }) => {
-  const CHECK_INTERVAL = 60 * 60 * 1000 // 1 hour (you release often! 🚀)
+  const vcConfig = await loadVersionCheckConfig(directory)
+  const CHECK_INTERVAL = vcConfig.checkInterval
   
   const toast = async (message: string, variant: 'info' | 'success' | 'error' = 'info') => {
     try {
@@ -127,6 +160,14 @@ export const VersionCheckPlugin: Plugin = async ({ directory, client }) => {
   }
   
   log(`Plugin loaded`)
+  
+  // Respect config enabled flag
+  if (!vcConfig.enabled) {
+    log(`Plugin DISABLED by config`)
+    return {
+      event: async () => {},
+    }
+  }
   
   // Run check after short delay (let TUI initialize)
   setTimeout(async () => {

@@ -26,8 +26,12 @@ let logFilePath: string | null = null
 // Log to file only
 function logFile(msg: string): void {
   if (logFilePath) {
-    const timestamp = new Date().toISOString().slice(11, 19)
-    fsSync.appendFileSync(logFilePath, `${timestamp} ${msg}\n`)
+    try {
+      const timestamp = new Date().toISOString().slice(11, 19)
+      fsSync.appendFileSync(logFilePath, `${timestamp} ${msg}\n`)
+    } catch {
+      // Ignore write errors (e.g., ENOENT if log directory was removed)
+    }
   }
 }
 
@@ -183,6 +187,7 @@ async function loadConfig(projectRoot: string): Promise<VectorizerConfig> {
       exclude = excludeMatch[1].match(/-\s+(.+)/g)?.map(m => m.replace(/^-\s+/, '').trim()) || DEFAULT_CONFIG.exclude
     }
     
+    // TODO(BACKLOG): parse vectorizer.indexes from config.yaml to support custom extensions
     return { enabled, auto_index, debounce_ms, indexes: DEFAULT_CONFIG.indexes, exclude }
   } catch (e) {
     debug(`Failed to load config: ${(e as Error).message}`)
@@ -201,7 +206,11 @@ function getIndexForFile(filePath: string, config: VectorizerConfig): string | n
 }
 
 function isExcluded(relativePath: string, config: VectorizerConfig): boolean {
-  return config.exclude.some(pattern => relativePath.startsWith(pattern))
+  const norm = relativePath.replace(/\\/g, '/')
+  return config.exclude.some(pattern => {
+    const p = pattern.replace(/\\/g, '/').replace(/\/+$/, '')
+    return norm === p || norm.startsWith(`${p}/`) || norm.includes(`/${p}/`)
+  })
 }
 
 async function isVectorizerInstalled(projectRoot: string): Promise<boolean> {
@@ -258,20 +267,23 @@ async function ensureIndexOnSessionStart(
     for (const [indexName, indexConfig] of Object.entries(config.indexes)) {
       if (!indexConfig.enabled) continue
       const indexer = await new CodebaseIndexer(projectRoot, indexName).init()
-      const indexExists = await hasIndex(projectRoot, indexName)
-      
-      if (!indexExists) {
-        const health = await indexer.checkHealth(config.exclude)
-        totalExpectedFiles += health.expectedCount
-        needsWork = true
-      } else {
-        const health = await indexer.checkHealth(config.exclude)
-        if (health.needsReindex) {
+      try {
+        const indexExists = await hasIndex(projectRoot, indexName)
+        
+        if (!indexExists) {
+          const health = await indexer.checkHealth(config.exclude)
           totalExpectedFiles += health.expectedCount
           needsWork = true
+        } else {
+          const health = await indexer.checkHealth(config.exclude)
+          if (health.needsReindex) {
+            totalExpectedFiles += health.expectedCount
+            needsWork = true
+          }
         }
+      } finally {
+        await indexer.unloadModel()
       }
-      await indexer.unloadModel()
     }
     
     // Notify about work to do
@@ -287,47 +299,48 @@ async function ensureIndexOnSessionStart(
       const startTime = Date.now()
       
       const indexer = await new CodebaseIndexer(projectRoot, indexName).init()
-      
-      if (!indexExists) {
-        log(`Creating "${indexName}" index...`)
-        const stats = await indexer.indexAll((indexed: number, total: number, file: string) => {
-          if (indexed % 10 === 0 || indexed === total) {
-            logFile(`"${indexName}": ${indexed}/${total} - ${file}`)
-          }
-        }, config.exclude)
-        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1)
-        log(`"${indexName}": done ${stats.indexed} files (${elapsed}s)`)
-        totalFiles += stats.indexed
-        action = 'created'
-      } else {
-        const health = await indexer.checkHealth(config.exclude)
-        
-        if (health.needsReindex) {
-          log(`Rebuilding "${indexName}" (${health.reason}: ${health.currentCount} vs ${health.expectedCount} files)...`)
+      try {
+        if (!indexExists) {
+          log(`Creating "${indexName}" index...`)
           const stats = await indexer.indexAll((indexed: number, total: number, file: string) => {
             if (indexed % 10 === 0 || indexed === total) {
               logFile(`"${indexName}": ${indexed}/${total} - ${file}`)
             }
           }, config.exclude)
           const elapsed = ((Date.now() - startTime) / 1000).toFixed(1)
-          log(`"${indexName}": rebuilt ${stats.indexed} files (${elapsed}s)`)
+          log(`"${indexName}": done ${stats.indexed} files (${elapsed}s)`)
           totalFiles += stats.indexed
-          action = 'rebuilt'
+          action = 'created'
         } else {
-          log(`Freshening "${indexName}"...`)
-          const stats = await indexer.freshen()
-          const elapsed = ((Date.now() - startTime) / 1000).toFixed(1)
+          const health = await indexer.checkHealth(config.exclude)
           
-          if (stats.updated > 0 || stats.deleted > 0) {
-            log(`"${indexName}": +${stats.updated} -${stats.deleted} (${elapsed}s)`)
-            action = 'freshened'
+          if (health.needsReindex) {
+            log(`Rebuilding "${indexName}" (${health.reason}: ${health.currentCount} vs ${health.expectedCount} files)...`)
+            const stats = await indexer.indexAll((indexed: number, total: number, file: string) => {
+              if (indexed % 10 === 0 || indexed === total) {
+                logFile(`"${indexName}": ${indexed}/${total} - ${file}`)
+              }
+            }, config.exclude)
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(1)
+            log(`"${indexName}": rebuilt ${stats.indexed} files (${elapsed}s)`)
+            totalFiles += stats.indexed
+            action = 'rebuilt'
           } else {
-            log(`"${indexName}": fresh (${elapsed}s)`)
+            log(`Freshening "${indexName}"...`)
+            const stats = await indexer.freshen()
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(1)
+            
+            if (stats.updated > 0 || stats.deleted > 0) {
+              log(`"${indexName}": +${stats.updated} -${stats.deleted} (${elapsed}s)`)
+              action = 'freshened'
+            } else {
+              log(`"${indexName}": fresh (${elapsed}s)`)
+            }
           }
         }
+      } finally {
+        await indexer.unloadModel()
       }
-      
-      await indexer.unloadModel()
     }
     
     elapsedSeconds = (Date.now() - overallStart) / 1000
@@ -364,21 +377,22 @@ async function processPendingFiles(projectRoot: string, config: VectorizerConfig
     
     for (const [indexName, files] of filesToProcess.entries()) {
       const indexer = await new CodebaseIndexer(projectRoot, indexName).init()
-      
-      for (const filePath of files) {
-        try {
-          const wasIndexed = await indexer.indexSingleFile(filePath)
-          if (wasIndexed) {
-            log(`Reindexed: ${path.relative(projectRoot, filePath)} → ${indexName}`)
-          } else {
-            logFile(`Skipped (unchanged): ${path.relative(projectRoot, filePath)}`)
+      try {
+        for (const filePath of files) {
+          try {
+            const wasIndexed = await indexer.indexSingleFile(filePath)
+            if (wasIndexed) {
+              log(`Reindexed: ${path.relative(projectRoot, filePath)} → ${indexName}`)
+            } else {
+              logFile(`Skipped (unchanged): ${path.relative(projectRoot, filePath)}`)
+            }
+          } catch (e) {
+            log(`Error reindexing ${path.relative(projectRoot, filePath)}: ${(e as Error).message}`)
           }
-        } catch (e) {
-          log(`Error reindexing ${path.relative(projectRoot, filePath)}: ${(e as Error).message}`)
         }
+      } finally {
+        await indexer.unloadModel()
       }
-      
-      await indexer.unloadModel()
     }
   } catch (e) {
     debug(`Fatal: ${(e as Error).message}`)
@@ -409,7 +423,12 @@ export const FileIndexerPlugin: Plugin = async ({ directory, client }) => {
   
   // Setup log file
   logFilePath = path.join(directory, '.opencode', 'indexer.log')
-  fsSync.writeFileSync(logFilePath, '') // Clear old log
+  try {
+    fsSync.writeFileSync(logFilePath, '') // Clear old log
+  } catch {
+    if (DEBUG) console.log(`[file-indexer] log init failed`)
+    logFilePath = null // Disable file logging if can't write
+  }
   
   log(`Plugin ACTIVE`)
   
@@ -449,6 +468,11 @@ export const FileIndexerPlugin: Plugin = async ({ directory, client }) => {
   function queueFileForIndexing(filePath: string): void {
     const relativePath = path.relative(directory, filePath)
     
+    // Reject paths outside project directory
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+      return
+    }
+    
     // Check exclusions from config
     if (isExcluded(relativePath, config)) {
       return
@@ -468,6 +492,7 @@ export const FileIndexerPlugin: Plugin = async ({ directory, client }) => {
         await processPendingFiles(directory, config)
       } else {
         debug(`Vectorizer not installed`)
+        pendingFiles.clear() // Prevent unbounded growth when vectorizer is not installed
       }
     }, config.debounce_ms + 100)
   }

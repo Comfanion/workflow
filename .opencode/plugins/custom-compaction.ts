@@ -260,8 +260,9 @@ DO NOT skip this step. DO NOT ask user what to do. Just read these files first.`
                 const fullPath = join(statePath, stateFile)
                 const content = await readFile(fullPath, "utf-8")
                 
-                // Check if this epic is in-progress
-                if (content.includes("status: \"in-progress\"") || content.includes("status: in-progress")) {
+                // Check if this epic is in-progress (normalize variants)
+                const contentLower = content.toLowerCase()
+                if (contentLower.includes("status: \"in-progress\"") || contentLower.includes("status: in-progress") || contentLower.includes("status: \"in_progress\"") || contentLower.includes("status: in_progress")) {
                   // Parse epic state
                   const epicIdMatch = content.match(/epic_id:\s*["']?([^"'\n]+)["']?/i)
                   const epicTitleMatch = content.match(/epic_title:\s*["']?([^"'\n]+)["']?/i)
@@ -343,11 +344,18 @@ DO NOT skip this step. DO NOT ask user what to do. Just read these files first.`
         return m ? m[1].trim() : null
       }
       const list = (parent: string, key: string): string[] => {
+        // First try inline format: key: [T1, T2] or key: T1, T2
         const val = nested(parent, key)
-        if (!val) return []
-        // Handle [T1, T2] or T1, T2
-        const clean = val.replace(/^\[/, '').replace(/\]$/, '')
-        return clean.split(',').map(s => s.trim()).filter(Boolean)
+        if (val) {
+          const clean = val.replace(/^\[/, '').replace(/\]$/, '')
+          return clean.split(',').map(s => s.trim()).filter(Boolean)
+        }
+        // Fallback: YAML block list under parent.key
+        const section = content.match(new RegExp(`^${parent}:\\s*\\n([\\s\\S]*?)(?=^\\w+:|$)`, 'm'))
+        if (!section) return []
+        const keyBlock = section[1].match(new RegExp(`^\\s+${key}:\\s*\\n((?:\\s+-\\s+.+\\n?)*)`, 'm'))
+        if (!keyBlock) return []
+        return [...keyBlock[1].matchAll(/^\s+-\s+(.+)$/gm)].map(m => m[1].trim())
       }
 
       // Parse key_decisions as list
@@ -422,7 +430,7 @@ DO NOT skip this step. DO NOT ask user what to do. Just read these files first.`
       // Parse story file
       const storyContent = await readFile(join(directory, storyPath), "utf-8")
       const titleMatch = storyContent.match(/^#\s+(.+)/m)
-      const statusMatch = storyContent.match(/\*\*Status:\*\*\s*(\w+)/i)
+      const statusMatch = storyContent.match(/\*\*Status:\*\*\s*([\w-]+)/i)
 
       const completedTasks: string[] = []
       const pendingTasks: string[] = []
@@ -547,7 +555,7 @@ DO NOT skip this step. DO NOT ask user what to do. Just read these files first.`
     try {
       const storyContent = await readFile(join(directory, storyPath), "utf-8")
       const titleMatch = storyContent.match(/^#\s+(.+)/m)
-      const statusMatch = storyContent.match(/\*\*Status:\*\*\s*(\w+)/i)
+      const statusMatch = storyContent.match(/\*\*Status:\*\*\s*([\w-]+)/i)
 
       const completedTasks: string[] = []
       const pendingTasks: string[] = []
@@ -802,7 +810,8 @@ ${ctx.relevantFiles.map(f => `- \`${f}\``).join("\n")}`)
   async function formatInstructions(ctx: SessionContext): Promise<string> {
     const agent = ctx.activeAgent?.toLowerCase()
     const hasInProgressTasks = ctx.todos.some(t => t.status === "in_progress")
-    const hasInProgressStory = ctx.story?.status === "in-progress"
+    const storyStatus = ctx.story?.status?.toLowerCase().replace(/_/g, '-') || ''
+    const hasInProgressStory = storyStatus === "in-progress"
     
     // Check if we're in epic workflow
     const epicState = await getActiveEpicState()
@@ -1022,6 +1031,9 @@ This is /dev-epic autopilot mode. Execute stories sequentially until epic done.`
       await log(directory, `=== COMPACTION STARTED ===`)
       await log(directory, `  lastActiveAgent: ${lastActiveAgent}`)
       
+      // Guard: ensure output.context is an array
+      if (!output.context) output.context = []
+      
       // Use tracked agent or try to detect from session
       const agent = lastActiveAgent
       const ctx = await buildContext(agent)
@@ -1039,6 +1051,14 @@ This is /dev-epic autopilot mode. Execute stories sequentially until epic done.`
       const ss = ctx.sessionState
       const briefing = buildBriefing(agent, ss, ctx, readCommands)
       output.context.push(briefing)
+
+      // Push agent-specific context (story details, epic progress, AC) and resume instructions
+      if (context) {
+        output.context.push(context)
+      }
+      if (instructions) {
+        output.context.push(instructions)
+      }
       
       await log(directory, `  -> output.context pushed (${output.context.length} items)`)
       await log(directory, `=== COMPACTION DONE ===`)
