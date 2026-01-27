@@ -911,6 +911,74 @@ This is /dev-epic autopilot mode. Execute stories sequentially until epic done.`
 4. Update todo/story when task complete`
   }
 
+  function buildBriefing(agent: string | null, ss: SessionState | null, ctx: SessionContext, readCommands: string): string {
+    const lines: string[] = []
+
+    // 1. WHO you are
+    if (agent) {
+      lines.push(`You are @${agent} (→ .opencode/agents/${agent}.md).`)
+    }
+
+    // 2. WHAT you are doing
+    if (ss) {
+      const cmd = ss.command || "unknown command"
+      if (ss.epic) {
+        lines.push(`You are executing ${cmd} ${ss.epic.id}: ${ss.epic.title}.`)
+      } else if (ss.story) {
+        lines.push(`You are executing ${cmd} ${ss.story.id}: ${ss.story.title}.`)
+      } else {
+        lines.push(`You are executing ${cmd}.`)
+      }
+    } else if (ctx.activeCommand) {
+      lines.push(`You are executing ${ctx.activeCommand}.`)
+    }
+
+    // 3. WHERE you stopped
+    if (ss?.story) {
+      const task = ss.story.current_task || "review"
+      lines.push(`You were on story ${ss.story.id}: ${ss.story.title}, task ${task}.`)
+      if (ss.story.completed_tasks.length > 0) {
+        lines.push(`Completed: ${ss.story.completed_tasks.join(", ")}.`)
+      }
+      if (ss.story.pending_tasks.length > 0) {
+        lines.push(`Remaining: ${ss.story.pending_tasks.join(", ")}.`)
+      }
+    } else if (ss?.epic) {
+      lines.push(`Epic progress: ${ss.epic.progress}.`)
+    } else if (ctx.story) {
+      lines.push(`You were on story: ${ctx.story.title}, task ${ctx.story.currentTask || "review"}.`)
+    }
+
+    // 4. WHAT to do next
+    if (ss?.next_action) {
+      lines.push(`\nNext action: ${ss.next_action}`)
+    }
+
+    // 5. READ these files
+    lines.push(`\n${readCommands}`)
+
+    // 6. KEY DECISIONS (if any)
+    if (ss?.key_decisions && ss.key_decisions.length > 0) {
+      lines.push(`\nKey decisions from your session:`)
+      for (const d of ss.key_decisions) {
+        lines.push(`- ${d}`)
+      }
+    }
+
+    // 7. TODO status (brief)
+    if (ctx.todos.length > 0) {
+      const inProgress = ctx.todos.filter(t => t.status === "in_progress")
+      const pending = ctx.todos.filter(t => t.status === "pending")
+      const completed = ctx.todos.filter(t => t.status === "completed")
+      lines.push(`\nTODO: ${completed.length} done, ${inProgress.length} in progress, ${pending.length} pending.`)
+    }
+
+    // 8. RULES
+    lines.push(`\nDO NOT ask user what to do. Read files above, then resume automatically.`)
+
+    return lines.join("\n")
+  }
+
   return {
     // Track active agent from chat messages
     "chat.message": async (input, output) => {
@@ -967,24 +1035,10 @@ This is /dev-epic autopilot mode. Execute stories sequentially until epic done.`
       const instructions = await formatInstructions(ctx)
       const readCommands = await generateReadCommands(agent, ctx.story, ctx.activeCommand, ctx.sessionState)
 
-      // Agent identity reminder
-      const agentIdentity = agent 
-        ? `You are @${agent} (.opencode/agents/${agent}.md). Load your persona and continue.`
-        : "You are an AI assistant helping with this project."
-
-      output.context.push(`# Session Continuation
-
-${agentIdentity}
-
-${readCommands}
-
----
-
-${context}
-
----
-
-${instructions}`)
+      // Build agentic briefing
+      const ss = ctx.sessionState
+      const briefing = buildBriefing(agent, ss, ctx, readCommands)
+      output.context.push(briefing)
       
       await log(directory, `  -> output.context pushed (${output.context.length} items)`)
       await log(directory, `=== COMPACTION DONE ===`)
