@@ -9,22 +9,34 @@ metadata:
 
 # Dev Epic Skill
 
+## CRITICAL: Context Rules
+
+**READ ONLY (max ~70KB):**
+- `CLAUDE.md`
+- `docs/coding-standards/README.md`
+- `docs/coding-standards/patterns.md`
+- Epic file (ONE)
+- Current story file (ONE at a time)
+
+**❌ DO NOT READ — WASTES CONTEXT:**
+- ❌ `docs/prd.md` — epic/story already has context
+- ❌ `docs/architecture.md` — too large, coding-standards has patterns
+- ❌ All stories at once — read ONE, execute, then next
+
+---
+
 <workflow name="dev-epic">
 
   <phase name="1-context" title="Load Minimal Context">
+    <critical>DO NOT read prd.md, architecture.md, or all stories!</critical>
     <read>
       <file>CLAUDE.md</file>
       <file>docs/coding-standards/README.md</file>
       <file>docs/coding-standards/patterns.md</file>
       <file>{epic-file}</file>
-      <file>{current-story-file}</file>
+      <file>{current-story-file} — ONE only!</file>
     </read>
-    <skip reason="too large, epic/story has context">
-      <file>docs/prd.md</file>
-      <file>docs/architecture.md</file>
-      <file>all stories at once</file>
-    </skip>
-    <goal>~70KB per story</goal>
+    <goal>~70KB per story, NOT 200KB+</goal>
   </phase>
 
   <phase name="2-init" title="Initialize Epic">

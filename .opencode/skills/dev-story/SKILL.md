@@ -11,20 +11,31 @@ metadata:
 
 # Dev Story Skill
 
+## CRITICAL: Context Rules
+
+**READ ONLY (max ~70KB):**
+- `CLAUDE.md`
+- `docs/coding-standards/README.md`
+- `docs/coding-standards/patterns.md`
+- Story file
+
+**❌ DO NOT READ — WASTES CONTEXT:**
+- ❌ `docs/prd.md` — story already has context
+- ❌ `docs/architecture.md` — too large, coding-standards has patterns
+
+---
+
 <workflow name="dev-story">
 
   <phase name="1-context" title="Load Minimal Context">
+    <critical>DO NOT read prd.md or architecture.md!</critical>
     <read>
       <file>CLAUDE.md</file>
       <file>docs/coding-standards/README.md</file>
       <file>docs/coding-standards/patterns.md</file>
       <file>{story-file}</file>
     </read>
-    <skip reason="too large, story has context">
-      <file>docs/prd.md</file>
-      <file>docs/architecture.md</file>
-    </skip>
-    <goal>~70KB context, not 200KB+</goal>
+    <goal>~70KB context, NOT 200KB+</goal>
   </phase>
 
   <phase name="2-transform" title="Transform Story Task → Executable Instruction">

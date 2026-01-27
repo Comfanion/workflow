@@ -9,23 +9,37 @@ metadata:
 
 # Dev Sprint Skill
 
+## CRITICAL: Context Rules
+
+**READ ONLY (max ~70KB):**
+- `CLAUDE.md`
+- `docs/coding-standards/README.md`
+- `docs/coding-standards/patterns.md`
+- `sprint-status.yaml`
+- Current epic file (ONE)
+- Current story file (ONE at a time)
+
+**❌ DO NOT READ — WASTES CONTEXT:**
+- ❌ `docs/prd.md` — epic/story already has context
+- ❌ `docs/architecture.md` — too large, coding-standards has patterns
+- ❌ All epics at once — read ONE, execute, then next
+- ❌ All stories at once — read ONE, execute, then next
+
+---
+
 <workflow name="dev-sprint">
 
   <phase name="1-context" title="Load Minimal Context">
+    <critical>DO NOT read prd.md, architecture.md, or all epics/stories!</critical>
     <read>
       <file>CLAUDE.md</file>
       <file>docs/coding-standards/README.md</file>
       <file>docs/coding-standards/patterns.md</file>
       <file>sprint-status.yaml</file>
-      <file>{current-epic-file}</file>
-      <file>{current-story-file}</file>
+      <file>{current-epic-file} — ONE only!</file>
+      <file>{current-story-file} — ONE only!</file>
     </read>
-    <skip reason="too large, epic/story has context">
-      <file>docs/prd.md</file>
-      <file>docs/architecture.md</file>
-      <file>all epics/stories at once</file>
-    </skip>
-    <goal>~70KB per story</goal>
+    <goal>~70KB per story, NOT 200KB+</goal>
   </phase>
 
   <phase name="2-init" title="Initialize Sprint">
