@@ -3,8 +3,8 @@ description: "Code Reviewer - Use for: security review, bug finding, test covera
 mode: all       # Invoked by @dev or via /review-story
 temperature: 0.1     # Low temperature for precise analysis
 
-#model: openai/gpt-5.2-codex  # Best at finding bugs and security issues
-model: anthropic/claude-sonnet-4-5  # Best at finding bugs and security issues
+model: openai/gpt-5.2-codex  # Best at finding bugs and security issues
+#model: anthropic/claude-sonnet-4-5  # Best at finding bugs and security issues
 
 # Tools - Read-only for code, but CAN write review findings to story/epic files
 tools:
