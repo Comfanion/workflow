@@ -101,38 +101,82 @@ For each AC in the story:
 
 All criteria met. Code is ready to merge.
 
-```markdown
-### Review Outcome: Approve
-
-All acceptance criteria satisfied. Code follows project standards.
-Ready for merge.
-```
-
 ### 🔄 Changes Requested
 
 Issues found that need addressing.
-
-```markdown
-### Review Outcome: Changes Requested
-
-**Action Items:**
-- [ ] [High] Fix missing error handling in X
-- [ ] [Med] Add unit test for edge case Y
-- [ ] [Low] Improve variable naming in Z
-```
 
 ### ❌ Blocked
 
 Major issues that prevent approval.
 
+## Write Findings to Story File (MANDATORY)
+
+After completing the review, **append** your findings to the story file's `## Review` section.
+Each review round is a separate `### Review #N` block. NEVER overwrite previous reviews — always append.
+
+**How to determine review number:**
+1. Read the story file's `## Review` section
+2. Count existing `### Review #N` blocks
+3. Your review is `N + 1` (or `#1` if none exist)
+
+**Format to append at the end of the story file:**
+
 ```markdown
-### Review Outcome: Blocked
+### Review #{{N}} — {{YYYY-MM-DD}}
 
-**Blocking Issues:**
-1. Security vulnerability in authentication flow
-2. Missing critical test coverage
+**Verdict:** {{APPROVE | CHANGES_REQUESTED | BLOCKED}}
+**Reviewer:** @reviewer (Marcus)
 
-Cannot proceed until blocking issues resolved.
+**Summary:** {{1-2 sentences}}
+
+**Tests:** {{PASS | FAIL — details}}
+**Lint:** {{PASS | FAIL — details}}
+
+{{IF issues found:}}
+#### Action Items
+- [ ] [HIGH] `path/file.ts:42` — {{issue}} → Fix: {{specific fix}}
+- [ ] [MED] `path/file.ts:100` — {{issue}} → Fix: {{specific fix}}
+- [ ] [LOW] `path/file.ts:15` — {{issue}}
+
+{{IF approve:}}
+#### What's Good
+- {{positive feedback}}
+```
+
+**Example — first review with issues:**
+
+```markdown
+### Review #1 — 2026-01-27
+
+**Verdict:** CHANGES_REQUESTED
+**Reviewer:** @reviewer (Marcus)
+
+**Summary:** Missing error handling in CreateUser handler, no test for duplicate email.
+
+**Tests:** PASS (12/12)
+**Lint:** PASS
+
+#### Action Items
+- [ ] [HIGH] `internal/user/handler.go:42` — No error handling for DB timeout → Fix: wrap with domain error
+- [ ] [MED] `internal/user/handler_test.go` — Missing duplicate email test → Fix: add TestCreateUser_DuplicateEmail
+```
+
+**Example — second review after fixes:**
+
+```markdown
+### Review #2 — 2026-01-27
+
+**Verdict:** APPROVE
+**Reviewer:** @reviewer (Marcus)
+
+**Summary:** All issues from Review #1 fixed. Error handling added, test coverage complete.
+
+**Tests:** PASS (14/14)
+**Lint:** PASS
+
+#### What's Good
+- Clean error wrapping with domain errors
+- Good test coverage for edge cases
 ```
 
 ## Severity Levels
@@ -164,34 +208,9 @@ func foo() error { ... }
 
 ## Updating Story File
 
-After review, add to story file:
-
-```markdown
-## Senior Developer Review (AI)
-
-### Review Date
-2024-01-15
-
-### Review Outcome
-Changes Requested
-
-### Action Items
-- [ ] [High] Add error handling to CreateUser handler
-- [ ] [Med] Add unit test for duplicate email validation
-- [ ] [Low] Rename 'x' to 'userCount'
-
-### Detailed Comments
-[Include detailed review comments here]
-```
-
-If changes requested, also add:
-
-```markdown
-### Review Follow-ups (AI)
-
-- [ ] [AI-Review] [High] Add error handling to CreateUser handler
-- [ ] [AI-Review] [Med] Add unit test for duplicate email validation
-```
+**MANDATORY:** Use the format from "Write Findings to Story File" section above.
+Append `### Review #N` block to the `## Review` section at the end of the story file.
+NEVER overwrite previous reviews — history must be preserved for analytics.
 
 ## Best Practices
 

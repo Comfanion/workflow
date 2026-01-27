@@ -228,3 +228,11 @@ Before marking story as done, verify:
 - [ ] Tests pass
 - [ ] Code reviewed
 - [ ] No lint errors
+
+---
+
+## Review
+
+<!-- Reviewer (@reviewer) appends review rounds here. DO NOT edit manually.
+     Each review is appended as ### Review #N with verdict and action items.
+     History is preserved for analytics. -->

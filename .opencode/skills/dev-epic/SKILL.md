@@ -95,9 +95,13 @@ metadata:
       </action>
       
       <action name="review-story">
-        Invoke @reviewer on story code
+        Invoke @reviewer on story code.
+        Reviewer does TWO things:
+        1. WRITES findings to story file (## Review → ### Review #N) — for history
+        2. RETURNS summary to you — use THIS, do NOT re-read story file
         <if condition="CHANGES_REQUESTED">
-          Add fix tasks → re-execute → re-review (max 3 attempts)
+          Use reviewer's returned action items directly.
+          Create fix tasks from action items → execute → re-review (max 3 attempts).
         </if>
         <if condition="APPROVED">
           Set story status: done

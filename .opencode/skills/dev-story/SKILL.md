@@ -118,8 +118,11 @@ metadata:
     <critical>Status flow: in_progress → review → done. NEVER skip review!</critical>
     <step n="1">All tasks done → set story status: review</step>
     <step n="2">Run all tests, verify AC</step>
-    <step n="3">If called from /dev-epic: invoke @reviewer</step>
-    <step n="4">If fixes needed → fix → re-review (max 3 attempts)</step>
+    <step n="3">If called from /dev-epic: invoke @reviewer.
+      Reviewer does TWO things:
+      1. WRITES findings to story file (## Review → ### Review #N) — for history
+      2. RETURNS summary to you — use THIS, do NOT re-read story file</step>
+    <step n="4">If CHANGES_REQUESTED: use reviewer's returned action items directly → fix → re-review (max 3 attempts)</step>
     <step n="5">Review passed → set story status: done</step>
     <step n="6">Update .opencode/session-state.yaml</step>
   </phase>
