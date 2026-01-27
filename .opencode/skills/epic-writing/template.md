@@ -79,10 +79,10 @@ Epic is complete when:
 
 ## Stories
 
-| ID | Title | Size | Focus | Status |
-|----|-------|------|-------|--------|
-| S{{E}}-01 | {{title}} | S/M/L | → Unit: `{{unit}}` | ⬜ |
-| S{{E}}-02 | {{title}} | S/M/L | → Unit: `{{unit}}` | ⬜ |
+| ID | Title | Size | File | Status |
+|----|-------|------|------|--------|
+| E{{E}}-S01 | {{title}} | S/M/L | `story-{{E}}-01-{{slug}}.md` | ⬜ |
+| E{{E}}-S02 | {{title}} | S/M/L | `story-{{E}}-02-{{slug}}.md` | ⬜ |
 
 **Dependency Flow:**
 ```
@@ -91,8 +91,32 @@ S01 ──► S02 ──► S03
          └──► S04
 ```
 
-**Notes:**
-- {{implementation_note}}
+---
+
+## Story Tasks
+
+<!-- This section is populated by /stories command.
+     Used by /dev-epic to build TODO without reading all story files. -->
+
+### E{{E}}-S01: {{story title}}
+- E{{E}}-S01-T01: {{task title}}
+- E{{E}}-S01-T02: {{task title}}
+
+### E{{E}}-S02: {{story title}}
+- E{{E}}-S02-T01: {{task title}}
+- E{{E}}-S02-T02: {{task title}}
+
+<!-- Example:
+### E04-S01: Merge Domain Logic
+- E04-S01-T01: MergeResult value object
+- E04-S01-T02: Merge service — primary selection
+- E04-S01-T03: Unit tests
+
+### E04-S02: Auto Merge on Link
+- E04-S02-T01: Event handler for link
+- E04-S02-T02: Best-effort merge logic
+- E04-S02-T03: Integration tests
+-->
 
 ---
 

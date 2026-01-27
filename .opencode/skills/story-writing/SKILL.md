@@ -233,6 +233,26 @@ T1 ──► T2 ──► T3
 
 Save to: `docs/sprint-artifacts/sprint-[N]/stories/story-[EPIC]-[NN]-[description].md`
 
+## MANDATORY: Update Epic File
+
+After creating stories, update the parent epic's **Story Tasks** section.
+This lets `/dev-epic` build TODO from epic file alone — no need to read all stories.
+
+```markdown
+## Story Tasks
+
+### E04-S01: Merge Domain Logic
+- E04-S01-T01: MergeResult value object
+- E04-S01-T02: Merge service — primary selection
+- E04-S01-T03: Unit tests
+
+### E04-S02: Auto Merge on Link
+- E04-S02-T01: Event handler for link
+- E04-S02-T02: Best-effort merge logic
+```
+
+**Format:** `E{NN}-S{NN}-T{NN}: {task title}` — one line per task.
+
 ## Related Skills
 
 - `acceptance-criteria` - For detailed AC

@@ -40,7 +40,7 @@ metadata:
   </phase>
 
   <phase name="2-init" title="Initialize Epic">
-    <step n="1">Parse epic file → extract story list</step>
+    <step n="1">Parse epic file → "Story Tasks" section has all stories + tasks (no need to read story files yet)</step>
     <step n="2">Create epic state: docs/sprint-artifacts/sprint-N/.sprint-state/epic-XX-state.yaml</step>
     <step n="3">Create TODO list with IDs — stories, their tasks, and reviews:
       ```
