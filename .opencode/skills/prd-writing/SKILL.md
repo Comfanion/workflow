@@ -255,11 +255,22 @@ Brief prose section with:
 - Each module gets its own FR table
 - Example: "Order Management Module" → FR-ORD-001, FR-ORD-002
 
-**Table format:**
+**Table format (with traceability):**
 
-| ID | Requirement | Priority |
-|----|-------------|----------|
-| FR-001 | {{requirement}} | P0 |
+| ID | Requirement | Priority | Module | Doc Section | Arch § | Epic | Status |
+|----|-------------|----------|--------|-------------|--------|------|--------|
+| FR-001 | {{requirement}} | P0 | {{module}} | → Unit: `{{name}}` | §{{N}} | → Epic: `{{file}}` | ⬜ |
+
+**Column filling:**
+- **@pm (you):** ID, Requirement, Priority, Module — filled when writing PRD
+- **@architect:** Doc Section, Arch § — filled when creating architecture/unit docs
+- **@pm:** Epic — filled when creating epics (`/epics`)
+- **@dev:** Status — marked ✅ when done
+
+**Doc Section format:**
+- Use `→ Unit: Name`, `→ Module: Name`, `→ Service: Name`, etc.
+- Examples: `→ Unit: Task`, `→ Module: Auth`, `→ Service: NotificationService`
+- Leave blank initially, @architect fills later
 
 With **Notes:** for business rules after each domain table.
 
@@ -272,10 +283,19 @@ FR-INV-001  # Inventory module
 
 ### 5. Non-Functional Requirements
 
-Tables for:
-- Performance (with metrics)
-- Security
-- Scalability
+**Table format (with traceability):**
+
+| ID | Requirement | Priority | Module | Doc Section | Arch § | Status |
+|----|-------------|----------|--------|-------------|--------|--------|
+| NFR-001 | {{requirement}} | P0 | — | — | §{{N}} | ⬜ |
+
+**Column filling:**
+- **@pm (you):** ID, Requirement, Priority, Module (if specific)
+- **@architect:** Doc Section (if specific), Arch §
+- **@dev:** Status
+
+**Optional details section:**
+Add Performance/Security/Scalability subsections if NFRs need detailed explanation.
 
 ### 6. Critical Business Rules
 

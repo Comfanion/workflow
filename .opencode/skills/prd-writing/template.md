@@ -117,18 +117,21 @@ TaskFlow is a B2B platform for managing distributed teams. The system handles ta
 
 ## Functional Requirements
 
+> **Traceability:** Each FR tracks Module, Unit, Architecture section, Epic, and Status.
+> **Maintained by:** @pm (Epic), @architect (Module/Unit/Arch §), @dev (Status).
+
 ### {{Domain_1}}
 
-| ID | Requirement | Priority |
-|----|-------------|----------|
-| FR-001 | {{requirement}} | P0 |
-| FR-002 | {{requirement}} | P0 |
-| FR-003 | {{requirement}} | P1 |
+| ID | Requirement | Priority | Module | Doc Section | Arch § | Epic | Status |
+|----|-------------|----------|--------|-------------|--------|------|--------|
+| FR-001 | {{requirement}} | P0 | {{module}} | → Unit: `{{name}}` | §{{N}} | → Epic: `{{file}}` | ⬜ |
+| FR-002 | {{requirement}} | P0 | {{module}} | → Module: `{{name}}` | §{{N}} | → Epic: `{{file}}` | ⬜ |
+| FR-003 | {{requirement}} | P1 | {{module}} | → Service: `{{name}}` | §{{N}} | → Epic: `{{file}}` | ⬜ |
 
-<!-- e.g.
-| FR-001 | User can create task with title, description, due date | P0 |
-| FR-002 | User can assign task to team member | P0 |
-| FR-003 | System sends notification on assignment | P1 |
+<!-- Example:
+| FR-001 | User can create task with title, description, due date | P0 | Task | → Unit: `Task` | §3.1 | → Epic: `epic-01-task-crud.md` | ✅ |
+| FR-002 | User can assign task to team member | P0 | Task | → Unit: `Task` | §3.1 | → Epic: `epic-01-task-crud.md` | ⬜ |
+| FR-003 | System sends notification on assignment | P1 | Notification | → Service: `NotificationService` | §3.3 | → Epic: `epic-03-notifications.md` | ⬜ |
 -->
 
 **Notes:**
@@ -136,24 +139,40 @@ TaskFlow is a B2B platform for managing distributed teams. The system handles ta
 
 ### {{Domain_2}}
 
-| ID | Requirement | Priority |
-|----|-------------|----------|
-| FR-010 | {{requirement}} | P0 |
+| ID | Requirement | Priority | Module | Doc Section | Arch § | Epic | Status |
+|----|-------------|----------|--------|-------------|--------|------|--------|
+| FR-010 | {{requirement}} | P0 | {{module}} | → Unit: `{{name}}` | §{{N}} | → Epic: `{{file}}` | ⬜ |
 
 ---
 
 ## Non-Functional Requirements
 
+> **Traceability:** NFRs also track Module (if specific), Architecture section, and Status.
+
+| ID | Requirement | Priority | Module | Doc Section | Arch § | Status |
+|----|-------------|----------|--------|-------------|--------|--------|
+| NFR-001 | {{requirement}} | P0 | — | — | §{{N}} | ⬜ |
+| NFR-002 | {{requirement}} | P0 | {{module}} | → Unit: `{{name}}` | §{{N}} | ⬜ |
+
+<!-- Example:
+| NFR-001 | API response time < 200ms (p95) | P0 | — | — | §5 Performance | ⬜ |
+| NFR-002 | Task data encrypted at rest | P0 | Task | → Unit: `Task` | §4 Security | ⬜ |
+-->
+
+---
+
+## Non-Functional Requirements (Details)
+
+> Optional: Add detailed notes for complex NFRs here.
+
 ### Performance
-| Metric | Target |
-|--------|--------|
-| {{metric}} | {{value}} |
+- {{details_if_needed}}
 
 ### Security
-- {{requirement}}
+- {{details_if_needed}}
 
 ### Scalability
-- {{requirement}}
+- {{details_if_needed}}
 
 ---
 
