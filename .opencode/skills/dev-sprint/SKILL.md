@@ -179,6 +179,12 @@ This file survives compaction and tells the agent where to resume.
 <rules>
   <do>Create ONE master TODO list for entire sprint at start</do>
   <do>Let dev-epic skill manage its own nested TODO</do>
+  <do>Execute epics IN ORDER as planned in sprint-status.yaml</do>
+  <do>Within each epic, execute stories IN ORDER as planned</do>
+  <do>Within each story, execute tasks ONE BY ONE (or parallel if independent)</do>
   <dont>Ask for confirmation between epics — sprint TODO is your guide</dont>
   <dont>Proceed to next epic if epic review fails — HALT and report</dont>
+  <dont>Reorder, skip, merge, or "optimize" epic/story execution order</dont>
+  <dont>Work on multiple stories or epics in parallel</dont>
+  <dont>Delegate entire story to @coder in one prompt — task by task only</dont>
 </rules>
