@@ -45,32 +45,32 @@ metadata:
     <step n="3">Create TODO list with IDs — stories, their tasks, and reviews:
       ```
       [ ] E{N}-S01: {story title}
-        [ ] S01 T1: {task title}
-        [ ] S01 T2: {task title}
-        [ ] S01 Review: run tests, verify AC
+        [ ] E{N}-S01-T01: {task title}
+        [ ] E{N}-S01-T02: {task title}
+        [ ] E{N}-S01-Review: run tests, verify AC
       [ ] E{N}-S02: {story title}
-        [ ] S02 T1: {task title}
-        [ ] S02 T2: {task title}
-        [ ] S02 Review: run tests, verify AC
+        [ ] E{N}-S02-T01: {task title}
+        [ ] E{N}-S02-T02: {task title}
+        [ ] E{N}-S02-Review: run tests, verify AC
       ...
-      [ ] E{N} Integration tests
-      [ ] E{N} Verify epic AC
+      [ ] E{N}-Integration: run epic integration tests
+      [ ] E{N}-AC: verify epic acceptance criteria
       ```
     </step>
     <example>
       ```
       [ ] E04-S01: Merge Domain Logic
-        [ ] S01 T1: MergeResult value object
-        [ ] S01 T2: Merge service — primary selection
-        [ ] S01 T3: Unit tests
-        [ ] S01 Review: run tests, verify AC
+        [ ] E04-S01-T01: MergeResult value object
+        [ ] E04-S01-T02: Merge service — primary selection
+        [ ] E04-S01-T03: Unit tests
+        [ ] E04-S01-Review: run tests, verify AC
       [ ] E04-S02: Auto Merge on Link
-        [ ] S02 T1: Event handler for link
-        [ ] S02 T2: Best-effort merge logic
-        [ ] S02 T3: Integration tests
-        [ ] S02 Review: run tests, verify AC
-      [ ] E04 Integration tests
-      [ ] E04 Verify epic AC
+        [ ] E04-S02-T01: Event handler for link
+        [ ] E04-S02-T02: Best-effort merge logic
+        [ ] E04-S02-T03: Integration tests
+        [ ] E04-S02-Review: run tests, verify AC
+      [ ] E04-Integration: run epic integration tests
+      [ ] E04-AC: verify epic acceptance criteria
       ```
     </example>
     <step n="4">Set state: status="in-progress", next_action="Execute [first-story.md]"</step>

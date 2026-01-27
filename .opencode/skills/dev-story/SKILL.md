@@ -72,20 +72,20 @@ metadata:
     <critical>TODO MUST use task IDs from story file!</critical>
     <template>
       ```
-      [ ] S{E}-{N} T1: {task title from story}
-      [ ] S{E}-{N} T2: {task title}
-      [ ] S{E}-{N} T3: {task title}
+      [ ] E{E}-S{N}-T01: {task title from story}
+      [ ] E{E}-S{N}-T02: {task title}
+      [ ] E{E}-S{N}-T03: {task title}
       ...
-      [ ] S{E}-{N} Review: run all tests, verify AC
+      [ ] E{E}-S{N}-Review: run all tests, verify AC
       ```
     </template>
     <example>
       ```
-      [ ] S04-01 T1: Domain Model — MergeResult value object
-      [ ] S04-01 T2: Merge Service — primary selection logic
-      [ ] S04-01 T3: External ID reassignment
-      [ ] S04-01 T4: Unit tests for merge logic
-      [ ] S04-01 Review: run all tests, verify AC
+      [ ] E04-S01-T01: Domain Model — MergeResult value object
+      [ ] E04-S01-T02: Merge Service — primary selection logic
+      [ ] E04-S01-T03: External ID reassignment
+      [ ] E04-S01-T04: Unit tests for merge logic
+      [ ] E04-S01-Review: run all tests, verify AC
       ```
     </example>
   </phase>

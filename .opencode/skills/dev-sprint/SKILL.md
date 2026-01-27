@@ -48,41 +48,41 @@ metadata:
       ```
       [ ] E{N1}: {epic title}
         [ ] E{N1}-S01: {story title}
-          [ ] S01 T1: {task title}
-          [ ] S01 T2: {task title}
-          [ ] S01 Review: run tests, verify AC
+          [ ] E{N1}-S01-T01: {task title}
+          [ ] E{N1}-S01-T02: {task title}
+          [ ] E{N1}-S01-Review: run tests, verify AC
         [ ] E{N1}-S02: {story title}
-          [ ] S02 T1: {task title}
-          [ ] S02 Review: run tests, verify AC
-        [ ] E{N1} Review: integration tests
+          [ ] E{N1}-S02-T01: {task title}
+          [ ] E{N1}-S02-Review: run tests, verify AC
+        [ ] E{N1}-Integration: epic integration tests
       [ ] E{N2}: {epic title}
         [ ] E{N2}-S01: {story title}
-          [ ] S01 T1: {task title}
-          [ ] S01 Review: run tests, verify AC
-        [ ] E{N2} Review: integration tests
-      [ ] Sprint integration tests
+          [ ] E{N2}-S01-T01: {task title}
+          [ ] E{N2}-S01-Review: run tests, verify AC
+        [ ] E{N2}-Integration: epic integration tests
+      [ ] Sprint-Integration: run sprint integration tests
       ```
     </step>
     <example>
       ```
       [ ] E04: Identity Merge
         [ ] E04-S01: Merge Domain Logic
-          [ ] S01 T1: MergeResult value object
-          [ ] S01 T2: Merge service
-          [ ] S01 T3: Unit tests
-          [ ] S01 Review: run tests, verify AC
+          [ ] E04-S01-T01: MergeResult value object
+          [ ] E04-S01-T02: Merge service
+          [ ] E04-S01-T03: Unit tests
+          [ ] E04-S01-Review: run tests, verify AC
         [ ] E04-S02: Auto Merge on Link
-          [ ] S02 T1: Event handler
-          [ ] S02 T2: Integration tests
-          [ ] S02 Review: run tests, verify AC
-        [ ] E04 Review: integration tests
+          [ ] E04-S02-T01: Event handler
+          [ ] E04-S02-T02: Integration tests
+          [ ] E04-S02-Review: run tests, verify AC
+        [ ] E04-Integration: epic integration tests
       [ ] E06: Team Management
         [ ] E06-S01: Team CRUD
-          [ ] S01 T1: Domain model
-          [ ] S01 T2: Handler
-          [ ] S01 Review: run tests, verify AC
-        [ ] E06 Review: integration tests
-      [ ] Sprint integration tests
+          [ ] E06-S01-T01: Domain model
+          [ ] E06-S01-T02: Handler
+          [ ] E06-S01-Review: run tests, verify AC
+        [ ] E06-Integration: epic integration tests
+      [ ] Sprint-Integration: run sprint integration tests
       ```
     </example>
     <step n="3">Set sprint status="in-progress" in sprint-status.yaml</step>
