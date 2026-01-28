@@ -34,6 +34,14 @@ current_sprint:
   start_date: "{{sprint_start}}"
   end_date: "{{sprint_end}}"
   goal: "{{sprint_goal}}"
+  increment: "{{what_will_be_demo_ready}}"  # What will work end-to-end
+  capacity: "{{1L_epic_or_2M_epics}}"  # T-shirt or points
+  definition_of_done:
+    - "Works end-to-end (UI → API → DB)"
+    - "Tests pass"
+    - "No critical bugs"
+    - "Demo-ready"
+    # Add more based on project size (see SKILL.md)
   
 # =============================================================================
 # DEVELOPMENT STATUS

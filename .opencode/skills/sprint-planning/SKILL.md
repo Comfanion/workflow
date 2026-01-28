@@ -1,6 +1,6 @@
 ---
 name: sprint-planning
-description: Use when organizing epics into sprints, creating sprint-status.yaml, or tracking sprint progress. REQUIRES epics to exist first - run /epics if none
+description: Organize epics and stories into sprint cycles, create sprint-status.yaml, and track sprint progress. Use when planning sprints, organizing backlog, estimating capacity, or when user mentions "sprint planning", "sprint organization", "backlog prioritization", or "sprint schedule". Requires epics to exist first.
 license: MIT
 compatibility: opencode
 metadata:
@@ -10,236 +10,87 @@ metadata:
 
 # Sprint Planning Skill
 
-## When to Use
-
-Use this skill when you need to:
-- Organize epics into sprints
-- Create sprint-status.yaml
-- Track sprint progress
-- Plan new sprints
-
-## Prerequisites
-
-**CRITICAL: Epics must exist before sprint planning!**
-
-```
-Check: ls docs/sprint-artifacts/backlog/epic-*.md 2>/dev/null || ls docs/sprint-artifacts/sprint-*/epic-*.md 2>/dev/null
-```
-
-| Check | Action if Missing |
-|-------|-------------------|
-| No epics in backlog or sprints | **STOP** → Create epics from PRD first |
-| Epics exist but no stories | Epics can be planned, stories created later |
-| PRD missing | **STOP** → Create PRD first |
-
-### Dependency Chain
-
-```
-PRD → Architecture → Epics → Sprint Plan
-                       ↑
-                 YOU ARE HERE
-                 (need epics first!)
-```
-
-If user asks for sprint planning without epics:
-1. Inform them epics are required
-2. Offer to create epics first
-3. Only proceed with sprint planning after epics exist
-
-## Sprint Duration
-
-- **Recommended:** 2 weeks
-- **Range:** 1-4 weeks depending on team
-- **Sprint 0:** Foundation/setup work
-
-## Sprint Planning Process
-
-### Step 1: Analyze Backlog
-
-1. List all epics from `docs/sprint-artifacts/backlog/`
-2. Check dependencies between epics
-3. Identify P0 (must-have) epics
-
-### Step 2: Calculate Velocity
-
-If historical data exists:
-- Average story points per sprint
-- Team availability
-
-If new project:
-- Estimate conservatively
-- Plan 60-70% capacity for first sprint
-
-### Step 3: Create Sprint
-
-1. Select epics that fit capacity
-2. Respect dependencies (blocked epics can't start)
-3. Balance workload across team
-4. Define sprint goal
-
-### Step 4: Move Epics
-
-```bash
-# Move epic from backlog to sprint
-mv docs/sprint-artifacts/backlog/epic-10-*.md docs/sprint-artifacts/sprint-2/
-```
-
-### Step 5: Update sprint-status.yaml
-
-## Sprint Status YAML Format
-
-```yaml
-# docs/sprint-artifacts/sprint-status.yaml
-project: marketplace
-current_sprint: sprint-1
-updated: 2026-01-23
-
-sprints:
-  sprint-0:
-    status: completed
-    goal: "Foundation and data layer"
-    start_date: 2026-01-06
-    end_date: 2026-01-17
-    velocity: 34  # story points completed
-    epics:
-      - id: CATALOG-E01
-        title: "Catalog Data Layer"
-        status: done
-        stories_done: 6
-        stories_total: 6
-
-  sprint-1:
-    status: in_progress
-    goal: "Core domain implementation"
-    start_date: 2026-01-20
-    end_date: 2026-02-03
-    capacity: 40  # planned story points
-    epics:
-      - id: CATALOG-E05
-        title: "Products Service"
-        status: in_progress
-        branch: feature/epic-05-products-service
-        assignee: team-catalog
-        stories:
-          - id: CATALOG-S05-01
-            title: "Product aggregate"
-            status: in_progress
-            estimate: M
-            assignee: developer-1
-          - id: CATALOG-S05-02
-            title: "Product repository"
-            status: todo
-            estimate: M
-            assignee: developer-1
-          - id: CATALOG-S05-03
-            title: "Product HTTP endpoints"
-            status: todo
-            estimate: L
-            assignee: developer-2
-
-  sprint-2:
-    status: planned
-    goal: "Search and filtering"
-    start_date: 2026-02-03
-    end_date: 2026-02-17
-    epics: []  # To be planned
-
-backlog:
-  - id: CATALOG-E10
-    title: "Search Integration"
-    priority: P1
-    estimate: L
-    depends_on: [CATALOG-E05]
+```xml
+<sprint_planning>
+  <prerequisites>
+    <check>Epics must exist (backlog or sprint folders)</check>
+    <if_missing>STOP → Run /epics first</if_missing>
+    <command>ls docs/sprint-artifacts/backlog/epic-*.md</command>
+  </prerequisites>
   
-  - id: INVENTORY-E01
-    title: "Inventory Management"
-    priority: P0
-    estimate: XL
-    depends_on: [CATALOG-E05]
+  <principle>Sprint = Scope for completing epic(s)</principle>
+  
+  <capacity_by_project_size>
+    <TOY epics="2-3" result="Working app"/>
+    <SMALL epics="1-2" result="Working features"/>
+    <MEDIUM epics="1" result="Working module"/>
+    <LARGE epics="1" result="Working domain"/>
+    <ENTERPRISE epics="0.5" result="Working context"/>
+  </capacity_by_project_size>
+  
+  <definition_of_done>
+    <ALL>Works end-to-end, Tests pass, No bugs, Demo-ready</ALL>
+    <SMALL_plus>+ Code review, Docs, Deployable</SMALL_plus>
+    <MEDIUM_plus>+ Integration tests, Performance</MEDIUM_plus>
+    <ENTERPRISE>+ Security review, Load tests</ENTERPRISE>
+  </definition_of_done>
+  
+  <workflow>
+    <step n="1">Read PRD → project size</step>
+    <step n="2">List backlog epics → check dependencies</step>
+    <step n="3">Define goal (what will be demo-ready)</step>
+    <step n="4">Select epics (use capacity table)</step>
+    <step n="5">Calculate capacity (T-shirt or points)</step>
+    <step n="6">Set DoD</step>
+    <step n="7">Move epics: backlog → sprint-N/</step>
+    <step n="8">Update sprint-status.yaml</step>
+  </workflow>
+  
+  <sprint_status_values>
+    <planned>Sprint defined but not started</planned>
+    <in_progress>Current sprint</in_progress>
+    <completed>Sprint finished</completed>
+  </sprint_status_values>
+  
+  <yaml_fields>
+    <goal>What will be demo-ready</goal>
+    <increment>What works end-to-end</increment>
+    <capacity>1L epic or 34 pts</capacity>
+    <definition_of_done>Array of DoD items</definition_of_done>
+    <start_date>YYYY-MM-DD</start_date>
+    <end_date>YYYY-MM-DD</end_date>
+  </yaml_fields>
+  
+  <rules>
+    <do>Select complete epic(s)</do>
+    <do>Clear goal</do>
+    <do>Plan 70-80% capacity</do>
+    <dont>Partial epic</dont>
+    <dont>Multiple incomplete epics</dont>
+    <dont>Vague goal</dont>
+  </rules>
+  
+  <output>docs/sprint-artifacts/sprint-status.yaml</output>
+</sprint_planning>
 ```
 
-## Status Values
+---
 
-### Sprint Status
-- `planned` - Sprint defined but not started
-- `in_progress` - Current sprint
-- `completed` - Sprint finished
-
-### Epic Status
-- `todo` - Not started
-- `in_progress` - Work ongoing
-- `review` - All stories done, under review
-- `done` - Completed and merged
-
-### Story Status
-- `todo` - Not started
-- `in_progress` - Being worked on
-- `review` - PR submitted
-- `done` - Merged
-
-## Sprint Actions
-
-### Start New Sprint
+## YAML Example
 
 ```yaml
-# Add new sprint
-sprint-2:
-  status: in_progress
-  goal: "[Sprint goal]"
-  start_date: YYYY-MM-DD
-  end_date: YYYY-MM-DD
-  epics: []
-
-# Update current_sprint
-current_sprint: sprint-2
-```
-
-### Complete Sprint
-
-```yaml
-# Update sprint status
 sprint-1:
-  status: completed
-  velocity: 38  # actual points completed
-
-# Move incomplete work to backlog or next sprint
+  status: in_progress
+  goal: "Order Management works end-to-end"
+  increment: "Users can create/view/update orders"
+  capacity: "1L epic"  # or "34 pts" for ENTERPRISE
+  definition_of_done:
+    - "Works end-to-end (UI → API → DB)"
+    - "Tests pass"
+    - "Demo-ready"
+  epics:
+    - id: ORD-E01
+      status: in_progress
 ```
 
-### Update Progress
-
-```yaml
-# Update story status
-- id: CATALOG-S05-01
-  status: done  # was: in_progress
-
-# Update epic progress
-- id: CATALOG-E05
-  stories_done: 3  # was: 2
-```
-
-## Sprint Planning Rules
-
-1. **Respect dependencies** - Blocked epics wait
-2. **Don't overcommit** - Plan 70-80% capacity
-3. **Balance skills** - Distribute work by expertise
-4. **Include buffer** - Leave room for issues
-5. **Clear goals** - Each sprint has measurable goal
-
-## Sprint Review Checklist
-
-At end of sprint:
-- [ ] All stories marked done or moved
-- [ ] Velocity calculated
-- [ ] Retrospective notes added
-- [ ] Blockers documented
-- [ ] Next sprint planned
-
-## Output
-
-Update: `docs/sprint-artifacts/sprint-status.yaml`
-
-## Related Skills
-
-- `epic-writing` - For creating epics
-- `story-writing` - For creating stories
-- `jira-integration` - For syncing to Jira
+See `template.yaml` for full format.

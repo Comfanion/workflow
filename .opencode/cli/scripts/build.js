@@ -30,11 +30,10 @@ const OPENCODE_ITEMS = [
   'skills',
   'checklists',
   'commands',
-  'tools',
-  'plugins',
   'mcp',
   'package.json',
-  'opencode.json'
+  'opencode.json',
+  'vectorizer.yaml'
 ];
 
 // Exclude from copying
@@ -102,22 +101,6 @@ async function build() {
     console.log('    ✅ Removed mcp/enabled.yaml (user config)');
   }
 
-  // Copy vectorizer source files (installed on demand)
-  console.log('\n  Copying vectorizer module...');
-  const vectorizerSrc = path.join(OPENCODE_SRC, 'vectorizer');
-  const vectorizerDest = path.join(DIST_DIR, 'vectorizer');
-  
-  if (await fs.pathExists(vectorizerSrc)) {
-    // Only copy index.js and package.json (not node_modules)
-    await fs.ensureDir(vectorizerDest);
-    await fs.copy(path.join(vectorizerSrc, 'index.js'), path.join(vectorizerDest, 'index.js'));
-    await fs.copy(path.join(vectorizerSrc, 'package.json'), path.join(vectorizerDest, 'package.json'));
-    console.log('    ✅ vectorizer/index.js');
-    console.log('    ✅ vectorizer/package.json');
-  } else {
-    console.log('    ⚠️  vectorizer/ (not found, skipping)');
-  }
-
   // Create package info
   console.log('\n  Creating build info...');
   const buildInfo = {
@@ -138,15 +121,9 @@ async function build() {
   console.log('  │   ├── FLOW.yaml');
   console.log('  │   ├── agents/');
   console.log('  │   ├── skills/');
-  console.log('  │   ├── tools/        # Custom tools for AI');
-  console.log('  │   │   ├── search.ts');
-  console.log('  │   │   └── codeindex.ts');
-  console.log('  │   └── plugins/      # Auto-indexer plugin');
-  console.log('  │   ├── workflows/');
   console.log('  │   ├── checklists/');
   console.log('  │   └── commands/');
   console.log('  ├── repo-structure/   # Repository templates');
-  console.log('  ├── vectorizer/       # Semantic search module');
   console.log('  └── build-info.json');
 }
 

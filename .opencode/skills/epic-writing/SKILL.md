@@ -1,6 +1,6 @@
 ---
 name: epic-writing
-description: Use when creating epics from PRD with acceptance criteria and story breakdown
+description: Create epics from PRD with acceptance criteria, story breakdown, and technical approach. Use when breaking down PRD into epics, defining feature areas, or when user mentions "epic", "feature breakdown", "epic creation", or "story grouping".
 license: MIT
 compatibility: opencode
 metadata:
@@ -10,278 +10,190 @@ metadata:
 
 # Epic Writing Skill
 
-## When to Use
-
-Use this skill when you need to:
-- Create epics from PRD
-- Define epic scope and acceptance criteria
-- Plan stories within an epic
-- Track PRD requirement coverage
-
-## Template
-
-Use template at: `@.opencode/skills/epic-writing/template.md`
-
-## CRITICAL: What is an Epic?
-
-**Epic scope changes with project size!** Read PRD's Project Classification first.
-
-| Project Size | Epic = | Example | Stories |
-|--------------|--------|---------|---------|
-| **TOY** | Major feature | "Game Logic", "UI Rendering", "Scoring" | 3-8 tasks |
-| **SMALL** | Feature area | "User Authentication", "Post Management" | 5-12 tasks |
-| **MEDIUM** | **Module/Unit** | "Order Management Module", "Payment Module" | 8-15 features |
-| **LARGE** | **Domain** | "Order Domain", "Payment Domain" | 10-20 features |
-| **ENTERPRISE** | **Bounded Context** | "Core Banking Context" | 15-30 features |
-
-**For MEDIUM+ projects:**
-- Each Epic = One Module from PRD
-- Epic should reference Unit documentation: `→ Unit: docs/units/order-management/`
-- Stories within epic are features of that module
-- Epic owns a set of FRs (e.g., FR-ORD-001 through FR-ORD-015)
-
-**Example - MEDIUM E-commerce:**
-```
-Epic: Order Management Module
-  → Unit: docs/units/order-management/
-  → FRs: FR-ORD-001 to FR-ORD-012
-  → Stories:
-    - Customer can create order
-    - System validates inventory
-    - Order status workflow
-    - Order history view
-    ...
-```
-
-**Example - TOY Tetris:**
-```
-Epic: Game Logic
-  → Stories:
-    - Implement block rotation
-    - Add collision detection
-    - Clear full lines
-    - Increase fall speed
-  → No Unit docs needed
-  → Simple AC: "Game logic works correctly"
-```
-
-**Example - SMALL Blog:**
-```
-Epic: Post Management
-  → Stories:
-    - User can create post
-    - User can edit post
-    - User can delete post
-    - User can publish/unpublish
-    - Posts show in list
-  → No Unit docs (flat structure)
-  → AC: "Users can manage posts through full lifecycle"
+```xml
+<epic_writing>
+  <definition>Epic = Group of stories forming complete feature/module</definition>
+  
+  <scope_by_project_size>
+    <TOY scope="Major feature" stories="3-8" size="S"/>
+    <SMALL scope="Feature area" stories="5-12" size="M"/>
+    <MEDIUM scope="Module/Unit" stories="8-15" size="L"/>
+    <LARGE scope="Domain" stories="10-20" size="XL"/>
+    <ENTERPRISE scope="Bounded Context" stories="15-30" size="XXL"/>
+  </scope_by_project_size>
+  
+  <vertical_slice>
+    <principle>Epic = Complete vertical slice (all layers)</principle>
+    <layers>Domain → Repository → Use Cases → API → UI → Tests</layers>
+    <result>Working module (demo-ready)</result>
+  </vertical_slice>
+  
+  <status_values>
+    <todo>Not started</todo>
+    <in_progress>Work ongoing</in_progress>
+    <review>All stories done, under review</review>
+    <done>Completed and merged</done>
+  </status_values>
+  
+  <estimation>
+    <t_shirt for="TOY,SMALL,MEDIUM,LARGE">S, M, L, XL</t_shirt>
+    <t_shirt_plus_points for="ENTERPRISE">
+      <mapping S="8-13" M="13-21" L="21-34" XL="34-55" XXL="55+"/>
+      <calculate>Sum of story points</calculate>
+    </t_shirt_plus_points>
+  </estimation>
+  
+  <depth_by_size>
+    <TOY>
+      <overview>Simple (1-2 paragraphs)</overview>
+      <units>Not needed</units>
+      <ac>Simple checklist</ac>
+      <stories>Bullet points</stories>
+      <increment>"Feature works"</increment>
+    </TOY>
+    
+    <MEDIUM>
+      <overview>Detailed with business value</overview>
+      <units>References Unit docs</units>
+      <ac>Comprehensive</ac>
+      <stories>Table with dependencies</stories>
+      <technical_decisions>With ADR links</technical_decisions>
+      <risks>Identified</risks>
+      <increment>"Module works end-to-end"</increment>
+    </MEDIUM>
+    
+    <ENTERPRISE>
+      <overview>Complete with strategic context</overview>
+      <units>Multiple Units (cross-domain)</units>
+      <ac>Exhaustive with compliance</ac>
+      <stories>With estimates and confidence</stories>
+      <technical_decisions>All documented</technical_decisions>
+      <risks>With mitigation plans</risks>
+      <security>Considerations included</security>
+      <increment>"Domain slice works"</increment>
+    </ENTERPRISE>
+  </depth_by_size>
+  
+  <header_fields>
+    <id>{{PREFIX}}-E{{N}}</id>
+    <status>backlog | ready | in_progress | done</status>
+    <priority>P0 | P1</priority>
+    <size>S | M | L | XL | XXL</size>
+    <estimate>Optional: ENTERPRISE only (story points total)</estimate>
+    <sprint>{{sprint}}</sprint>
+  </header_fields>
+  
+  <structure>
+    <overview>What epic delivers, business value, scope</overview>
+    <units_affected>Table: Unit | Changes | Impact</units_affected>
+    <dependencies>Table: Type | Item | Why</dependencies>
+    <prd_coverage>Table: FR | Requirement | Notes</prd_coverage>
+    <acceptance_criteria>Checklist defining "working increment"</acceptance_criteria>
+    <stories>Table: ID | Title | Size | Focus | Status</stories>
+    <technical_decisions>Table: Decision | Rationale | ADR</technical_decisions>
+    <risks>Table: Risk | Impact | Mitigation</risks>
+    <references>Links to PRD, Architecture, Units</references>
+  </structure>
+  
+  <story_order>
+    <step n="1">Domain layer (entities, value objects)</step>
+    <step n="2">Repository interfaces</step>
+    <step n="3">Use cases</step>
+    <step n="4">Repository implementations</step>
+    <step n="5">HTTP handlers</step>
+    <step n="6">Integration tests</step>
+  </story_order>
+  
+  <naming>
+    <file>epic-[NN]-[description].md</file>
+    <id>[PREFIX]-E[NN]</id>
+    <examples>
+      <file>epic-01-task-management.md</file>
+      <id>TASK-E01</id>
+    </examples>
+  </naming>
+  
+  <traceability>
+    <after_epic_creation>Update requirements.md with Epic column</after_epic_creation>
+    <format>→ Epic: `epic-01-task-crud.md`</format>
+  </traceability>
+  
+  <reference_format>
+    <unit>→ Unit: `Task`</unit>
+    <fr>→ FR: `FR-001`</fr>
+    <adr>→ ADR: `ADR-001`</adr>
+    <prd>→ PRD: `docs/prd.md`</prd>
+  </reference_format>
+  
+  <output>
+    <sprint>docs/sprint-artifacts/sprint-[N]/epic-[NN]-[description].md</sprint>
+    <backlog>docs/sprint-artifacts/backlog/epic-[NN]-[description].md</backlog>
+  </output>
+</epic_writing>
 ```
 
 ---
 
-## Epic Depth by Project Size
-
-**CRITICAL:** Epic structure changes with project size!
-
-**TOY/SMALL:**
-- Simple overview (1-2 paragraphs)
-- No Units Affected section (no modules)
-- Simple AC checklist
-- Stories listed as bullet points
-- No Technical Decisions section
-- No Risks section
-
-**MEDIUM:**
-- Detailed overview with business value
-- **Units Affected section** (references Unit docs)
-- Comprehensive AC
-- Stories in table with dependencies
-- Technical Decisions with ADR links
-- Risks identified
-
-**LARGE/ENTERPRISE:**
-- Complete overview with strategic context
-- **Multiple Units Affected** (cross-domain)
-- Exhaustive AC with compliance
-- Stories with estimates and confidence levels
-- All Technical Decisions documented
-- Risks with mitigation plans
-- Security considerations
-
-## Epic Structure (v2)
-
-### 1. Header
+## Example: MEDIUM Project Epic
 
 ```yaml
-id: {{PREFIX}}-E{{N}}
-status: backlog | ready | in_progress | done
-priority: P0 | P1
-sprint: {{sprint}}
+id: ORD-E01
+status: in_progress
+priority: P0
+size: L
+sprint: sprint-1
 ```
 
-### 2. Overview
+# Epic: Order Management Module
 
-Prose section with:
-- What epic delivers (bold the outcome)
-- Business value
-- Scope (included)
-- Not included
-
-```markdown
 ## Overview
 
-This epic delivers **complete task management** for team members. When complete, users will be able to create, assign, and track tasks.
+This epic delivers **complete order management** for e-commerce platform. When complete, users will be able to create, view, update, and track orders through full lifecycle.
 
 **Business Value:** Core functionality for MVP launch
 
 **Scope:**
-- Task CRUD
-- Assignments
-- Status workflow
+- Order CRUD operations
+- Order status workflow
+- Inventory validation
+- Order history
 
 **Not Included:**
-- Recurring tasks (Growth)
-```
+- Recurring orders (Growth phase)
+- Bulk order import (Enterprise)
 
-### 3. Units Affected
+## Units Affected
 
 | Unit | Changes | Impact |
 |------|---------|--------|
-| → Unit: `Task` | Create | New entity |
-| → Unit: `User` | Modify | Add relation |
+| → Unit: `Order` | Create | New domain entity |
+| → Unit: `Inventory` | Modify | Add reservation logic |
 
-### 4. Dependencies
+## Acceptance Criteria
 
-| Type | Item | Why |
-|------|------|-----|
-| **Requires** | Auth system | Users must exist |
-| **Enables** | Notifications epic | Triggers on assignment |
-
-### 5. PRD Coverage
-
-| FR | Requirement | Notes |
-|----|-------------|-------|
-| → FR: `FR-001` | Create task | Core feature |
-| → FR: `FR-002` | Assign task | |
-
-### 6. Acceptance Criteria
-
-Checklist format:
-- [ ] User can create task
-- [ ] User can assign task
+- [ ] **Increment ready:** Order Management module works end-to-end
+- [ ] Users can create orders via UI
+- [ ] Orders validate against inventory
+- [ ] Order status workflow implemented
+- [ ] Integration tests pass (Order ↔ Inventory)
 - [ ] All stories completed
-- [ ] Tests pass (>80%)
-- [ ] Documentation updated
+- [ ] Tests pass (>80% coverage)
+- [ ] API documented
+- [ ] **Demo-ready:** Can show to stakeholders
 
-### 7. Stories
-
-Table + dependency diagram:
+## Stories
 
 | ID | Title | Size | Focus | Status |
 |----|-------|------|-------|--------|
-| S01-01 | Task Domain | M | → Unit: `Task` | ⬜ |
-| S01-02 | Task Repository | M | → Unit: `Task` | ⬜ |
-
-**Size Guide:** Prefer S→M or M. (S=2-4 tasks, M=4-8 tasks, L=8+ tasks)
-
-```
-S01 ──► S02 ──► S03
-```
-
-### 8. Technical Decisions
-
-| Decision | Rationale | ADR |
-|----------|-----------|-----|
-| UUID for IDs | Distributed generation | → ADR: `ADR-001` |
-
-### 9. Risks
-
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Complex validation | M | Start simple, iterate |
-
-### 10. References
+| ORD-S01-01 | Order Domain | M | → Unit: `Order` | ⬜ |
+| ORD-S01-02 | Order Repository | M | → Unit: `Order` | ⬜ |
+| ORD-S01-03 | Create Order Use Case | M | → Unit: `Order` | ⬜ |
+| ORD-S01-04 | Order API | M | → Unit: `Order` | ⬜ |
+| ORD-S01-05 | Order UI | M | → Unit: `Order` | ⬜ |
+| ORD-S01-06 | Integration Tests | S | All | ⬜ |
 
 ```
-→ PRD: `docs/prd.md`
-→ Architecture: `docs/architecture.md`
-→ Unit: `Task`
+S01 ──► S02 ──► S03 ──► S04 ──► S05 ──► S06
 ```
 
-## Reference Format
-
-Always use `→` prefix:
-
-```markdown
-→ Unit: `Task`
-→ FR: `FR-001`
-→ ADR: `ADR-001`
-→ PRD: `docs/prd.md`
-```
-
-## Story Planning
-
-### Story Order
-
-Recommended order within epic:
-1. Domain layer (entities, value objects)
-2. Repository interfaces
-3. Use cases
-4. Repository implementations
-5. HTTP handlers
-6. Integration tests
-
-### Story Focus
-
-Each story should focus on one unit:
-
-| ID | Title | Focus |
-|----|-------|-------|
-| S01-01 | Task Domain | → Unit: `Task` |
-| S01-02 | Task Repository | → Unit: `Task` |
-
-## Naming Conventions
-
-### File Names
-
-```
-epic-[NN]-[description].md
-
-Examples:
-- epic-01-task-management.md
-- epic-02-user-auth.md
-```
-
-### Epic IDs
-
-```
-[PREFIX]-E[NN]
-
-Examples:
-- TASK-E01
-- AUTH-E02
-```
-
-## Validation Checklist
-
-- [ ] Overview explains what and why
-- [ ] Units affected listed with `→ Unit:` format
-- [ ] All FRs from scope are listed with `→ FR:` format
-- [ ] Acceptance criteria are measurable
-- [ ] Stories have dependency order
-- [ ] Technical decisions link to ADRs
-- [ ] Uses `→` reference format throughout
-
-## Output
-
-Save to: `docs/sprint-artifacts/sprint-[N]/epic-[NN]-[description].md`
-
-Or backlog: `docs/sprint-artifacts/backlog/epic-[NN]-[description].md`
-
-## Related Skills
-
-- `story-writing` - For creating stories
-- `prd-writing` - Source of requirements
-- `unit-writing` - For documenting affected units
-- `sprint-planning` - For organizing epics
+See `template.md` for full format.

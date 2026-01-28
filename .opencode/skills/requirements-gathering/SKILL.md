@@ -1,6 +1,6 @@
 ---
 name: requirements-gathering
-description: Use when gathering FR/NFR through stakeholder interviews and elicitation techniques
+description: Gather functional and non-functional requirements through stakeholder interviews, user research, and elicitation techniques. Use when starting a new project, collecting requirements, interviewing stakeholders, or when user mentions "requirements", "FR", "NFR", "stakeholder needs", or "user research".
 license: MIT
 compatibility: opencode
 metadata:
@@ -10,69 +10,85 @@ metadata:
 
 # Requirements Gathering Skill
 
-## When to Use
-
-Use this skill when you need to:
-- Gather requirements from stakeholders
-- Document functional and non-functional requirements
-- Create the foundation for PRD
-
-## Template
-
-Use template at: `@.opencode/skills/requirements-gathering/template.md`
-
-## Requirements Document Structure (v2)
-
-### 1. Header
-
-```yaml
-id: REQ-001
-version: 1.0
-status: draft | approved
-date: {{date}}
-author: {{author}}
+```xml
+<requirements_gathering>
+  <definition>Gather FR/NFR through stakeholder interviews</definition>
+  
+  <output>docs/requirements/requirements.md</output>
+  
+  <structure>
+    <header>id, version, status, date, author</header>
+    <summary>Problem, users, outcomes</summary>
+    <stakeholders>Table: Role | Representative | Interest | Influence</stakeholders>
+    <functional_requirements>
+      <grouped_by>Domain</grouped_by>
+      <table>ID | Requirement | Priority | Source | Module | Doc Section | Arch § | Epic | Status</table>
+      <traceability>
+        <module>Filled by @architect</module>
+        <arch_section>Filled by @architect</arch_section>
+        <epic>Filled by @pm</epic>
+        <status>Updated by @dev (⬜ → ✅)</status>
+      </traceability>
+    </functional_requirements>
+    <nfr>
+      <categories>Performance, Security, Scalability, Usability, Reliability, Maintainability</categories>
+      <table>ID | Requirement | Priority | Metric | Arch § | Status</table>
+    </nfr>
+    <ai_requirements optional="true">For RAG/AI systems</ai_requirements>
+    <constraints>Table: Type | Description | Impact</constraints>
+    <assumptions>Bullet list</assumptions>
+    <dependencies>Table: Item | Owner | Status | Risk</dependencies>
+    <open_questions>Checklist</open_questions>
+    <glossary>Table: Term | Definition</glossary>
+    <references>Links to PRD, Architecture</references>
+  </structure>
+  
+  <requirement_rules>
+    <atomic>One requirement = one thing</atomic>
+    <measurable>Use numbers, not "quickly"</measurable>
+    <testable>Can verify with test</testable>
+    <unambiguous>Clear, no interpretation needed</unambiguous>
+  </requirement_rules>
+  
+  <ids>
+    <functional>FR-001, FR-002, ...</functional>
+    <nfr>NFR-001, NFR-002, ...</nfr>
+  </ids>
+  
+  <priority>
+    <P0>Must have (MVP)</P0>
+    <P1>Should have (Growth)</P1>
+    <P2>Nice to have (Vision)</P2>
+  </priority>
+  
+  <interview_questions>
+    <functional>
+      <q>What do you need to accomplish?</q>
+      <q>What information do you need to see?</q>
+      <q>What actions do you need to take?</q>
+      <q>What happens when X fails?</q>
+    </functional>
+    <nfr>
+      <q>How many users concurrently?</q>
+      <q>What response time is acceptable?</q>
+      <q>What's the data retention policy?</q>
+      <q>What security standards apply?</q>
+    </nfr>
+  </interview_questions>
+  
+  <reference_format>
+    <unit>→ Unit: `Task`</unit>
+    <fr>→ FR: `FR-001`</fr>
+    <prd>→ PRD: `docs/prd.md`</prd>
+  </reference_format>
+</requirements_gathering>
 ```
 
-### 2. Summary
-
-Brief prose explaining:
-- What problem is being solved
-- Who the primary users are
-- Key outcomes expected
-
-### 3. Stakeholders
-
-| Role | Representative | Interest | Influence |
-|------|---------------|----------|-----------|
-| Product Owner | Name | Feature delivery | High |
-| End Users | Segment | Daily usage | High |
-
-### 4. Functional Requirements
-
-**Grouped by domain:**
-
-```markdown
-### Task Management
-
-Core task lifecycle operations.
-
-| ID | Requirement | Priority | Source |
-|----|-------------|----------|--------|
-| FR-001 | User can create task | P0 | Team Lead |
-
-**Business Rules:**
-- One task = one assignee
-
-**Notes:**
-- Notifications in separate domain
-```
-
-### 5. Non-Functional Requirements
-
-Separate tables by category:
-- Performance (with metrics)
-- Security
-- Scalability
+**When to include:**
+- System uses LLM/ML models
+- System has probabilistic outputs (not deterministic)
+- Accuracy/hallucination metrics are critical
+- System needs clear boundaries (what it should/shouldn't do)
 
 ### 6. Constraints
 
@@ -112,71 +128,40 @@ Separate tables by category:
 → Stakeholder Interviews: `docs/interviews/`
 ```
 
-## Reference Format
+---
 
-Use `→` for all references:
-```markdown
-→ PRD: `docs/prd.md`
-→ FR: `FR-001`
+## Example: Task Management Requirements
+
+```yaml
+id: REQ-001
+version: 1.0
+status: draft
 ```
 
-## Requirement Writing Rules
+# Requirements Document
 
-### Good Requirements
+## Summary
 
-| Rule | Good | Bad |
-|------|------|-----|
-| Atomic | User can create task | User can create and edit task |
-| Measurable | Load in < 2s | Load quickly |
-| Testable | Title max 200 chars | Title reasonable length |
-| Unambiguous | Required field | Important field |
+Team collaboration tool for managing tasks and assignments.
 
-### Requirement IDs
+## Functional Requirements
 
-- Functional: `FR-001`, `FR-002`, ...
-- Non-Functional: `NFR-001`, `NFR-002`, ...
+### Task Management
 
-### Priority
+| ID | Requirement | Priority | Source | Module | Doc Section | Arch § | Epic | Status |
+|----|-------------|----------|--------|--------|-------------|--------|------|--------|
+| FR-001 | User can create task | P0 | Team Lead | Task | → Unit: `Task` | §3.1 | → Epic: `epic-01-task-crud.md` | ⬜ |
+| FR-002 | User can assign task | P0 | Team Lead | Task | → Unit: `Task` | §3.1 | → Epic: `epic-01-task-crud.md` | ⬜ |
 
-| Level | Meaning | Scope |
-|-------|---------|-------|
-| P0 | Must have | MVP |
-| P1 | Should have | Growth |
-| P2 | Nice to have | Vision |
+**Business Rules:**
+- One task = one assignee
 
-## Interview Questions
+## Non-Functional Requirements
 
-### Functional Discovery
+### Performance
 
-1. What do you need to accomplish?
-2. What information do you need to see?
-3. What actions do you need to take?
-4. What happens when X fails?
+| ID | Requirement | Priority | Metric | Arch § | Status |
+|----|-------------|----------|--------|--------|--------|
+| NFR-001 | Page load < 2s | P0 | 95th percentile | §4.2 | ⬜ |
 
-### NFR Discovery
-
-1. How many users concurrently?
-2. What response time is acceptable?
-3. What's the data retention policy?
-4. What security standards apply?
-
-## Validation Checklist
-
-- [ ] All stakeholders identified
-- [ ] Requirements grouped by domain
-- [ ] Each requirement is atomic and testable
-- [ ] NFRs have measurable metrics
-- [ ] Constraints documented
-- [ ] Assumptions validated
-- [ ] Dependencies identified with owners
-- [ ] Uses `→` reference format
-
-## Output
-
-Save to: `docs/requirements/requirements.md`
-
-## Related Skills
-
-- `prd-writing` - Uses requirements as input
-- `requirements-validation` - Validates requirements
-- `acceptance-criteria` - For testable AC
+See `template.md` for full format.

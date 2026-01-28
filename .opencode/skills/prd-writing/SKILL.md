@@ -1,6 +1,6 @@
 ---
 name: prd-writing
-description: Use when creating a PRD from requirements with proper structure and traceability
+description: Create Product Requirements Document from validated requirements with project classification, success metrics, and feature specifications. Use when writing PRD, documenting product vision, defining features, or when user mentions "product requirements", "PRD", "product spec", or "feature definition".
 license: MIT
 compatibility: opencode
 metadata:
@@ -10,391 +10,187 @@ metadata:
 
 # PRD Writing Skill
 
-## When to Use
+```xml
+<prd_writing>
+  <definition>Create PRD from requirements with product vision</definition>
+  
+  <prd_contains>
+    <executive_summary>Business value, vision</executive_summary>
+    <project_classification>Size, complexity, timeline (MANDATORY FIRST SECTION)</project_classification>
+    <success_criteria>Metrics, KPIs</success_criteria>
+    <product_scope>MVP/Growth/Out-of-scope</product_scope>
+    <user_flows>High-level capabilities</user_flows>
+    <business_rules>Critical rules</business_rules>
+    <ai_considerations optional="true">For AI/RAG systems</ai_considerations>
+    <requirements_summary>Counts, priorities, link to requirements.md</requirements_summary>
+  </prd_contains>
+  
+  <prd_does_not_contain>
+    <detailed_fr_nfr>→ requirements.md (source of truth)</detailed_fr_nfr>
+    <technical_details>→ architecture.md</technical_details>
+    <task_breakdowns>→ epics/*.md, stories/*.md</task_breakdowns>
+    <api_specs>→ units/*/api-spec.md</api_specs>
+    <data_models>→ units/*/data-model.md</data_models>
+  </prd_does_not_contain>
+  
+    <project_classification mandatory="true" first_section="true">
+      <purpose>Determines depth of all artifacts (PRD, Architecture, Epics, Stories)</purpose>
+      <attributes>Size, Complexity, Team Size, Timeline, Domain</attributes>
+      
+      <TOY>
+        <examples>Tetris, Calculator, Todo list</examples>
+        <scope>Single feature</scope>
+        <team>Solo</team>
+        <prd>2-3 pages, bullet points OK</prd>
+        <architecture>200-500 lines, simple diagram</architecture>
+        <structure>Flat components</structure>
+        <epics>3-5 features</epics>
+        <units>No</units>
+      </TOY>
+      
+      <SMALL>
+        <examples>Blog, REST API, CLI tool</examples>
+        <scope>Single app, basic CRUD</scope>
+        <team>1-2 devs</team>
+        <prd>3-5 pages</prd>
+        <architecture>500-1000 lines, C4 model</architecture>
+        <structure>Flat services</structure>
+        <epics>5-10 feature areas</epics>
+        <units>No</units>
+      </SMALL>
+      
+      <MEDIUM>
+        <examples>E-commerce, CRM, Mobile app</examples>
+        <scope>Multi-module system</scope>
+        <team>2-5 devs</team>
+        <prd>5-10 pages, break into MODULES</prd>
+        <architecture>1000-2000 lines, full C4</architecture>
+        <structure>Modules (OrderModule, PaymentModule)</structure>
+        <epics>8-15, each Epic = one Module</epics>
+        <units>Yes - docs/units/module-name/</units>
+      </MEDIUM>
+      
+      <LARGE>
+        <examples>SaaS, Payment platform, Marketplace</examples>
+        <scope>Multi-domain platform</scope>
+        <team>5-20 devs</team>
+        <prd>10-20 pages, think in DOMAINS</prd>
+        <architecture>2000-4000 lines</architecture>
+        <structure>Domains/Bounded Contexts</structure>
+        <epics>15-30, each Epic = one Domain</epics>
+        <units>Yes - complete with API specs, events</units>
+      </LARGE>
+      
+      <ENTERPRISE>
+        <examples>Banking, Healthcare, ERP</examples>
+        <scope>Enterprise-wide, compliance</scope>
+        <team>20+ devs</team>
+        <prd>20-50 pages, strategic</prd>
+        <architecture>4000+ lines, per-domain files</architecture>
+        <structure>Bounded Contexts with subdomains</structure>
+        <epics>30+</epics>
+        <units>Yes - audit-ready</units>
+      </ENTERPRISE>
+    </project_classification>
+    
+      <executive_summary>What system is, architecture pattern, key domains, unique value, scale</executive_summary>
+      <success_criteria>MVP Success, Growth Success (measurable)</success_criteria>
+      <product_scope>MVP, Growth, Out of Scope (by module for MEDIUM+)</product_scope>
+      <requirements_summary>Link to requirements.md, counts by domain/priority</requirements_summary>
+      <ai_considerations optional="true">Quality targets, system boundaries</ai_considerations>
+      <business_rules>Numbered list with bold rule names</business_rules>
+      <glossary>Table: Term | Definition</glossary>
+      <references>Links to requirements.md, architecture.md, coding-standards</references>
+      <changelog>Version | Date | Author | Changes</changelog>
+    </structure>
 
-Use this skill when you need to:
-- Create a new PRD from requirements
-- Structure product requirements into a coherent document
-- Define scope boundaries (MVP/Growth/Vision)
+  <workflow>
+    <prerequisite>Check if requirements.md exists</prerequisite>
+    <if_exists>Read it, use for Requirements Summary, count FRs by domain/priority</if_exists>
+    <if_not_exists>STOP - tell user to run /requirements first</if_not_exists>
+  </workflow>
+  
+  <requirements_section>
+    <format>Summary only (no detailed FR/NFR tables)</format>
+    <source_of_truth>requirements.md</source_of_truth>
+    <summary>Count FRs by domain, priority; Count NFRs by category</summary>
+  </requirements_section>
+  
+  <units>
+    <TOY>No units</TOY>
+    <SMALL>No units</SMALL>
+    <MEDIUM>Yes - modules (docs/units/module-name/)</MEDIUM>
+    <LARGE>Yes - domains (docs/units/domain-name/)</LARGE>
+    <ENTERPRISE>Yes - bounded contexts</ENTERPRISE>
+  </units>
+  
+  <reference_format>
+    <unit>→ Unit: `Order Management` - docs/units/order-management/</unit>
+    <fr>→ FR: `FR-001`</fr>
+    <adr>→ ADR: `ADR-001`</adr>
+    <requirements>→ Requirements: `docs/requirements/requirements.md`</requirements>
+  </reference_format>
+  
+  <priority>
+    <P0>Must have (MVP)</P0>
+    <P1>Should have (Growth)</P1>
+    <P2>Nice to have (Vision)</P2>
+  </priority>
+</prd_writing>
+```
 
-## Template
+---
 
-Use the template at: `@.opencode/skills/prd-writing/template.md`
+## Example: MEDIUM E-commerce PRD
 
-## PRD Structure (v3 - with Project Classification)
+```yaml
+id: PRD-001
+version: 1.0
+status: approved
+```
 
-### 0. Project Classification (MANDATORY FIRST SECTION)
+# Product Requirements Document: E-commerce Platform
 
-**Purpose:** This section determines how deep and detailed ALL subsequent artifacts will be.
-
-**CRITICAL - Fill this FIRST:**
-1. Ask user about project (or infer from requirements)
-2. Classify size based on timeline and complexity
-3. Fill the classification table
-4. Adapt your writing style for the rest of PRD
-
-**Classification Table:**
-
-| Attribute | Value | Notes |
-|-----------|-------|-------|
-| **Size** | toy / small / medium / large / enterprise | See guide below |
-| **Complexity** | simple / moderate / complex / very_complex | Business logic depth |
-| **Team Size** | 1-100+ | Number of developers |
-| **Timeline** | Days/weeks/months | Expected duration |
-| **Domain** | game / web_app / api / library / cli / mobile_app / embedded | Project type |
-
-**Size Impact Table:**
+## 0. Project Classification
 
 | Attribute | Value |
 |-----------|-------|
-| **PRD Depth** | X-Y pages |
-| **Architecture** | X-Y lines |
-| **Epics** | X-Y (scope: feature/module/domain) |
-| **Stories per Epic** | X-Y |
-| **Sprints** | X |
+| **Size** | medium |
+| **Complexity** | moderate |
+| **Team Size** | 3 developers |
+| **Timeline** | 3 months |
+| **Domain** | web_app |
 
----
+## Executive Summary
 
-### How to Classify Project Size
+Multi-module e-commerce platform for online retail. Clean architecture with Order, Inventory, and Payment modules.
 
-**Ask yourself:**
-- What's the scope? (single feature vs full system)
-- How complex is the business logic? (simple CRUD vs complex workflows)
-- How many integrations? (none vs many external systems)
-- What's the data model? (few entities vs complex relationships)
-- Who's the team? (solo vs multiple teams)
+## Requirements
 
----
+> **Source of Truth:** `docs/requirements/requirements.md`
 
-**TOY** - Learning/Prototype
-- **Examples:** Tetris, Calculator, Tic-tac-toe, Todo list
-- **Scope:** Single feature or concept exploration
-- **Complexity:** Minimal business logic, no integrations
-- **Data:** No database or simple localStorage
-- **Team:** Solo developer
-- **What to write:**
-  - PRD: 2-3 pages, bullet points OK
-  - Architecture: 200-500 lines, simple component diagram
-  - Structure: Flat components (GameEngine, Renderer, ScoreManager)
-  - Epics: 3-5 major features ("Game Logic", "UI", "Scoring")
-  - No modules, no Unit docs
+### Requirements Summary
 
----
+**Functional Requirements:** 23 requirements across 3 modules
+- Order Management: 12 requirements (8 P0, 4 P1)
+- Inventory: 6 requirements (5 P0, 1 P1)
+- Payment: 5 requirements (2 P0, 3 P1)
 
-**SMALL** - Simple Application
-- **Examples:** Blog, Portfolio site, Simple REST API, Chrome extension, CLI tool
-- **Scope:** Single application with basic CRUD
-- **Complexity:** Simple business logic, 1-2 integrations max
-- **Data:** Basic database (5-10 tables), simple relationships
-- **Team:** 1-2 developers
-- **What to write:**
-  - PRD: 3-5 pages, structured tables
-  - Architecture: 500-1000 lines, C4 Context + Container + Component
-  - Structure: Flat services (AuthService, PostService, CommentService)
-  - Epics: 5-10 feature areas ("User Auth", "Post Management")
-  - No modules yet, no Unit docs
+**Priority Breakdown:**
+- P0 (MVP): 15 requirements
+- P1 (Growth): 8 requirements
 
----
+## Product Scope
 
-**MEDIUM** - Multi-Module System
-- **Examples:** E-commerce site, CRM, Mobile app, Booking system
-- **Scope:** Multiple interconnected features
-- **Complexity:** Moderate business logic, 3-5 integrations, workflows
-- **Data:** 15-30 tables, complex relationships, transactions
-- **Team:** 2-5 developers (small team)
-- **What to write:**
-  - PRD: 5-10 pages, break into **MODULES**
-  - Architecture: 1000-2000 lines, full C4 model + sequences
-  - Structure: **Modules** (OrderModule, InventoryModule, PaymentModule)
-  - Epics: 8-15, **each Epic = one Module**
-  - **Create Unit docs** for each module: `docs/units/module-name/`
-  - Module boundaries matter - define what's in/out
+### MVP
 
----
-
-**LARGE** - Multi-Domain Platform
-- **Examples:** Multi-tenant SaaS, Payment platform, Social network, Marketplace
-- **Scope:** Multiple domains with complex interactions
-- **Complexity:** Complex business logic, 10+ integrations, event-driven
-- **Data:** 50-100+ tables, multiple databases, caching layers
-- **Team:** 5-20 developers (multiple teams)
-- **What to write:**
-  - PRD: 10-20 pages, think in **DOMAINS**
-  - Architecture: 2000-4000 lines, likely multiple files per domain
-  - Structure: **Domains/Bounded Contexts** (OrderDomain, PaymentDomain)
-  - Epics: 15-30, **each Epic = one Domain**
-  - **Complete Unit docs** with API specs, events, data models
-  - ADRs for all major decisions (affects multiple teams)
-  - Security review required
-
----
-
-**ENTERPRISE** - Mission-Critical System
-- **Examples:** Banking system, Healthcare platform, ERP, Trading platform
-- **Scope:** Enterprise-wide system with governance
-- **Complexity:** Very complex, regulatory compliance, high availability
-- **Data:** 100+ tables, distributed databases, audit trails
-- **Team:** 20+ developers (large organization)
-- **What to write:**
-  - PRD: 20-50 pages, strategic document
-  - Architecture: 4000+ lines, per-domain files
-  - Structure: **Bounded Contexts** with subdomains
-  - Compliance requirements in every section
-  - Multiple review stages (security, compliance, legal)
-  - Audit-ready documentation
-
----
-
-### How Size Affects Your Writing
-
-**TOY/SMALL - Keep it lean:**
-```markdown
-## Functional Requirements
-
-### Game Logic
-| ID | Requirement | Priority |
-|----|-------------|----------|
-| FR-001 | User can rotate block | P0 |
-| FR-002 | Blocks fall automatically | P0 |
-| FR-003 | Full lines disappear | P0 |
-
-**Notes:**
-- Rotation uses standard Tetris rules
-- Fall speed increases with score
-```
-
-**MEDIUM - Structured by modules:**
-```markdown
-## Functional Requirements
-
-### Order Management Module
-| ID | Requirement | Priority |
-|----|-------------|----------|
-| FR-ORD-001 | Customer can create order with items | P0 |
-| FR-ORD-002 | System validates inventory before order | P0 |
-| FR-ORD-003 | Order status follows workflow (pending → paid → shipped) | P0 |
-
-**Notes:**
-- Order cannot be modified after payment
-- Inventory reserved on order creation, committed on payment
+**Order Management Module:**
+- Order CRUD with items
+- Status workflow (pending → paid → shipped)
+- Inventory validation
 
 → Unit: `docs/units/order-management/`
 
-### Payment Module
-| ID | Requirement | Priority |
-|----|-------------|----------|
-| FR-PAY-001 | System integrates with Stripe | P0 |
-| FR-PAY-002 | Payment failures trigger order cancellation | P0 |
+See `template.md` for full format.
 
-→ Unit: `docs/units/payment/`
-```
 
-**LARGE/ENTERPRISE - Domain-driven:**
-```markdown
-## Functional Requirements
-
-### Order Domain
-→ Unit: `docs/units/order-domain/`
-
-#### Order Lifecycle
-| ID | Requirement | Priority | Compliance |
-|----|-------------|----------|------------|
-| FR-ORD-001 | Customer can create order | P0 | GDPR: consent required |
-| FR-ORD-002 | Order audit trail maintained | P0 | SOX: 7 year retention |
-
-#### Order Validation
-...
-
-### Payment Domain
-→ Unit: `docs/units/payment-domain/`
-...
-```
-
-### 1. Executive Summary
-
-Brief prose section with:
-- What the system is and does
-- Architecture pattern
-- Key domains (numbered list)
-- What makes this special (unique value)
-- Scale (MVP and Growth targets)
-
-### 2. Success Criteria
-
-| Section | Content |
-|---------|---------|
-| MVP Success | Measurable criteria for launch |
-| Growth Success | Measurable criteria for scale |
-
-### 3. Product Scope
-
-| Section | Content |
-|---------|---------|
-| MVP | Features by domain |
-| Growth Features | Post-MVP enhancements |
-| Out of Scope | Explicit exclusions |
-
-**IMPORTANT - Module Breakdown by Size:**
-
-- **TOY/SMALL:** No modules needed, flat feature list
-- **MEDIUM+:** Break into modules/domains (Units)
-  - Each module = separate section in scope
-  - Each module will become Epic later
-  - Example: "Order Management Module", "Payment Module"
-
-### 4. Functional Requirements
-
-**Grouping by Project Size:**
-
-**TOY/SMALL projects:**
-- Group by feature area (flat structure)
-- Example: "Game Logic", "UI", "Scoring"
-
-**MEDIUM+ projects:**
-- Group by Module/Unit (hierarchical)
-- Each module gets its own FR table
-- Example: "Order Management Module" → FR-ORD-001, FR-ORD-002
-
-**Table format (with traceability):**
-
-| ID | Requirement | Priority | Module | Doc Section | Arch § | Epic | Status |
-|----|-------------|----------|--------|-------------|--------|------|--------|
-| FR-001 | {{requirement}} | P0 | {{module}} | → Unit: `{{name}}` | §{{N}} | → Epic: `{{file}}` | ⬜ |
-
-**Column filling:**
-- **@pm (you):** ID, Requirement, Priority, Module — filled when writing PRD
-- **@architect:** Doc Section, Arch § — filled when creating architecture/unit docs
-- **@pm:** Epic — filled when creating epics (`/epics`)
-- **@dev:** Status — marked ✅ when done
-
-**Doc Section format:**
-- Use `→ Unit: Name`, `→ Module: Name`, `→ Service: Name`, etc.
-- Examples: `→ Unit: Task`, `→ Module: Auth`, `→ Service: NotificationService`
-- Leave blank initially, @architect fills later
-
-With **Notes:** for business rules after each domain table.
-
-**Module-based FR IDs (MEDIUM+):**
-```
-FR-ORD-001  # Order Management module
-FR-PAY-001  # Payment module
-FR-INV-001  # Inventory module
-```
-
-### 5. Non-Functional Requirements
-
-**Table format (with traceability):**
-
-| ID | Requirement | Priority | Module | Doc Section | Arch § | Status |
-|----|-------------|----------|--------|-------------|--------|--------|
-| NFR-001 | {{requirement}} | P0 | — | — | §{{N}} | ⬜ |
-
-**Column filling:**
-- **@pm (you):** ID, Requirement, Priority, Module (if specific)
-- **@architect:** Doc Section (if specific), Arch §
-- **@dev:** Status
-
-**Optional details section:**
-Add Performance/Security/Scalability subsections if NFRs need detailed explanation.
-
-### 6. Critical Business Rules
-
-Numbered list with **bold rule name** — description format.
-
-### 7. Glossary
-
-| Term | Definition |
-|------|------------|
-
-### 8. References
-
-Using `→` format:
-```
-→ Architecture: `docs/architecture.md`
-→ Requirements: `docs/requirements.md`
-```
-
-## Units (Modules/Domains)
-
-**What is a Unit?**
-A Unit is a module, domain, or bounded context - a cohesive piece of the system.
-
-**When to create Units?**
-
-| Project Size | Units? | Scope | Examples |
-|--------------|--------|-------|----------|
-| **TOY** | No | Flat features | "Game Logic", "UI", "Scoring" |
-| **SMALL** | No | Flat features | "Auth", "Posts", "Comments" |
-| **MEDIUM** | Yes | Modules | "Order Management", "Inventory", "Payment" |
-| **LARGE** | Yes | Domains | "Order Domain", "Payment Domain" |
-| **ENTERPRISE** | Yes | Bounded Contexts | "Core Banking", "Risk Management" |
-
-**For MEDIUM+ projects:**
-1. Identify modules/domains in Executive Summary
-2. Create separate scope section per module
-3. Group FRs by module (FR-ORD-001, FR-PAY-001)
-4. Each module → separate Epic later
-5. Each module → separate Unit documentation (docs/units/module-name/)
-
-**Unit Documentation:**
-- For MEDIUM+ projects, create `docs/units/module-name/index.md` for each module
-- Use `unit-writing` skill to document each unit
-- Link from PRD: `→ Unit: Order Management - docs/units/order-management/`
-
-## Writing Guidelines
-
-### Reference Format
-
-Always use `→` prefix for links:
-```
-→ Unit: `Order Management` - docs/units/order-management/
-→ FR: `FR-001`
-→ ADR: `ADR-001`
-→ `path/to/file.md`
-```
-
-### Requirement IDs
-- Functional: `FR-001`, `FR-002`, ...
-- Non-Functional: `NFR-001`, `NFR-002`, ...
-
-### Priority Levels
-- **P0**: Must have for MVP
-- **P1**: Should have for growth
-- **P2**: Nice to have for vision
-
-### Tables over Prose
-
-Prefer structured tables over paragraphs:
-```markdown
-| ID | Requirement | Priority |
-|----|-------------|----------|
-| FR-001 | User can create task | P0 |
-```
-
-NOT:
-```markdown
-FR-001: The user shall be able to create a task. This is a P0 requirement...
-```
-
-## Validation Checklist
-
-Before completing PRD:
-- [ ] Executive summary explains the "why"
-- [ ] All FRs from requirements.md are addressed
-- [ ] All NFRs have measurable metrics
-- [ ] Success criteria are measurable
-- [ ] Scope boundaries are clear
-- [ ] Critical business rules documented
-- [ ] Uses `→` reference format
-- [ ] Tables used for structured data
-
-## Output
-
-Save to: `docs/prd.md`
-
-## Related Skills
-
-- `acceptance-criteria` - For writing testable AC
-- `requirements-gathering` - For source requirements
-- `prd-validation` - For validating the PRD
-- `unit-writing` - For documenting units referenced in PRD

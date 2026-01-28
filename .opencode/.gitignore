@@ -26,3 +26,5 @@ jira-cache.yaml
 
 # MCP user config (personal selections)
 mcp/enabled.yaml
+
+*.log

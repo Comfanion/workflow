@@ -2,10 +2,20 @@
 
 ```yaml
 id: {{PREFIX}}-E{{N}}
-status: backlog | ready | in_progress | done
+status: backlog | in_progress | review | done
 priority: P0 | P1
+size: S | M | L | XL | XXL  # Epic size (T-shirt)
+estimate: {{points}}  # Optional: Only for ENTERPRISE (sum of story points)
 sprint: {{sprint}}
 ```
+
+<!-- Size guide:
+  S (TOY): 3-8 stories
+  M (SMALL): 5-12 stories
+  L (MEDIUM): 8-15 stories
+  XL (LARGE): 10-20 stories
+  XXL (ENTERPRISE): 15-30 stories
+-->
 
 ---
 

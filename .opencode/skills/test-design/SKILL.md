@@ -1,6 +1,6 @@
 ---
 name: test-design
-description: Use when designing test strategy, writing unit/integration tests, or improving coverage
+description: Design test strategy, write unit/integration/E2E tests, plan test coverage, and define testing approach. Use when designing tests, writing test cases, planning test coverage, or when user mentions "test design", "test strategy", "unit tests", "integration tests", "test coverage", or "testing approach".
 license: MIT
 compatibility: opencode
 metadata:
@@ -10,102 +10,96 @@ metadata:
 
 # Test Design Skill
 
-Principles for writing effective tests.
-
-## Test Naming
-
-```
-Test{Component}_{Method}_{Scenario}_{Expected}
-
-Examples:
-- TestUser_Create_ValidData_Success
-- TestUser_Create_EmptyEmail_ReturnsError
-- TestOrder_Cancel_AlreadyShipped_Fails
-```
-
-## Test Structure (AAA)
-
-```
-// Arrange - Setup
-input := ...
-expected := ...
-
-// Act - Execute
-result := sut.Method(input)
-
-// Assert - Verify
-assert(result == expected)
-```
-
-## Table-Driven Tests
-
-When testing multiple scenarios of same function:
-
-```
-tests := []struct {
-    name     string
-    input    Input
-    expected Output
-    wantErr  bool
-}{
-    {"valid input", validInput(), expectedOutput(), false},
-    {"empty input", emptyInput(), nil, true},
-}
-
-for _, tt := range tests {
-    t.Run(tt.name, func(t *testing.T) {
-        result, err := sut.Method(tt.input)
-        // assert
-    })
-}
+```xml
+<test_design>
+  <definition>Design test strategy, write unit/integration/E2E tests</definition>
+  
+  <test_types>
+    <unit>Individual components, fast, isolated → See [unit-tests.md](unit-tests.md)</unit>
+    <integration>Module contracts, API boundaries → See [integration-tests.md](integration-tests.md)</integration>
+    <e2e>User scenarios, critical paths → See [e2e-tests.md](e2e-tests.md)</e2e>
+  </test_types>
+  
+  <test_pyramid>
+    <many>Unit tests (70-80% coverage)</many>
+    <some>Integration tests (50-60% coverage)</some>
+    <few>E2E tests (20-30% critical paths)</few>
+  </test_pyramid>
+  
+  <quick_reference>
+    <what_to_test>Public API, Business logic, Error handling, Edge cases</what_to_test>
+    <what_not_to_test>Private methods, Getters/setters, Framework internals</what_not_to_test>
+    <naming>Test{Component}_{Method}_{Scenario}_{Expected}</naming>
+    <structure>AAA: Arrange → Act → Assert</structure>
+  </quick_reference>
+  
+  <coverage_targets>
+    <domain>80%+</domain>
+    <application>70%+</application>
+    <infrastructure>50%+</infrastructure>
+    <focus>Critical paths, not 100%</focus>
+  </coverage_targets>
+  
+  <when_to_test>
+    <tdd>Red → Green → Refactor (clear requirements)</tdd>
+    <after>Write code first (prototyping, unclear requirements)</after>
+  </when_to_test>
+</test_design>
 ```
 
-## What to Test
+---
 
-**Always test:**
-- Public API / exported functions
-- Business logic / domain rules
-- Error handling paths
-- Edge cases (empty, nil, zero, max)
-- State transitions
+## Detailed Guides
 
-**Skip testing:**
-- Private implementation details
-- Simple getters/setters
-- Generated code
-- Framework internals
+**Unit Testing:**
+- [unit-tests.md](unit-tests.md) - Basics: what to test, AAA pattern, naming
+- [unit-tests-patterns.md](unit-tests-patterns.md) - Table-driven, state transitions, validation
+- [unit-tests-mocking.md](unit-tests-mocking.md) - Mocking, DI, test isolation
 
-## Mocking
+**Integration Testing:**
+- [integration-tests.md](integration-tests.md) - Module contracts, API boundaries, events
 
-Mock when:
-- External services (HTTP, DB)
-- Non-deterministic (time, random)
-- Slow operations
+**E2E Testing:**
+- [e2e-tests.md](e2e-tests.md) - User scenarios, critical paths, smoke tests
 
-Prefer interfaces for testability:
+**Strategy:**
+- [test-strategy.md](test-strategy.md) - Test pyramid, coverage targets, when to use what
+
+**Templates:**
+- [templates/template-integration.md](templates/template-integration.md) - Architecture integration tests
+- [templates/template-module.md](templates/template-module.md) - Module test cases
+
+---
+
+## Quick Example
+
+```typescript
+// Unit test
+it('calculates order total', () => {
+  const order = new Order();
+  order.addItem({ price: 100, quantity: 2 });
+  expect(order.calculateTotal()).toBe(200);
+});
+
+// Integration test
+it('saves order to database', async () => {
+  const order = await orderService.create(orderData);
+  const saved = await db.orders.findById(order.id);
+  expect(saved).toMatchObject(orderData);
+});
 ```
-type Repository interface {
-    Find(id string) (*Entity, error)
-}
 
-// Production: RealRepository
-// Tests: MockRepository
+---
+
+## Test Pyramid
+
+```
+        /\
+       /  \      E2E (Few)
+      /____\     
+     /      \    Integration (Some)
+    /        \   
+   /__________\  Unit (Many)
 ```
 
-## Test Isolation
-
-Each test should:
-- Setup its own data
-- Not depend on other tests
-- Clean up after itself
-- Run in any order
-
-## Coverage Guidelines
-
-| Layer | Target |
-|-------|--------|
-| Domain/Business | 80%+ |
-| Application/UseCase | 70%+ |
-| Infrastructure | 50%+ |
-
-Focus on critical paths, not 100% coverage.
+For full details, see the guides above.

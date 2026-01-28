@@ -4,8 +4,17 @@
 id: {{PREFIX}}-S{{E}}-{{N}}
 epic: {{PREFIX}}-E{{E}}
 status: draft | ready | in_progress | review | done
-size: S | M | L
+size: XS | S | M | L | XL  # Story size (prefer M)
+estimate: {{points}}  # Optional: Only for ENTERPRISE (1,3,5,8,13)
 ```
+
+<!-- Size guide:
+  XS: 1-2 tasks (trivial)
+  S: 2-4 tasks
+  M: 4-8 tasks ← Prefer this!
+  L: 8-12 tasks (consider splitting)
+  XL: 12+ tasks (MUST split!)
+-->
 
 ---
 
