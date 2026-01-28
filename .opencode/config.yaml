@@ -27,9 +27,6 @@ documentation:
     enforced: true  # Cannot be changed
     paths:
       - "docs/"
-      - "CLAUDE.md"
-      - "README.md"
-      - ".opencode/"
       
   # User-facing docs (translations, Confluence export)
   user_facing:
@@ -83,13 +80,6 @@ workflow:
   # Default validation level: strict | normal | minimal
   validation_level: normal
 
-# =============================================================================
-# AGENT DEFAULTS
-# =============================================================================
-agents:
-  default_model: "anthropic/claude-sonnet-4-20250514"
-  default_temperature: 0.3
-  
 # =============================================================================
 # JIRA INTEGRATION
 # =============================================================================

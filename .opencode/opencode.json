@@ -21,7 +21,8 @@
   "tools": {
     "lsp": true,
     "search": true,
-    "codeindex": true
+    "codeindex": true,
+    "usethis-todo": true
   },
   
   "permission": {
