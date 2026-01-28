@@ -30,7 +30,8 @@ import fs from "fs/promises"
 
 interface Todo {
   id: string              // E01-S01-T01
-  content: string         // Full task description
+  content: string         // Short task summary
+  description?: string    // Full task description (optional)
   status: string          // pending | ready | in_progress | waiting_review | done | cancelled
   priority: string        // CRIT | HIGH | MED | LOW
   blockedBy?: string[]    // IDs of blocking tasks
@@ -117,10 +118,11 @@ function toNative(todo: Todo): NativeTodo {
   }
   
   const deps = todo.blockedBy?.length ? ` [← ${todo.blockedBy.join(", ")}]` : ""
+  const desc = todo.description?.trim() ? ` — ${todo.description.trim()}` : ""
 
   return {
     id: todo.id,
-    content: `${todo.content}${deps}`,
+    content: `${todo.content}${desc}${deps}`,
     status: statusMap[todo.status] || "pending",
     priority: prioMap[todo.priority] || "medium",
   }
@@ -220,7 +222,8 @@ function formatGraph(graph: TodoGraph): string {
   lines.push("All Tasks:")
   for (const t of todos) {
     const deps = t.blockedBy?.length ? ` ← ${t.blockedBy.join(", ")}` : ""
-    lines.push(`  ${SI(t.status)} ${PE(t.priority)} ${t.id}: ${t.content}${deps}`)
+    const desc = t.description?.trim() ? ` — ${t.description.trim()}` : ""
+    lines.push(`  ${SI(t.status)} ${PE(t.priority)} ${t.id}: ${t.content}${desc}${deps}`)
   }
   lines.push("")
   
@@ -228,7 +231,8 @@ function formatGraph(graph: TodoGraph): string {
     lines.push("Available Now:")
     for (const id of graph.available) {
       const t = todos.find(x => x.id === id)
-      lines.push(`  → ${PE(t?.priority)} ${id}: ${t?.content}`)
+      const desc = t?.description?.trim() ? ` — ${t.description.trim()}` : ""
+      lines.push(`  → ${PE(t?.priority)} ${id}: ${t?.content}${desc}`)
     }
   } else {
     lines.push("Available Now: none")
@@ -246,7 +250,8 @@ function formatGraph(graph: TodoGraph): string {
     lines.push("Blocked:")
     for (const [id, blockers] of Object.entries(graph.blocked)) {
       const t = todos.find(x => x.id === id)
-      lines.push(`  ⊗ ${id}: ${t?.content} ← waiting: ${blockers.join(", ")}`)
+      const desc = t?.description?.trim() ? ` — ${t.description.trim()}` : ""
+      lines.push(`  ⊗ ${id}: ${t?.content}${desc} ← waiting: ${blockers.join(", ")}`)
     }
   }
   
@@ -258,12 +263,13 @@ function formatGraph(graph: TodoGraph): string {
 // ============================================================================
 
 export const write = tool({
-  description: "Create or update TODO list. TODOv2",
+  description: "Create or update TODO list. TODOv2 (Prefer this instead of TODO)",
   args: {
     todos: tool.schema.array(
       tool.schema.object({
         id: tool.schema.string().describe("Task ID in concat format: E01-S01-T01"),
-        content: tool.schema.string().describe("Full task description"),
+        content: tool.schema.string().describe("Short task summary"),
+        description: tool.schema.string().optional().describe("Full task description"),
         status: tool.schema.string().describe("pending | ready | in_progress | waiting_review | done | cancelled"),
         priority: tool.schema.string().describe("CRIT | HIGH | MED | LOW"),
         blockedBy: tool.schema.array(tool.schema.string()).optional().describe("IDs of blocking tasks"),
@@ -272,7 +278,7 @@ export const write = tool({
   },
   async execute(args, context) {
     const now = Date.now()
-    const todos = args.todos.map(t => ({ ...t, createdAt: t.createdAt || now, updatedAt: now }))
+    const todos = args.todos.map((t: any) => ({ ...t, createdAt: t.createdAt || now, updatedAt: now }))
     await writeTodos(todos, context.sessionID, context.directory)
     return formatGraph(analyzeGraph(todos))
   },
@@ -290,7 +296,8 @@ export const read_next_five = tool({
     for (const id of next5) {
       const t = graph.todos.find(x => x.id === id)
       if (t) {
-        lines.push(`${PE(t.priority)} ${id}: ${t.content}`)
+        const desc = t.description?.trim() ? `\n   ${t.description.trim()}` : ""
+        lines.push(`${PE(t.priority)} ${id}: ${t.content}${desc}`)
         lines.push("")
       }
     }
@@ -309,13 +316,37 @@ export const read = tool({
   },
 })
 
+export const get_by_id = tool({
+  description: "Get one task by id.",
+  args: {
+    id: tool.schema.string().describe("Task ID"),
+  },
+  async execute(args, context) {
+    const todos = await readTodos(context.sessionID, context.directory)
+    const todo = todos.find(t => t.id === args.id)
+    if (!todo) return `❌ Task ${args.id} not found`
+
+    const deps = todo.blockedBy?.length ? `\nblockedBy: ${todo.blockedBy.join(", ")}` : ""
+    const desc = todo.description?.trim() ? `\n\ndescription:\n${todo.description.trim()}` : ""
+    return [
+      `id: ${todo.id}`,
+      `priority: ${todo.priority}`,
+      `status: ${todo.status}`,
+      deps,
+      `\ncontent:\n${todo.content}`,
+      desc,
+    ].filter(Boolean).join("\n")
+  },
+})
+
 export const update = tool({
   description: "Update tasks. Same interface as write, but merges by id.",
   args: {
     todos: tool.schema.array(
       tool.schema.object({
         id: tool.schema.string().describe("Task ID in concat format: E01-S01-T01"),
-        content: tool.schema.string().describe("Full task description"),
+        content: tool.schema.string().describe("Short task summary"),
+        description: tool.schema.string().optional().describe("Full task description"),
         status: tool.schema.string().describe("pending | ready | in_progress | waiting_review | done | cancelled"),
         priority: tool.schema.string().describe("CRIT | HIGH | MED | LOW"),
         blockedBy: tool.schema.array(tool.schema.string()).optional().describe("IDs of blocking tasks"),

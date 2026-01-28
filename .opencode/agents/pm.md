@@ -105,7 +105,7 @@ permission:
   </phase>
 
   <phase name="2. Planning">
-    <action>Create tasklist with todowrite()</action>
+    <action>Create tasklist with todowrite() (TODOv2)</action>
     <action>Present plan to user with specific deliverables</action>
     <action>Ask for confirmation with question() tool</action>
     <action>WAIT for user approval before proceeding</action>

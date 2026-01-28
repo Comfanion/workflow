@@ -211,7 +211,7 @@ epic_workflow:
   # Run integration tests after each story
   # When true: story done → run integration tests → continue
   # When false: skip per-story integration tests
-  test_after_each_story: false
+  test_after_each_story: true
   
   # Run integration tests after epic complete
   # When true: all stories done → run epic integration tests

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "bun:test"
 import { readFile } from "fs/promises"
 import { join } from "path"
 import { createTempDir, cleanupTempDir } from "./helpers/mock-ctx"
-import { write, update, read } from "../../tools/usethis_todo"
+import { write, update, read, get_by_id } from "../../tools/usethis_todo"
 
 describe("usethis_todo tool", () => {
   let tempDir: string
@@ -28,7 +28,7 @@ describe("usethis_todo tool", () => {
     const output = await write.execute(
       {
         todos: [
-          { id: "A1", content: "First task", status: "ready", priority: "HIGH" },
+          { id: "A1", content: "First task", description: "Longer details", status: "ready", priority: "HIGH" },
           { id: "A2", content: "Second task", status: "pending", priority: "LOW" },
         ],
       },
@@ -41,6 +41,7 @@ describe("usethis_todo tool", () => {
     const enhanced = JSON.parse(await readFile(enhancedPath, "utf-8"))
     expect(enhanced.length).toBe(2)
     expect(enhanced[0].content).toBe("First task")
+    expect(enhanced[0].description).toBe("Longer details")
 
     const nativePath = join(
       process.env.XDG_DATA_HOME!,
@@ -52,6 +53,7 @@ describe("usethis_todo tool", () => {
     const native = JSON.parse(await readFile(nativePath, "utf-8"))
     expect(native.length).toBe(2)
     expect(native[0].content).toContain("First task")
+    expect(native[0].content).toContain("Longer details")
   })
 
   it("update merges by id and can add new tasks", async () => {
@@ -60,7 +62,7 @@ describe("usethis_todo tool", () => {
     await write.execute(
       {
         todos: [
-          { id: "A1", content: "First task", status: "pending", priority: "MED" },
+          { id: "A1", content: "First task", description: "v1", status: "pending", priority: "MED" },
         ],
       },
       ctx
@@ -69,7 +71,7 @@ describe("usethis_todo tool", () => {
     const result = await update.execute(
       {
         todos: [
-          { id: "A1", content: "First task", status: "done", priority: "MED" },
+          { id: "A1", content: "First task", description: "v2", status: "done", priority: "MED" },
           { id: "A2", content: "Second task", status: "ready", priority: "LOW" },
         ],
       },
@@ -82,6 +84,7 @@ describe("usethis_todo tool", () => {
     const enhanced = JSON.parse(await readFile(enhancedPath, "utf-8"))
     expect(enhanced.length).toBe(2)
     expect(enhanced.find((t: any) => t.id === "A1")?.status).toBe("done")
+    expect(enhanced.find((t: any) => t.id === "A1")?.description).toBe("v2")
   })
 
   it("read returns graph with content", async () => {
@@ -98,5 +101,38 @@ describe("usethis_todo tool", () => {
     const output = await read.execute({}, ctx)
     expect(output).toContain("Task content")
     expect(output).toContain("Available Now")
+  })
+
+  it("get_by_id returns single task", async () => {
+    const ctx = { sessionID: "sess-get", directory: tempDir } as any
+    await write.execute(
+      {
+        todos: [
+          {
+            id: "A1",
+            content: "Task content",
+            description: "More details",
+            status: "ready",
+            priority: "HIGH",
+            blockedBy: ["B1"],
+          },
+        ],
+      },
+      ctx
+    )
+
+    const out = await get_by_id.execute({ id: "A1" }, ctx)
+    expect(out).toContain("id: A1")
+    expect(out).toContain("content:")
+    expect(out).toContain("Task content")
+    expect(out).toContain("blockedBy: B1")
+    expect(out).toContain("description:")
+    expect(out).toContain("More details")
+  })
+
+  it("get_by_id returns not found", async () => {
+    const ctx = { sessionID: "sess-miss", directory: tempDir } as any
+    const out = await get_by_id.execute({ id: "NOPE" }, ctx)
+    expect(out).toContain("not found")
   })
 })

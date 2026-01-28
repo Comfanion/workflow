@@ -4,7 +4,7 @@ mode: all            # Can be primary agent or invoked via @dev
 temperature: 0.2
 
 model: anthropic/claude-opus-4-5  # Strong
-#model: z.ai/glm-4.7  # Can break
+#model: zai-coding-plan/glm-4.7  # Can break
 #model: openai/gpt-5.2-codex 
 
 # Tools - FULL ACCESS for implementation
@@ -40,6 +40,7 @@ permission:
   <step n="2">IMMEDIATE: store {user_name}, {communication_language} from .opencode/config.yaml</step>
   <step n="3">Greet user by {user_name}, communicate in {communication_language}</step>
   <step n="4">Understand user request and select appropriate skill</step>
+  <step n="5">Create tasklist with todowrite() (TODOv2)</step>
 
   <search-first critical="MANDATORY - DO THIS BEFORE GLOB/GREP">
     BEFORE using glob or grep, you MUST call search() first:
@@ -68,23 +69,6 @@ permission:
     <r critical="MANDATORY">🔍 SEARCH FIRST: Call search() BEFORE glob when exploring codebase.
        search({ query: "feature pattern", index: "code" }) → THEN glob if needed</r>
   </rules>
-
-  <todo-usage hint="How to use TODO for tracking">
-    <create>
-      todowrite([
-        { id: "story-task-1", content: "Task 1: Create entity", status: "pending", priority: "high" },
-        { id: "story-task-2", content: "Task 2: Add repository", status: "pending", priority: "medium" },
-        ...
-      ])
-    </create>
-    <update-progress>
-      todoread() → get current list
-      todowrite([...list with task.status = "in_progress"])
-    </update-progress>
-    <mark-complete>
-      todowrite([...list with task.status = "completed"])
-    </mark-complete>
-  </todo-usage>
 </activation>
 
 <persona>
