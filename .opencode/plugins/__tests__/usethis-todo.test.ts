@@ -28,8 +28,8 @@ describe("usethis_todo tool", () => {
     const output = await write.execute(
       {
         todos: [
-          { id: "A1", content: "First task", description: "Longer details", status: "ready", priority: "HIGH" },
-          { id: "A2", content: "Second task", status: "pending", priority: "LOW" },
+          { id: "A1", content: "First task", description: "Longer details", status: "todo", priority: "HIGH" },
+          { id: "A2", content: "Second task", status: "todo", priority: "LOW" },
         ],
       },
       ctx
@@ -62,7 +62,7 @@ describe("usethis_todo tool", () => {
     await write.execute(
       {
         todos: [
-          { id: "A1", content: "First task", description: "v1", status: "pending", priority: "MED" },
+          { id: "A1", content: "First task", description: "v1", status: "todo", priority: "MED" },
         ],
       },
       ctx
@@ -72,7 +72,7 @@ describe("usethis_todo tool", () => {
       {
         todos: [
           { id: "A1", content: "First task", description: "v2", status: "done", priority: "MED" },
-          { id: "A2", content: "Second task", status: "ready", priority: "LOW" },
+          { id: "A2", content: "Second task", status: "todo", priority: "LOW" },
         ],
       },
       ctx
@@ -87,12 +87,35 @@ describe("usethis_todo tool", () => {
     expect(enhanced.find((t: any) => t.id === "A1")?.description).toBe("v2")
   })
 
+  it("auto-promotes ready -> done when releases exist", async () => {
+    const ctx = { sessionID: "sess-rel", directory: tempDir } as any
+
+    await write.execute(
+      {
+        todos: [
+          {
+            id: "A1",
+            content: "Ship it",
+            status: "ready",
+            priority: "HIGH",
+            releases: ["4.38.4"],
+          },
+        ],
+      },
+      ctx
+    )
+
+    const enhancedPath = join(tempDir, ".opencode", "session-todos", "sess-rel.json")
+    const enhanced = JSON.parse(await readFile(enhancedPath, "utf-8"))
+    expect(enhanced.find((t: any) => t.id === "A1")?.status).toBe("done")
+  })
+
   it("read returns graph with content", async () => {
     const ctx = { sessionID: "sess-read", directory: tempDir } as any
     await write.execute(
       {
         todos: [
-          { id: "A1", content: "Task content", status: "ready", priority: "HIGH" },
+          { id: "A1", content: "Task content", status: "todo", priority: "HIGH" },
         ],
       },
       ctx
@@ -108,12 +131,14 @@ describe("usethis_todo tool", () => {
     await write.execute(
       {
         todos: [
-          { id: "A1", content: "T1", description: "D1", status: "ready", priority: "HIGH" },
-          { id: "A2", content: "T2", status: "ready", priority: "MED" },
-          { id: "A3", content: "T3", status: "ready", priority: "LOW" },
-          { id: "A4", content: "T4", status: "ready", priority: "LOW" },
-          { id: "A5", content: "T5", status: "ready", priority: "LOW" },
-          { id: "A6", content: "T6", status: "ready", priority: "LOW" },
+          { id: "A1", content: "T1", description: "D1", status: "todo", priority: "HIGH", blockedBy: ["B1"] },
+          { id: "A2", content: "T2", status: "todo", priority: "MED" },
+          { id: "A3", content: "T3", status: "todo", priority: "LOW" },
+          { id: "A4", content: "T4", status: "todo", priority: "LOW" },
+          { id: "A5", content: "T5", status: "todo", priority: "LOW" },
+          { id: "A6", content: "T6", status: "todo", priority: "LOW" },
+          { id: "B1", content: "B", status: "in_progress", priority: "LOW", blockedBy: ["C1"] },
+          { id: "C1", content: "C", status: "in_progress", priority: "MED" },
         ],
       },
       ctx
@@ -125,6 +150,9 @@ describe("usethis_todo tool", () => {
     expect(out).toContain("T1")
     expect(out).toContain("D1")
     expect(out).toContain("+1 more")
+    expect(out).toContain("Blocked By (resolved)")
+    expect(out).toContain("B1")
+    expect(out).toContain("C1")
   })
 
   it("read_by_id returns task with resolved blockers", async () => {
@@ -136,7 +164,7 @@ describe("usethis_todo tool", () => {
             id: "A1",
             content: "Task content",
             description: "More details",
-            status: "ready",
+            status: "todo",
             priority: "HIGH",
             blockedBy: ["B1"],
           },
@@ -150,7 +178,7 @@ describe("usethis_todo tool", () => {
           {
             id: "C1",
             content: "Root blocker",
-            status: "pending",
+            status: "todo",
             priority: "MED",
           },
         ],
@@ -159,16 +187,14 @@ describe("usethis_todo tool", () => {
     )
 
     const out = await read_by_id.execute({ id: "A1" }, ctx)
-    expect(out).toContain("id: A1")
-    expect(out).toContain("content:")
+    expect(out).toContain("Task:")
+    expect(out).toContain("A1")
     expect(out).toContain("Task content")
-    expect(out).toContain("blockedBy: B1")
-    expect(out).toContain("description:")
     expect(out).toContain("More details")
 
-    expect(out).toContain("blockedBy (resolved):")
-    expect(out).toContain("- B1")
-    expect(out).toContain("- C1")
+    expect(out).toContain("Blocked By (resolved):")
+    expect(out).toContain("B1")
+    expect(out).toContain("C1")
   })
 
   it("read_by_id returns not found", async () => {

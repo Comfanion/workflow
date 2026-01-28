@@ -33,7 +33,8 @@ interface Todo {
   id: string              // E01-S01-T01
   content: string         // Short task summary
   description?: string    // Full task description (optional)
-  status: string          // pending | ready | in_progress | waiting_review | done | cancelled
+  releases?: string[]     // Release identifiers (optional)
+  status: string          // todo | in_progress | ready | done
   priority: string        // CRIT | HIGH | MED | LOW
   blockedBy?: string[]    // IDs of blocking tasks
   createdAt?: number
@@ -103,10 +104,10 @@ async function getNativePaths(sid: string): Promise<string[]> {
 function toNative(todo: Todo): NativeTodo {
   // Status mapping: our → native
   const statusMap: Record<string, string> = {
-    pending: "pending",
-    ready: "pending",           // native has no "ready"
+    todo: "pending",
     in_progress: "in_progress",
-    waiting_review: "in_progress",  // native has no "waiting_review"
+    ready: "in_progress",       // native has no "ready"
+    finished: "in_progress",    // back-compat
     done: "completed",          // native uses "completed" not "done"
     cancelled: "cancelled",
   }
@@ -120,10 +121,11 @@ function toNative(todo: Todo): NativeTodo {
 
   const deps = todo.blockedBy?.length ? ` [← ${todo.blockedBy.join(", ")}]` : ""
   const desc = todo.description?.trim() ? ` — ${todo.description.trim()}` : ""
+  const rel = todo.releases?.length ? ` [rel: ${todo.releases.join(", ")}]` : ""
 
   return {
     id: todo.id,
-    content: `${todo.content}${desc}${deps}`,
+    content: `${todo.content}${desc}${rel}${deps}`,
     status: statusMap[todo.status] || "pending",
     priority: prioMap[todo.priority] || "medium",
   }
@@ -131,7 +133,9 @@ function toNative(todo: Todo): NativeTodo {
 
 async function readTodos(sid: string, directory?: string): Promise<Todo[]> {
   try {
-    return JSON.parse(await fs.readFile(getEnhancedPath(sid, directory), "utf-8"))
+    const raw = JSON.parse(await fs.readFile(getEnhancedPath(sid, directory), "utf-8"))
+    if (!Array.isArray(raw)) return []
+    return raw.map((t: any) => normalizeTodo(t))
   } catch {
     return []
   }
@@ -165,12 +169,13 @@ async function writeTodos(todos: Todo[], sid: string, directory?: string): Promi
 function analyzeGraph(todos: Todo[]): TodoGraph {
   const blocked: Record<string, string[]> = {}
   const availableTodos: Todo[] = []
-
+  
   for (const todo of todos) {
-    if (todo.status !== "ready") continue
+    if (normalizeStatus(todo.status) !== "todo") continue
     const activeBlockers = (todo.blockedBy || []).filter(id => {
       const b = todos.find(t => t.id === id)
-      return b && b.status !== "done"
+      const bs = normalizeStatus(b?.status)
+      return b && bs !== "done" && bs !== "cancelled"
     })
     if (activeBlockers.length === 0) {
       availableTodos.push(todo)
@@ -210,52 +215,184 @@ function analyzeGraph(todos: Todo[]): TodoGraph {
 // ============================================================================
 
 const PE = (p?: string) => p === "CRIT" ? "🔴" : p === "HIGH" ? "🟠" : p === "LOW" ? "🟢" : "🟡"
-const SI = (s: string) => s === "done" ? "✓" : s === "in_progress" ? "⚙" : s === "ready" ? "○" : s === "cancelled" ? "✗" : s === "waiting_review" ? "⏳" : "·"
+const SI = (s: string) => s === "done" ? "✓" : s === "in_progress" ? "⚙" : s === "ready" ? "⏳" : s === "cancelled" ? "✗" : s === "todo" ? "○" : "·"
+
+function normalizeStatus(input: unknown): string {
+  const s = String(input || "").trim()
+
+  // New canonical set
+  if (s === "todo" || s === "in_progress" || s === "ready" || s === "done") return s
+
+  // Back-compat (older versions)
+  if (s === "pending") return "todo"
+  if (s === "waiting_review" || s === "finished") return "ready"
+  if (s === "completed") return "done"
+
+  // Keep cancelled if it appears (native supports it)
+  if (s === "cancelled") return "cancelled"
+
+  // Default
+  return "todo"
+}
+
+function normalizeReleases(input: unknown): string[] | undefined {
+  if (!Array.isArray(input)) return undefined
+  const values = input
+    .map((x) => String(x || "").trim())
+    .filter(Boolean)
+  return values.length ? values : undefined
+}
+
+function normalizeTodo(input: any): Todo {
+  const status = normalizeStatus(input?.status)
+  const releases = normalizeReleases(input?.releases)
+
+  // Auto transition: ready -> done when releases exist
+  const promotedStatus = status === "ready" && releases?.length ? "done" : status
+
+  return {
+    ...input,
+    status: promotedStatus,
+    releases,
+  }
+}
+
+function prioRank(p?: string): number {
+  return p === "CRIT" ? 0 : p === "HIGH" ? 1 : p === "MED" ? 2 : 3
+}
+
+function sortTodosForList(todos: Todo[]): Todo[] {
+  return todos
+    .slice()
+    .sort((a, b) => (prioRank(a.priority) - prioRank(b.priority)) || a.id.localeCompare(b.id))
+}
+
+function isBlocked(todo: Todo, byId: Map<string, Todo>): boolean {
+  const s = normalizeStatus(todo.status)
+  if (s !== "todo") return false
+  if (!todo.blockedBy?.length) return false
+  for (const id of todo.blockedBy) {
+    const b = byId.get(id)
+    const bs = normalizeStatus(b?.status)
+    if (!b) return true
+    if (bs !== "done" && bs !== "cancelled") return true
+  }
+  return false
+}
+
+function todoLine(todo: Todo, byId: Map<string, Todo>): string {
+  const desc = todo.description?.trim() ? ` — ${todo.description.trim()}` : ""
+  const rel = todo.releases?.length ? ` [rel: ${todo.releases.join(", ")}]` : ""
+  const deps = todo.blockedBy?.length ? ` ← ${todo.blockedBy.join(", ")}` : ""
+  const ns = normalizeStatus(todo.status)
+  const icon = isBlocked(todo, byId) ? "⊗" : SI(ns)
+  return `${icon} ${PE(todo.priority)} ${todo.id}: ${todo.content}${desc}${rel}${deps}`
+}
+
+function renderNestedTodoList(todos: Todo[], allTodos?: Todo[]): string {
+  const byId = new Map((allTodos || todos).map(t => [t.id, t]))
+
+  // Group by id pattern: E01-S01-T01 → 3 nested levels (E01 → S01 → tasks)
+  const groups = new Map<string, Map<string, Todo[]>>()
+  const flat: Todo[] = []
+
+  for (const t of todos) {
+    const parts = t.id.split("-")
+    if (parts.length >= 3) {
+      const epic = parts[0]
+      const story = parts[1]
+      if (!groups.has(epic)) groups.set(epic, new Map())
+      const storyMap = groups.get(epic)!
+      if (!storyMap.has(story)) storyMap.set(story, [])
+      storyMap.get(story)!.push(t)
+    } else {
+      flat.push(t)
+    }
+  }
+
+  const lines: string[] = []
+  const epicKeys = [...groups.keys()].sort()
+  for (const epic of epicKeys) {
+    lines.push(`- ${epic}`)
+    const storyMap = groups.get(epic)!
+    const storyKeys = [...storyMap.keys()].sort()
+    for (const story of storyKeys) {
+      lines.push(`  - ${epic}-${story}`)
+      const tasks = storyMap.get(story)!
+        .slice()
+        .sort((a, b) => a.id.localeCompare(b.id))
+      for (const t of tasks) {
+        lines.push(`    - ${todoLine(t, byId)}`)
+      }
+    }
+  }
+
+  const flatSorted = flat.slice().sort((a, b) => a.id.localeCompare(b.id))
+  for (const t of flatSorted) {
+    lines.push(`- ${todoLine(t, byId)}`)
+  }
+
+  return lines.length ? lines.join("\n") : "- (empty)"
+}
+
+function resolveBlockers(todos: Todo[], rootIds: string[]): { blockers: Todo[]; missing: string[] } {
+  const byId = new Map(todos.map(t => [t.id, t]))
+  const blockers: Todo[] = []
+  const missing: string[] = []
+  const seen = new Set<string>()
+  const stack: string[] = []
+
+  for (const id of rootIds) {
+    const t = byId.get(id)
+    if (!t?.blockedBy?.length) continue
+    stack.push(...t.blockedBy)
+  }
+
+  while (stack.length > 0) {
+    const id = stack.shift()!
+    if (seen.has(id)) continue
+    seen.add(id)
+
+    const t = byId.get(id)
+    if (!t) {
+      missing.push(id)
+      continue
+    }
+
+    blockers.push(t)
+    if (t.blockedBy?.length) stack.push(...t.blockedBy)
+  }
+
+  blockers.sort((a, b) => a.id.localeCompare(b.id))
+  missing.sort((a, b) => a.localeCompare(b))
+  return { blockers, missing }
+}
 
 function formatGraph(graph: TodoGraph): string {
   const { todos } = graph
   const total = todos.length
-  const done = todos.filter(t => t.status === "done").length
-  const wip = todos.filter(t => t.status === "in_progress").length
+  const done = todos.filter(t => normalizeStatus(t.status) === "done").length
+  const wip = todos.filter(t => normalizeStatus(t.status) === "in_progress").length
 
-  const lines: string[] = [`═══ TODO Graph [${done}/${total} done, ${wip} in progress] ═══`, ""]
+  const availableTodos = graph.available
+    .map((id) => todos.find((t) => t.id === id))
+    .filter(Boolean) as Todo[]
 
+  const blockedTodos = Object.keys(graph.blocked)
+    .map((id) => todos.find((t) => t.id === id))
+    .filter(Boolean) as Todo[]
+
+  const lines: string[] = []
+  lines.push(`TODO Graph [${done}/${total} done, ${wip} in progress]`)
+  lines.push("")
   lines.push("All Tasks:")
-  for (const t of todos) {
-    const deps = t.blockedBy?.length ? ` ← ${t.blockedBy.join(", ")}` : ""
-    const desc = t.description?.trim() ? ` — ${t.description.trim()}` : ""
-    lines.push(`  ${SI(t.status)} ${PE(t.priority)} ${t.id}: ${t.content}${desc}${deps}`)
-  }
+  lines.push(renderNestedTodoList(sortTodosForList(todos), todos))
   lines.push("")
-
-  if (graph.available.length > 0) {
-    lines.push("Available Now:")
-    for (const id of graph.available) {
-      const t = todos.find(x => x.id === id)
-      const desc = t?.description?.trim() ? ` — ${t.description.trim()}` : ""
-      lines.push(`  → ${PE(t?.priority)} ${id}: ${t?.content}${desc}`)
-    }
-  } else {
-    lines.push("Available Now: none")
-  }
+  lines.push("Available Now:")
+  lines.push(availableTodos.length ? renderNestedTodoList(availableTodos, todos) : "- (none)")
   lines.push("")
-
-  const multi = graph.parallel.filter(g => g.length > 1)
-  if (multi.length > 0) {
-    lines.push("Parallel Groups:")
-    multi.forEach((g, i) => lines.push(`  Group ${i + 1}: ${g.join(", ")}`))
-    lines.push("")
-  }
-
-  if (Object.keys(graph.blocked).length > 0) {
-    lines.push("Blocked:")
-    for (const [id, blockers] of Object.entries(graph.blocked)) {
-      const t = todos.find(x => x.id === id)
-      const desc = t?.description?.trim() ? ` — ${t.description.trim()}` : ""
-      lines.push(`  ⊗ ${id}: ${t?.content}${desc} ← waiting: ${blockers.join(", ")}`)
-    }
-  }
-
+  lines.push("Blocked:")
+  lines.push(blockedTodos.length ? renderNestedTodoList(blockedTodos, todos) : "- (none)")
   return lines.join("\n")
 }
 
@@ -271,7 +408,8 @@ export const write = tool({
           id: tool.schema.string().describe("Task ID in concat format: E01-S01-T01"),
           content: tool.schema.string().describe("Short task summary"),
           description: tool.schema.string().optional().describe("Full task description"),
-          status: tool.schema.string().describe("pending | ready | in_progress | waiting_review | done | cancelled"),
+          releases: tool.schema.array(tool.schema.string()).optional().describe("Release identifiers"),
+          status: tool.schema.string().describe("todo | in_progress | ready | done"),
           priority: tool.schema.string().describe("CRIT | HIGH | MED | LOW"),
           blockedBy: tool.schema.array(tool.schema.string()).optional().describe("IDs of blocking tasks"),
         })
@@ -279,7 +417,7 @@ export const write = tool({
   },
   async execute(args, context) {
     const now = Date.now()
-    const todos = args.todos.map((t: any) => ({ ...t, createdAt: t.createdAt || now, updatedAt: now }))
+    const todos = args.todos.map((t: any) => normalizeTodo({ ...t, createdAt: t.createdAt || now, updatedAt: now }))
     await writeTodos(todos, context.sessionID, context.directory)
     return formatGraph(analyzeGraph(todos))
   },
@@ -290,19 +428,32 @@ export const read_five = tool({
   args: {},
   async execute(_args, context) {
     const todos = await readTodos(context.sessionID, context.directory)
-    const graph = analyzeGraph(todos)
-    if (graph.available.length === 0) return "No tasks available. All blocked or not ready."
-    const next5 = graph.available.slice(0, 5)
-    const lines: string[] = ["Next 5 available tasks:", ""]
-    for (const id of next5) {
-      const t = graph.todos.find(x => x.id === id)
-      if (t) {
-        const desc = t.description?.trim() ? `\n   ${t.description.trim()}` : ""
-        lines.push(`${PE(t.priority)} ${id}: ${t.content}${desc}`)
-        lines.push("")
-      }
+    const ready = sortTodosForList(todos.filter(t => normalizeStatus(t.status) === "todo"))
+    if (ready.length === 0) return "No tasks in todo."
+
+    const items = ready.slice(0, 5)
+
+    const rootIds = items.map(t => t.id)
+    const rootSet = new Set(rootIds)
+    const resolved = resolveBlockers(todos, rootIds)
+    const blockers = resolved.blockers.filter(t => !rootSet.has(t.id))
+    const missing = resolved.missing
+
+    const more = ready.length > 5 ? `+${ready.length - 5} more` : ""
+
+    const lines: string[] = []
+    lines.push("Next 5:")
+    lines.push(renderNestedTodoList(items, todos))
+    if (more) lines.push(more)
+
+    lines.push("")
+    lines.push(`Blocked By (resolved) [${blockers.length}]:`)
+    lines.push(blockers.length ? renderNestedTodoList(blockers, todos) : "- (none)")
+    if (missing.length) {
+      lines.push("")
+      lines.push(`Blocked By missing: ${missing.join(", ")}`)
     }
-    if (graph.available.length > 5) lines.push(`... +${graph.available.length - 5} more`)
+
     return lines.join("\n")
   },
 })
@@ -327,60 +478,19 @@ export const read_by_id = tool({
     const todo = todos.find(t => t.id === args.id)
     if (!todo) return `❌ Task ${args.id} not found`
 
-    const byId = new Map(todos.map(t => [t.id, t]))
-
-    // Resolve blockers transitively (task -> blockedBy -> blockedBy ...)
-    const blockers: Todo[] = []
-    const missing: string[] = []
-    const seen = new Set<string>()
-    const stack = [...(todo.blockedBy || [])]
-
-    while (stack.length > 0) {
-      const id = stack.shift()!
-      if (seen.has(id)) continue
-      seen.add(id)
-
-      const t = byId.get(id)
-      if (!t) {
-        missing.push(id)
-        continue
-      }
-
-      blockers.push(t)
-      if (t.blockedBy?.length) stack.push(...t.blockedBy)
-    }
+    const { blockers, missing } = resolveBlockers(todos, [todo.id])
 
     const lines: string[] = []
-    lines.push(`id: ${todo.id}`)
-    lines.push(`priority: ${todo.priority}`)
-    lines.push(`status: ${todo.status}`)
-
-    if (todo.blockedBy?.length) {
-      lines.push(`blockedBy: ${todo.blockedBy.join(", ")}`)
-    }
+    lines.push("Task:")
+    lines.push(`- ${todoLine(todo, new Map(todos.map(t => [t.id, t])) )}`)
 
     lines.push("")
-    lines.push("content:")
-    lines.push(todo.content)
-
-    if (todo.description?.trim()) {
-      lines.push("")
-      lines.push("description:")
-      lines.push(todo.description.trim())
-    }
-
-    if (blockers.length) {
-      lines.push("")
-      lines.push("blockedBy (resolved):")
-      for (const b of blockers) {
-        const d = b.description?.trim() ? ` — ${b.description.trim()}` : ""
-        lines.push(`- ${b.id} [${b.status}] ${b.priority}: ${b.content}${d}`)
-      }
-    }
+    lines.push("Blocked By (resolved):")
+    lines.push(blockers.length ? renderNestedTodoList(blockers, todos) : "- (none)")
 
     if (missing.length) {
       lines.push("")
-      lines.push(`blockedBy missing: ${missing.join(", ")}`)
+      lines.push(`Blocked By missing: ${missing.join(", ")}`)
     }
 
     return lines.join("\n")
@@ -395,9 +505,10 @@ export const update = tool({
           id: tool.schema.string().describe("Task ID in concat format: E01-S01-T01"),
           content: tool.schema.string().describe("Short task summary"),
           description: tool.schema.string().optional().describe("Full task description"),
-          status: tool.schema.string().describe("pending | ready | in_progress | waiting_review | done | cancelled"),
+          releases: tool.schema.array(tool.schema.string()).optional().describe("Release identifiers(from ready -> done)"),
+          status: tool.schema.string().describe("todo | in_progress | ready | done"),
           priority: tool.schema.string().describe("CRIT | HIGH | MED | LOW"),
-          blockedBy: tool.schema.array(tool.schema.string()).optional().describe("IDs of blocking tasks"),
+          blockedBy: tool.schema.array(tool.schema.string()).optional().describe("IDs of blocking tasks(from todo -> blocked)"),
         })
     ).describe("Array of todos to update"),
   },
@@ -407,12 +518,16 @@ export const update = tool({
     const byId = new Map(todos.map(t => [t.id, t]))
 
     for (const incoming of args.todos) {
-      const existing = byId.get(incoming.id)
+      const normalizedIncoming: any = normalizeTodo(incoming)
+      const existing = byId.get(normalizedIncoming.id)
       if (existing) {
-        Object.assign(existing, incoming)
+        Object.assign(existing, normalizedIncoming)
         existing.updatedAt = now
+        // Ensure auto transition is applied after merge
+        existing.status = normalizeTodo(existing).status
+        existing.releases = normalizeTodo(existing).releases
       } else {
-        byId.set(incoming.id, { ...incoming, createdAt: now, updatedAt: now })
+        byId.set(normalizedIncoming.id, normalizeTodo({ ...normalizedIncoming, createdAt: now, updatedAt: now }))
       }
     }
 
