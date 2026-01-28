@@ -9,10 +9,16 @@ import type { Plugin } from "@opencode-ai/plugin"
 export const UsethisTodoPublish: Plugin = async ({ client }) => {
   return {
     "tool.execute.after": async (input, output) => {
-      if (input.tool !== "usethis_todo_write" && input.tool !== "usethis_todo_update") return
+      if (
+          input.tool !== "usethis_todo_write"
+          && input.tool !== "usethis_todo_update"
+          && input.tool !== "usethis_todo_read_five"
+          && input.tool !== "usethis_todo_read"
+          && input.tool !== "usethis_todo_read_by_id"
+      ) return
 
       const text = [
-          `## TODO`,
+        `## TODO`,
         // `session: ${input.sessionID}`,
         "",
         output.output

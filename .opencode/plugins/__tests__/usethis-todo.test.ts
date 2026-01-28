@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "bun:test"
 import { readFile } from "fs/promises"
 import { join } from "path"
 import { createTempDir, cleanupTempDir } from "./helpers/mock-ctx"
-import { write, update, read, get_by_id } from "../../tools/usethis_todo"
+import { write, update, read, read_by_id, read_five } from "../../tools/usethis_todo"
 
 describe("usethis_todo tool", () => {
   let tempDir: string
@@ -103,7 +103,31 @@ describe("usethis_todo tool", () => {
     expect(output).toContain("Available Now")
   })
 
-  it("get_by_id returns single task", async () => {
+  it("read_five returns up to 5 available tasks with description", async () => {
+    const ctx = { sessionID: "sess-five", directory: tempDir } as any
+    await write.execute(
+      {
+        todos: [
+          { id: "A1", content: "T1", description: "D1", status: "ready", priority: "HIGH" },
+          { id: "A2", content: "T2", status: "ready", priority: "MED" },
+          { id: "A3", content: "T3", status: "ready", priority: "LOW" },
+          { id: "A4", content: "T4", status: "ready", priority: "LOW" },
+          { id: "A5", content: "T5", status: "ready", priority: "LOW" },
+          { id: "A6", content: "T6", status: "ready", priority: "LOW" },
+        ],
+      },
+      ctx
+    )
+
+    const out = await read_five.execute({}, ctx)
+    expect(out).toContain("Next 5")
+    expect(out).toContain("A1")
+    expect(out).toContain("T1")
+    expect(out).toContain("D1")
+    expect(out).toContain("+1 more")
+  })
+
+  it("read_by_id returns task with resolved blockers", async () => {
     const ctx = { sessionID: "sess-get", directory: tempDir } as any
     await write.execute(
       {
@@ -116,23 +140,40 @@ describe("usethis_todo tool", () => {
             priority: "HIGH",
             blockedBy: ["B1"],
           },
+          {
+            id: "B1",
+            content: "Blocker task",
+            status: "done",
+            priority: "LOW",
+            blockedBy: ["C1"],
+          },
+          {
+            id: "C1",
+            content: "Root blocker",
+            status: "pending",
+            priority: "MED",
+          },
         ],
       },
       ctx
     )
 
-    const out = await get_by_id.execute({ id: "A1" }, ctx)
+    const out = await read_by_id.execute({ id: "A1" }, ctx)
     expect(out).toContain("id: A1")
     expect(out).toContain("content:")
     expect(out).toContain("Task content")
     expect(out).toContain("blockedBy: B1")
     expect(out).toContain("description:")
     expect(out).toContain("More details")
+
+    expect(out).toContain("blockedBy (resolved):")
+    expect(out).toContain("- B1")
+    expect(out).toContain("- C1")
   })
 
-  it("get_by_id returns not found", async () => {
+  it("read_by_id returns not found", async () => {
     const ctx = { sessionID: "sess-miss", directory: tempDir } as any
-    const out = await get_by_id.execute({ id: "NOPE" }, ctx)
+    const out = await read_by_id.execute({ id: "NOPE" }, ctx)
     expect(out).toContain("not found")
   })
 })
