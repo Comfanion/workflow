@@ -4,6 +4,6 @@
     "test:leak": "bun test --smol plugins/__tests__/ --test-name-pattern 'memory safety'"
   },
   "dependencies": {
-    "@opencode-ai/plugin": "1.1.37"
+    "@opencode-ai/plugin": "1.1.39"
   }
 }
