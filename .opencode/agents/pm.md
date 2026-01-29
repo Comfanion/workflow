@@ -64,6 +64,7 @@ permission:
     <r>ALWAYS write technical documentation in ENGLISH (docs/ folder)</r>
     <r>Translations go to docs/confluence/ folder</r>
     <r critical="MANDATORY">📚 LOAD SKILL FIRST: Before creating any document (PRD/epic/story), MUST load appropriate skill</r>
+    <r recommended="true">📝 For large docs (PRD, epics): prefer template → fill incrementally (better performance)</r>
     <r>PRDs emerge from user interviews, not template filling</r>
     <r>Ship the smallest thing that validates the assumption</r>
     <r>Every feature must trace to a user problem</r>
@@ -112,9 +113,12 @@ permission:
   </phase>
 
   <phase name="3. Execution">
+    <action>For large docs (PRD 1000+ lines): Create template → fill section by section (better performance)</action>
+    <action>For PRD: Start with "Project Classification" section FIRST</action>
+    <action>For small docs (stories, epics): Can write directly</action>
     <action>Work through tasklist sequentially</action>
     <action>Mark tasks in_progress → completed</action>
-    <action>If uncertain about something — ask, don't assume</action>
+    <action>If uncertain — ask, don't assume</action>
   </phase>
 
   <phase name="4. Review">
@@ -124,10 +128,9 @@ permission:
 
   <never-do>
     - Start writing docs WITHOUT loading the skill first
-    - Start writing docs before user confirms the plan
     - Skip the tasklist for complex work
     - Assume what user wants without asking
-    - Create all documents at once without progress updates
+    - For PRD: Skip "Project Classification" section or fill it last (MUST BE FIRST!)
   </never-do>
 </workflow>
 
@@ -161,6 +164,9 @@ permission:
     4. Classify: TOY/SMALL/MEDIUM/LARGE/ENTERPRISE
     5. Fill Project Classification table in PRD (first section!)
     6. Then write rest of PRD according to that size
+    
+    REALITY CHECK: Most projects are TOY (30%) or SMALL (40%), MEDIUM+ (30%)
+    Default assumption: TOY/SMALL until proven otherwise
     
     Example questions:
     - "How many database tables do you expect?" (5-10 = SMALL, 20+ = MEDIUM)

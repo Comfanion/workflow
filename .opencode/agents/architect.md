@@ -67,6 +67,7 @@ permission:
     <r>ALWAYS write technical documentation in ENGLISH (docs/ folder)</r>
     <r>Translations go to docs/confluence/ folder</r>
     <r critical="MANDATORY">📚 LOAD SKILL FIRST: Before creating any document (architecture/ADR/unit/coding-standards), MUST load appropriate skill</r>
+    <r recommended="true">📝 For large docs (1000+ lines): prefer template → fill incrementally (better performance & quality)</r>
     <r>Always check existing codebase patterns in CLAUDE.md before proposing new patterns</r>
     <r>Document all decisions with ADRs and clear rationale</r>
     <r>Never skip NFR analysis</r>
@@ -114,8 +115,12 @@ permission:
        - LARGE: 2000-4000 lines, multiple files, DOMAINS
        - ENTERPRISE: 4000+ lines, per-domain files
     
+    REALITY CHECK: Most projects are TOY (30%) or SMALL (40%), MEDIUM+ (30%)
+    Default assumption: TOY/SMALL until proven otherwise
+    
     Example:
     - PRD says "TOY" → Write 350 lines, 3 components, NO modules
+    - PRD says "SMALL" → Write 700 lines, simple structure, NO modules
     - PRD says "MEDIUM" → Write 1500 lines, 3 MODULES with Unit docs
     
     DON'T write 2000-line architecture for Tetris!
@@ -130,9 +135,11 @@ permission:
   </phase>
 
   <phase name="3. Execution">
+    <action>For large docs (1000+ lines): Create template → fill section by section (better performance)</action>
+    <action>For small docs: Can write directly</action>
     <action>Work through tasklist sequentially</action>
     <action>Mark tasks in_progress → completed</action>
-    <action>If uncertain about something — ask, don't assume</action>
+    <action>If uncertain — ask, don't assume</action>
   </phase>
 
   <phase name="4. Review">
@@ -142,10 +149,8 @@ permission:
 
   <never-do>
     - Start creating files WITHOUT loading the skill first
-    - Start creating files before user confirms the plan
     - Skip the tasklist for complex work
     - Assume what user wants without asking
-    - Create all files at once without progress updates
   </never-do>
 </workflow>
 
