@@ -32,8 +32,7 @@ const OPENCODE_ITEMS = [
   'commands',
   'mcp',
   'package.json',
-  'opencode.json',
-  'vectorizer.yaml'
+  'opencode.json'
 ];
 
 // Exclude from copying

@@ -54,7 +54,6 @@ program
   .option('--tdd', 'Use TDD methodology')
   .option('--stub', 'Use STUB methodology')
   .option('--full', 'Create full repo structure')
-  .option('--vectorizer', 'Install vectorizer for semantic code search')
   .action(async (options) => {
     console.log(chalk.blue.bold(`\n🚀 OpenCode Workflow v${VERSION}\n`));
     
@@ -70,9 +69,6 @@ program
       jira_url: 'https://your-domain.atlassian.net',
       jira_project: 'PROJ',
       create_repo_structure: false,
-      vectorizer_enabled: true,
-      vectorizer_auto_index: true,
-      vectorizer_model: 'Xenova/all-MiniLM-L6-v2',
       project_name: path.basename(process.cwd())
     };
     
@@ -98,19 +94,6 @@ program
           if (jiraMatch) config.jira_enabled = jiraMatch[1] === 'true';
           if (jiraUrlMatch) config.jira_url = jiraUrlMatch[1];
           if (jiraProjMatch) config.jira_project = jiraProjMatch[1];
-          
-          // Parse vectorizer settings from vectorizer.yaml if exists
-          const vecPath = path.join(targetDir, 'vectorizer.yaml');
-          if (await fs.pathExists(vecPath)) {
-            const vecContent = await fs.readFile(vecPath, 'utf8');
-            const vEnabledMatch = vecContent.match(/enabled:\s*(true|false)/);
-            const vAutoMatch = vecContent.match(/auto_index:\s*(true|false)/);
-            const vModelMatch = vecContent.match(/model:\s*["']?([^"'\n]+)["']?/);
-            
-            if (vEnabledMatch) config.vectorizer_enabled = vEnabledMatch[1] === 'true';
-            if (vAutoMatch) config.vectorizer_auto_index = vAutoMatch[1] === 'true';
-            if (vModelMatch) config.vectorizer_model = vModelMatch[1].trim();
-          }
           
           isUpdate = true;
         } catch (e) {
@@ -200,40 +183,6 @@ program
           default: options.full || false
         },
         {
-          type: 'confirm',
-          name: 'vectorizer_enabled',
-          message: 'Enable semantic code search (vectorizer)?',
-          default: true
-        },
-        {
-          type: 'list',
-          name: 'vectorizer_model',
-          message: 'Embedding model for semantic search:',
-          when: (answers) => answers.vectorizer_enabled,
-          choices: [
-            { 
-              name: 'MiniLM-L6 (Fast)    - ~10 files/10sec, 384 dims, good quality', 
-              value: 'Xenova/all-MiniLM-L6-v2' 
-            },
-            { 
-              name: 'BGE-small (Balanced) - ~9 files/10sec, 384 dims, better quality', 
-              value: 'Xenova/bge-small-en-v1.5' 
-            },
-            { 
-              name: 'BGE-base (Quality)   - ~3 files/10sec, 768 dims, best quality', 
-              value: 'Xenova/bge-base-en-v1.5' 
-            }
-          ],
-          default: config.vectorizer_model
-        },
-        {
-          type: 'confirm',
-          name: 'vectorizer_auto_index',
-          message: 'Enable auto-indexing? (reindex files on save)',
-          when: (answers) => answers.vectorizer_enabled,
-          default: true
-        },
-        {
           type: 'checkbox',
           name: 'mcp_servers',
           message: 'Select MCP servers to enable (writes to opencode.json):',
@@ -259,7 +208,6 @@ program
       if (options.stub) config.methodology = 'stub';
       if (options.jira) config.jira_enabled = true;
       if (options.full) config.create_repo_structure = true;
-      if (options.vectorizer) config.install_vectorizer = true;
     }
 
     const spinner = ora('Initializing OpenCode Workflow...').start();
@@ -324,7 +272,6 @@ program
       // Update config.yaml with user values
       spinner.text = 'Configuring...';
       const configPath = path.join(targetDir, 'config.yaml');
-      const vecPath = path.join(targetDir, 'vectorizer.yaml');
       let configContent;
       
       // If we had existing config, use it as base (preserves comments and formatting)
@@ -354,19 +301,6 @@ program
       
       await fs.writeFile(configPath, configContent);
 
-      // Update vectorizer.yaml
-      if (await fs.pathExists(vecPath)) {
-        let vecContent = await fs.readFile(vecPath, 'utf8');
-        vecContent = vecContent
-          .replace(/(enabled:)\s*(true|false)/, `$1 ${config.vectorizer_enabled}`)
-          .replace(/(auto_index:)\s*(true|false)/, `$1 ${config.vectorizer_auto_index}`);
-        
-        if (config.vectorizer_model) {
-          vecContent = vecContent.replace(/(model:)\s*["']?[^"'\n]+["']?/, `$1 "${config.vectorizer_model}"`);
-        }
-        await fs.writeFile(vecPath, vecContent);
-      }
-      
       // Create docs structure (always)
       spinner.text = 'Creating docs structure...';
       await fs.ensureDir(path.join(process.cwd(), 'docs'));
@@ -476,22 +410,8 @@ program
         console.log(chalk.gray('   Run manually: cd .opencode && bun install'));
       }
 
-      // Show what was done
-      const vectorizerInstalled = await fs.pathExists(path.join(targetDir, 'vectorizer', 'node_modules'));
-      if (vectorizerInstalled) {
-        console.log(chalk.green('✅ Vectorizer installed (fresh dependencies)'));
-      } else if (config.vectorizer_enabled) {
-        console.log(chalk.yellow('⚠️  Vectorizer: run `npx @comfanion/workflow vectorizer install`'));
-      } else {
-        console.log(chalk.gray('ℹ️  Vectorizer disabled (enable in config.yaml to use semantic search)'));
-      }
       if (hadVectors) {
         console.log(chalk.green('✅ Vector indexes preserved'));
-      }
-
-      // Install vectorizer if requested and failed above
-      if (config.install_vectorizer && !vectorizerInstalled) {
-        await installVectorizer(targetDir);
       }
 
       // Show summary
@@ -559,9 +479,8 @@ program
 
 program
   .command('update')
-  .description('Update .opencode/ to latest version (preserves config.yaml and vectorizer)')
+  .description('Update .opencode/ to latest version (preserves config.yaml and vector indexes)')
   .option('--no-backup', 'Skip creating backup')
-  .option('--vectorizer', 'Update/install vectorizer too')
   .action(async (options) => {
     const spinner = ora('Updating OpenCode Workflow...').start();
     
@@ -762,27 +681,25 @@ program
       console.log(chalk.gray('  ○  Jira credentials not set'));
     }
     
-    // Check Vectorizer
-    console.log(chalk.cyan('\nVectorizer (semantic search):'));
-    const vectorsExist = await fs.pathExists(path.join(process.cwd(), '.opencode', 'vectors', 'code', 'hashes.json'));
-    
-    // Check vectorizer config
-    let vectorizerEnabled = true;
-    let autoIndexEnabled = true;
+    // Check Semantic Search plugin
+    console.log(chalk.cyan('\nSemantic search (@comfanion/usethis_search):'));
     try {
-      const vecConfigContent = await fs.readFile(path.join(process.cwd(), '.opencode/vectorizer.yaml'), 'utf8');
-      const vecEnabledMatch = vecConfigContent.match(/enabled:\s*(true|false)/);
-      const autoIndexMatch = vecConfigContent.match(/auto_index:\s*(true|false)/);
-      if (vecEnabledMatch) vectorizerEnabled = vecEnabledMatch[1] === 'true';
-      if (autoIndexMatch) autoIndexEnabled = autoIndexMatch[1] === 'true';
-    } catch {}
-    
-    console.log(vectorizerEnabled 
-      ? chalk.green('  ✅ Enabled in config')
-      : chalk.yellow('  ⚠️  Disabled in config'));
-    console.log(autoIndexEnabled
-      ? chalk.green('  ✅ Auto-index: ON')
-      : chalk.gray('  ○  Auto-index: OFF'));
+      const opcPath = path.join(process.cwd(), 'opencode.json');
+      if (await fs.pathExists(opcPath)) {
+        const opc = JSON.parse(await fs.readFile(opcPath, 'utf8'));
+        const plugins = opc.plugin || [];
+        if (plugins.includes('@comfanion/usethis_search')) {
+          console.log(chalk.green('  ✅ Plugin registered in opencode.json'));
+        } else {
+          console.log(chalk.yellow('  ⚠️  Plugin not in opencode.json (add "@comfanion/usethis_search" to plugin array)'));
+        }
+      } else {
+        console.log(chalk.gray('  ○  No opencode.json found'));
+      }
+    } catch {
+      console.log(chalk.gray('  ○  Could not check opencode.json'));
+    }
+    const vectorsExist = await fs.pathExists(path.join(process.cwd(), '.opencode', 'vectors', 'code', 'hashes.json'));
     if (vectorsExist) {
       try {
         const hashes = await fs.readJSON(path.join(process.cwd(), '.opencode', 'vectors', 'code', 'hashes.json'));
@@ -791,14 +708,7 @@ program
         console.log(chalk.gray('  ○  Not indexed yet'));
       }
     } else {
-      console.log(chalk.gray('  ○  Not indexed (will index on startup)'));
-    }
-    
-    // Check LSP env
-    if (process.env.OPENCODE_EXPERIMENTAL_LSP_TOOL === 'true' || process.env.OPENCODE_EXPERIMENTAL === 'true') {
-      console.log(chalk.green('  ✅ LSP tool enabled'));
-    } else {
-      console.log(chalk.gray('  ○  LSP tool disabled (set OPENCODE_EXPERIMENTAL_LSP_TOOL=true)'));
+      console.log(chalk.gray('  ○  Not indexed (will index on first startup with plugin)'));
     }
     
     console.log('');
