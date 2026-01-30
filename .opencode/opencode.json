@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["@comfanion/usethis_todo","@comfanion/usethis_compaction","@comfanion/usethis_search","@comfanion/usethis_version_check"],
+  "plugin": ["@comfanion/usethis_todo","@comfanion/usethis_compaction","@comfanion/usethis_search","@comfanion/usethis_version_check","@tarquinen/opencode-dcp"],
 
   "instructions": [
     "AGENTS.md",

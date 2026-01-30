@@ -1,0 +1,63 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Opencode-DCP/opencode-dynamic-context-pruning/master/dcp.schema.json",
+
+  // Workspace tools are pruned by @comfanion/usethis_search plugin itself
+  // (workspace state pruning — different queries supersede each other).
+  // DCP should NOT touch these — add to protectedTools everywhere.
+
+  "strategies": {
+    "deduplication": {
+      "enabled": true,
+      "protectedTools": [
+        "search",
+        "workspace_list",
+        "workspace_forget",
+        "workspace_clear",
+        "workspace_restore"
+      ]
+    },
+    "supersedeWrites": {
+      "enabled": true
+    },
+    "purgeErrors": {
+      "enabled": true,
+      "turns": 4,
+      "protectedTools": [
+        "search",
+        "workspace_list",
+        "workspace_forget",
+        "workspace_clear",
+        "workspace_restore"
+      ]
+    }
+  },
+
+  "tools": {
+    "discard": {
+      "enabled": true
+    },
+    "extract": {
+      "enabled": true
+    },
+    "settings": {
+      "protectedTools": [
+        "search",
+        "workspace_list",
+        "workspace_forget",
+        "workspace_clear",
+        "workspace_restore"
+      ]
+    }
+  },
+
+  "commands": {
+    "enabled": true,
+    "protectedTools": [
+      "search",
+      "workspace_list",
+      "workspace_forget",
+      "workspace_clear",
+      "workspace_restore"
+    ]
+  }
+}

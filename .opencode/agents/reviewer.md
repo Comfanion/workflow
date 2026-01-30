@@ -1,5 +1,5 @@
 ---
-description: "Code Reviewer - Use for: security review, bug finding, test coverage analysis, code quality. Auto-invoked after /dev-story completes. Has skills: code-review"
+description: "Code Reviewer - Use for: security review, bug finding, test coverage analysis, code quality. invoked after development complete."
 mode: all       # Invoked by @dev or via /review-story
 temperature: 0.1     # Low temperature for precise analysis
 

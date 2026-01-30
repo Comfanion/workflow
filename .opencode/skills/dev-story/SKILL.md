@@ -38,34 +38,11 @@ metadata:
     <goal>~70KB context, NOT 200KB+</goal>
   </phase>
 
-  <phase name="2-transform" title="Transform Story Task → Executable Instruction">
-    <step n="1" name="read-docs">
-      Story has "Required Reading", task has "Read First".
-      Open each → find sections → extract patterns, signatures, constraints.
-    </step>
-    <step n="2" name="find-patterns">
-      From "Read First" paths, find existing similar code.
-      Note structure, imports, error handling → becomes "Pattern Reference".
-    </step>
-    <step n="3" name="build-context">
-      @coder doesn't see story. Provide:
-      - Existing files (paths + what they contain)
-      - Patterns to follow (link to similar code)
-      - What was done (results of previous tasks)
-      - Imports (what packages to use)
-    </step>
-    <step n="4" name="add-direction">
-      Story has "Approach". Expand with:
-      - Interface signatures (method names, params, return types)
-      - Error handling (what errors to return)
-      - Validation rules
-    </step>
-    <step n="5" name="verification">
-      Story has "Done when". Add:
-      - Specific test commands
-      - Files that must compile
-      - Test coverage expectations
-    </step>
+  <phase name="2-plan" title="Plan Task Execution">
+    <step n="1">Read story tasks, determine execution order based on dependencies</step>
+    <step n="2">Identify which tasks are independent (can run in parallel) vs sequential</step>
+    <step n="3">For each task, note: what to do + which files/patterns are relevant context</step>
+    <step n="4">Do NOT read source files that only @coder needs — save your context for orchestration</step>
   </phase>
 
   <phase name="2b-todo" title="Create TODO with IDs">
@@ -90,28 +67,15 @@ metadata:
     </example>
   </phase>
 
-  <phase name="3-execute" title="Execute Tasks — One by One or Parallel">
-    <critical>DO NOT delegate entire story to @coder in one prompt!</critical>
-    <strategy>
-      For each task in TODO:
-      1. Check task dependencies (from story file)
-      2. If independent tasks exist → delegate in parallel (different files only)
-      3. If task depends on previous → delegate ONE task, wait for result
-      4. After @coder returns → verify, mark done, then next task
-    </strategy>
+  <phase name="3-execute" title="Execute Tasks">
     <loop>
-      <step n="1">Pick next task(s) from TODO</step>
-      <step n="2">Transform task → executable instruction (phase 2)</step>
-      <step n="3">Delegate to @coder using template below</step>
-      <step n="4">Verify result: tests pass, files compile</step>
-      <step n="5">Mark task ✅ in story file + TODO</step>
-      <step n="6">Update .opencode/session-state.yaml</step>
-      <step n="7">Next task or story complete</step>
+      <step n="1">Pick next task(s) from TODO (parallel if independent, otherwise one)</step>
+      <step n="2">Delegate to @coder with a brief: what to do + context file paths</step>
+      <step n="3">Verify result: tests pass, files compile</step>
+      <step n="4">Mark task done in story file + TODO</step>
+      <step n="5">Update .opencode/session-state.yaml</step>
+      <step n="6">Next task or story complete</step>
     </loop>
-    <parallel-rules>
-      OK to parallel: T01 (domain) + T02 (dto) — different files, no deps
-      NOT OK: T03 (service) depends on T01 (domain) — wait for T01 first
-    </parallel-rules>
   </phase>
 
   <phase name="4-review" title="Review BEFORE Done">
@@ -155,86 +119,25 @@ key_decisions:
 
 This file survives compaction and tells the agent where to resume.
 
-## Task Template for @coder
+## Brief Format for @coder
 
-<template name="coder-task">
-```markdown
-## Task: [Name] (Task IDs)
+Each @coder call = ONE task. Brief contains:
+- **What**: task goal in 1-2 sentences
+- **Context**: file paths (story, source, patterns to follow)
+- **Methodology**: TDD ("write failing test first") or STUB ("create stub first") per config.yaml
 
-[One line goal]
-
-### Skills
-- Use `doc-todo` for TODO comments
-
-### Context
-- [Existing file]: [what to use from it]
-- Existing pattern: [path to similar code]
-
-### Output Files
-- [path/to/create.ext]
-
-### Requirements
-1. [What to implement with signatures]
-2. [Another requirement]
-
-### Pattern Reference
-→ [path/to/similar/code.ext]
-
-### Error Handling
-[How to handle errors]
-
-### Done When
-- [ ] File compiles
-- [ ] Tests pass
-- [ ] [Specific criterion]
-```
-</template>
+@coder reads the files and figures out implementation details.
 
 <rules name="delegation">
-  <rule name="task-by-task" critical="true">
-    Delegate ONE task at a time (or parallel group if independent).
-    NEVER delegate entire story as one big prompt.
-  </rule>
-  <rule name="parallel">
-    Each task gets full context. No shared state. Different files only.
+  <rule name="one-task" critical="true">
+    ONE task per @coder call. Independent tasks can run in parallel (multiple agents in one message).
   </rule>
   <rule name="verify-between">
-    After each task: run tests, verify, mark done, THEN next task.
+    After each task: verify result, mark done, THEN next task.
   </rule>
-  <rule name="no-code">
-    Give direction, NOT solution. @coder writes implementation.
-  </rule>
-  <rule name="methodology">
-    TDD: "Write failing test first, then implement"
-    STUB: "Create stub first, write tests, then implement"
+  <rule name="task-scope">
+    Good task: logically complete unit (service, handler, entity). Single responsibility. Testable independently.
+    Split when: multiple unrelated responsibilities.
+    Combine when: too granular, same file, same concern.
   </rule>
 </rules>
-
-<task-boundaries>
-  <good>Logically complete unit (service, handler, entity). Single responsibility. Testable independently.</good>
-  <split-when>Multiple unrelated responsibilities. No logical connection.</split-when>
-  <combine-when>Too granular. Same file, same concern.</combine-when>
-</task-boundaries>
-
-<patterns>
-  <pattern name="new-service">
-    Context: domain entities, repository interface, existing service
-    Requirements: interface, constructor, methods
-    Pattern: existing service structure
-  </pattern>
-  <pattern name="new-handler">
-    Context: service interface, DTOs, existing handler
-    Requirements: handler struct, methods, error mapping
-    Pattern: existing handler structure
-  </pattern>
-  <pattern name="new-tests">
-    Context: code to test, existing test examples
-    Requirements: test scenarios, mocks
-    Pattern: existing test structure
-  </pattern>
-</patterns>
-
-<critical>
-  ✅ PROVIDE: pattern references, interface signatures, requirements, error approach
-  ❌ DO NOT: full implementations, ready-to-copy code, complete structs
-</critical>

@@ -32,7 +32,8 @@ const OPENCODE_ITEMS = [
   'commands',
   'mcp',
   'package.json',
-  'opencode.json'
+  'opencode.json',
+  'dcp.jsonc'
 ];
 
 // Exclude from copying

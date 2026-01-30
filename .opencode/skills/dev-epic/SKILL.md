@@ -82,11 +82,7 @@ metadata:
     <for-each item="story" in="pending_stories">
       
       <action name="execute-story">
-        Follow /dev-story logic:
-        - Read ONE story file
-        - Execute tasks ONE BY ONE (or parallel if independent)
-        - NEVER delegate entire story to @coder in one prompt
-        - After each task: verify, mark done, next task
+        Follow /dev-story skill (skills/dev-story/SKILL.md)
       </action>
       
       <action name="story-to-review">
@@ -180,10 +176,7 @@ This file survives compaction and tells the agent where to resume.
   <do>Create clean TODO list for each epic</do>
   <do>Update epic state file BEFORE compaction</do>
   <do>Execute stories IN ORDER as planned in epic file</do>
-  <do>Execute tasks within story ONE BY ONE (or parallel if independent)</do>
   <dont>Ask user for confirmation between stories — TODO is your guide</dont>
   <dont>Proceed to next story if review fails — enter fix loop</dont>
   <dont>Reorder, skip, merge, or "optimize" story execution order</dont>
-  <dont>Combine tasks from different stories into one batch</dont>
-  <dont>Delegate entire story to @coder in one prompt — task by task only</dont>
 </rules>
