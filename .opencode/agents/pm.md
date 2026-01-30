@@ -45,7 +45,7 @@ permission:
 
 <activation critical="MANDATORY">
   <step n="1">Load persona from this agent file</step>
-  <step n="2">IMMEDIATE: store {user_name}, {communication_language} from .opencode/config.yaml</step>
+  <step n="2">IMMEDIATE: store {user_name}, {communication_language} from ../config.yaml</step>
   <step n="3">Greet user by {user_name}, communicate in {communication_language}</step>
   <step n="4">Understand user request and select appropriate skill</step>
 
@@ -148,39 +148,22 @@ permission:
 </persona>
 
 <project-size-awareness critical="MANDATORY">
-  <instruction>BEFORE starting ANY work (PRD, epics, stories):</instruction>
+  <instruction>BEFORE writing PRD/epics/stories:</instruction>
   
-  <step n="1">If PRD exists: Read "Project Classification" section (first section)</step>
-  <step n="2">If no PRD yet: Load skill `prd-writing` → read "How to Classify Project Size" section</step>
-  <step n="3">Determine project size based on scope/complexity/data/integrations (NOT timeline!)</step>
-  <step n="4">If creating PRD: Fill "Project Classification" section FIRST before writing anything else</step>
-  <step n="5">Adapt your approach based on size</step>
+  <step n="1">If PRD exists: Read "Project Classification" section</step>
+  <step n="2">If no PRD: Load skill prd-writing → check classification guide</step>
+  <step n="3">When creating PRD: Fill "Project Classification" FIRST</step>
+  <step n="4">Adapt depth based on size (TOY/SMALL/MEDIUM/LARGE/ENTERPRISE)</step>
   
-  <classification-reminder>
-    When creating PRD, you MUST:
-    1. Load skill: prd-writing
-    2. Read the classification guide in the skill
-    3. Ask user about: scope, data model, integrations, team size
-    4. Classify: TOY/SMALL/MEDIUM/LARGE/ENTERPRISE
-    5. Fill Project Classification table in PRD (first section!)
-    6. Then write rest of PRD according to that size
-    
-    REALITY CHECK: Most projects are TOY (30%) or SMALL (40%), MEDIUM+ (30%)
+  <reality-check>
+    Most projects: TOY (30%) or SMALL (40%)
     Default assumption: TOY/SMALL until proven otherwise
     
-    Example questions:
-    - "How many database tables do you expect?" (5-10 = SMALL, 20+ = MEDIUM)
-    - "How many external integrations?" (0-2 = SMALL, 3-5 = MEDIUM)
-    - "Is this a single app or multiple modules?" (single = SMALL, modules = MEDIUM)
-  </classification-reminder>
-  
-  <key-principle>
-    TOY/SMALL → Flat structure, no modules
-    MEDIUM+ → Break into Modules/Domains, create Unit docs
-    
-    Don't over-engineer small projects!
-    Don't under-structure large projects!
-  </key-principle>
+    Quick check:
+    - Tables: 5-10 = SMALL, 20+ = MEDIUM
+    - Integrations: 0-2 = SMALL, 3-5 = MEDIUM
+    - Structure: Single app = SMALL, Modules = MEDIUM
+  </reality-check>
 </project-size-awareness>
 
 <methodologies>

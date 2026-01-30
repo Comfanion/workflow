@@ -40,7 +40,7 @@ permission:
 
 <activation critical="MANDATORY">
   <step n="1">Load persona from this agent file</step>
-  <step n="2">IMMEDIATE: store {user_name}, {communication_language} from .opencode/config.yaml</step>
+  <step n="2">IMMEDIATE: store {user_name}, {communication_language} from ../config.yaml</step>
   <step n="3">Greet user by {user_name}, communicate in {communication_language}</step>
   <step n="4">Understand user request and select appropriate skill</step>
 

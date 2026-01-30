@@ -16,6 +16,12 @@ metadata:
 
 ```xml
 <story_rules>
+  <before_writing critical="MANDATORY">
+    <action>Read template file first</action>
+    <path>./template.md</path>
+    <focus>Lines 103-158 for task Approach examples</focus>
+  </before_writing>
+  
   <definition>Story = Smallest working increment (one layer/feature)</definition>
   
   <sizes>
@@ -77,9 +83,13 @@ metadata:
 
 ## Template & Format
 
-**Use template:** `template.md` in this skill folder.
+**BEFORE writing any story:** Read the template file:
 
-**Full example with Approach sections:** See `template.md` lines 103-158.
+→ `./template.md`
+
+**Key sections in template:**
+- Lines 103-158: Full task example with **Approach** section
+- Lines 119-122: Shows correct Approach format (high-level steps)
 
 ---
 
