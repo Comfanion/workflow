@@ -47,6 +47,22 @@ metadata:
     <result>Each story = increment, Epic = working module</result>
   </vertical_slice>
   
+  <task_approach critical="MANDATORY">
+    <rule>Every task MUST have Approach section</rule>
+    <format>Numbered list of high-level steps (WHAT to do)</format>
+    <forbidden>
+      <code_blocks>No code in Approach section</code_blocks>
+      <implementation>No detailed implementation</implementation>
+      <ready_solutions>No copy-paste code</ready_solutions>
+    </forbidden>
+    <example_good>
+      1. Create struct with fields from Unit doc
+      2. Add constructor with validation
+      3. Write tests: happy path + errors
+    </example_good>
+    <example_bad>Define struct: type Foo struct { ... }</example_bad>
+  </task_approach>
+  
   <status_values>
     <draft>Being written</draft>
     <ready>Ready for dev</ready>
@@ -59,69 +75,48 @@ metadata:
 
 ---
 
-## Example: MEDIUM Project Story
+## Template & Format
 
-```yaml
-id: ORD-S01-01
-epic: ORD-E01
-status: ready
-size: M
+**Use template:** `template.md` in this skill folder.
+
+**Full example with Approach sections:** See `template.md` lines 103-158.
+
+---
+
+## Task Structure (MANDATORY)
+
+Each task MUST include these sections:
+
+1. **Goal** - what this task achieves
+2. **Read First** - table with documentation links
+3. **Output Files** - what files to create
+4. **Approach** - high-level steps (MANDATORY)
+5. **Done when** - completion criteria
+
+### Approach Section Rules
+
+**CRITICAL:** Every task MUST have **Approach** section.
+
+**Approach = High-level steps (WHAT to do), NOT code (HOW to implement).**
+
+✅ **CORRECT:**
+```markdown
+**Approach:**
+1. Create Order struct with fields from Unit doc
+2. Add NewOrder() constructor with validation
+3. Add Validate() method for business rules
+4. Write tests: valid order, validation errors
 ```
 
-# Story: Order Domain Layer
+❌ **WRONG (has code):**
+```markdown
+**Approach:**
+1. Define struct:
+   ```go
+   type Order struct { ID string }
+   ```
+```
 
-## Goal
+**Golden Rule:** If you see code blocks in Approach → STOP, remove them.
 
-Implement domain entities and value objects for Order Management.
-
-**Context:** Part of Epic 01 (Order Management). Focuses on domain layer.
-
-## Units Affected
-
-| Unit | Action | Description |
-|------|--------|-------------|
-| → Unit: `Order` | Create | New entity |
-
-## Required Reading
-
-| Document | Section | Why |
-|----------|---------|-----|
-| → `CLAUDE.md` | All | Project patterns |
-| → `docs/coding-standards/` | All | **MANDATORY** |
-| → Unit: `Order` | Data Model | Field definitions |
-
-## Acceptance Criteria
-
-- [ ] Order entity created with all fields
-- [ ] Validation logic implemented
-- [ ] Tests pass (>80% coverage)
-- [ ] Follows coding-standards
-
-## Tasks
-
-| ID | Task | Deps | Status |
-|----|------|------|--------|
-| T1 | Order entity | - | ⬜ |
-| T2 | Value objects | - | ⬜ |
-| T3 | Unit tests | T1, T2 | ⬜ |
-
-### T1: Order Entity
-
-**Goal:** Create Order entity with business rules
-
-**Read First:**
-| Document | Section | What to Look For |
-|----------|---------|------------------|
-| → `docs/coding-standards/` | Domain Layer | Entity patterns |
-| → Unit: `Order` | Data Model | All fields |
-
-**Output Files:**
-- `internal/order/domain/order.go`
-- `internal/order/domain/order_test.go`
-
-**Done when:**
-- [ ] Entity created
-- [ ] Follows coding-standards
-- [ ] Tests pass
-
-See `template.md` for full format.
+Point to patterns, don't write implementation.
