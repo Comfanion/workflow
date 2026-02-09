@@ -94,7 +94,10 @@ metadata:
     <for-each item="epic" in="pending_epics">
       
       <action name="execute-epic">
-        Follow dev-epic skill (skills/dev-epic/SKILL.md)
+        Follow dev-epic skill logic:
+        - Creates nested TODO for stories
+        - Executes all stories + reviews
+        - Clears epic TODO when done
       </action>
       
       <action name="epic-to-review">
@@ -186,8 +189,11 @@ This file survives compaction and tells the agent where to resume.
   <do>Create ONE master TODO list for entire sprint at start</do>
   <do>Let dev-epic skill manage its own nested TODO</do>
   <do>Execute epics IN ORDER as planned in sprint-status.yaml</do>
+  <do>Within each epic, execute stories IN ORDER as planned</do>
+  <do>Within each story, execute tasks ONE BY ONE (or parallel if independent)</do>
   <dont>Ask for confirmation between epics — sprint TODO is your guide</dont>
   <dont>Proceed to next epic if epic review fails — HALT and report</dont>
-  <dont>Reorder, skip, merge, or "optimize" epic execution order</dont>
-  <dont>Work on multiple epics in parallel</dont>
+  <dont>Reorder, skip, merge, or "optimize" epic/story execution order</dont>
+  <dont>Work on multiple stories or epics in parallel</dont>
+  <dont>Delegate entire story to @coder in one prompt — task by task only</dont>
 </rules>

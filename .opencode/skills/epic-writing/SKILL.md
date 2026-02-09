@@ -15,18 +15,39 @@ metadata:
   <definition>Epic = Group of stories forming complete feature/module</definition>
   
   <scope_by_project_size>
-    <TOY scope="Major feature" stories="3-8" size="S"/>
-    <SMALL scope="Feature area" stories="5-12" size="M"/>
-    <MEDIUM scope="Module/Unit" stories="8-15" size="L"/>
-    <LARGE scope="Domain" stories="10-20" size="XL"/>
-    <ENTERPRISE scope="Bounded Context" stories="15-30" size="XXL"/>
+    <TOY scope="Major feature" stories="3-6" size="S"/>
+    <SMALL scope="Feature area" stories="4-8" size="M"/>
+    <MEDIUM scope="Module/Unit" stories="5-10" size="L"/>
+    <LARGE scope="Domain" stories="7-12" size="XL"/>
+    <ENTERPRISE scope="Bounded Context" stories="10-15" size="XXL"/>
   </scope_by_project_size>
   
-  <vertical_slice>
-    <principle>Epic = Complete vertical slice (all layers)</principle>
-    <layers>Domain → Repository → Use Cases → API → UI → Tests</layers>
-    <result>Working module (demo-ready)</result>
-  </vertical_slice>
+  <feature_progression>
+    <principle>Epic = Series of working features, each builds on previous</principle>
+    <approach>Start SMALL (happy path) → validate → expand → repeat</approach>
+    <story_pattern>
+      <story n="1" size="S">Core feature (happy path, minimal entities)</story>
+      <story n="2" size="S">Add validation/error handling</story>
+      <story n="3" size="M">Integration with existing system</story>
+      <story n="4" size="S">Edge cases and refinements</story>
+      <story n="5" size="M">Performance/scale (if needed)</story>
+    </story_pattern>
+    <result>After EACH story: feature works, is tested, can be demoed</result>
+    
+    <anti_pattern>
+      <bad_story>S01: Domain layer (all entities)</bad_story>
+      <bad_story>S02: Repository layer (all repos)</bad_story>
+      <bad_story>S03: Use case layer (all logic)</bad_story>
+      <problem>Nothing works until S03 done. 2000+ lines uncommitted code.</problem>
+    </anti_pattern>
+    
+    <good_pattern>
+      <good_story>S01: Create simple order (entity + repo + API + test)</good_story>
+      <good_story>S02: Validate order data (add validation + tests)</good_story>
+      <good_story>S03: Check inventory (integration + tests)</good_story>
+      <result>After S01: can create order. After S02: validation works. Incremental delivery.</result>
+    </good_pattern>
+  </feature_progression>
   
   <status_values>
     <todo>Not started</todo>
@@ -95,14 +116,16 @@ metadata:
     <references>Links to PRD, Architecture, Units</references>
   </structure>
   
-  <story_order>
-    <step n="1">Domain layer (entities, value objects)</step>
-    <step n="2">Repository interfaces</step>
-    <step n="3">Use cases</step>
-    <step n="4">Repository implementations</step>
-    <step n="5">HTTP handlers</step>
-    <step n="6">Integration tests</step>
-  </story_order>
+  <story_approach>
+    <principle>Build working features incrementally, not layers</principle>
+    <each_story_includes>Domain + Repository + API + Tests (thin vertical slice)</each_story_includes>
+    <progression>
+      <phase n="1">Happy path (minimal, working)</phase>
+      <phase n="2">Validation and errors</phase>
+      <phase n="3">Integration with existing</phase>
+      <phase n="4">Edge cases and optimization</phase>
+    </progression>
+  </story_approach>
   
   <naming>
     <file>epic-[NN]-[description].md</file>

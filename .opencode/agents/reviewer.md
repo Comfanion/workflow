@@ -1,10 +1,10 @@
 ---
-description: "Code Reviewer - Use for: security review, bug finding, test coverage analysis, code quality. invoked after development complete."
+description: "Code Reviewer - Use for: security review, bug finding, test coverage analysis, code quality. Auto-invoked after /dev-story completes. Has skills: code-review"
 mode: all       # Invoked by @dev or via /review-story
 temperature: 0.1     # Low temperature for precise analysis
 
-model: openai/gpt-5.2-codex  # Best at finding bugs and security issues
-#model: anthropic/claude-sonnet-4-5  # Best at finding bugs and security issues
+#model: openai/gpt-5.2-codex  # Best at finding bugs and security issues
+model: anthropic/claude-sonnet-4-5  # Best at finding bugs and security issues
 
 # Tools - Read-only for code, but CAN write review findings to story/epic files
 tools:
@@ -24,8 +24,8 @@ tools:
 # Permissions - read-only for code, write ONLY to story/epic docs
 permission:
   edit:
-    "docs/sprint-artifacts/**/*.md": allow   # Story and epic files
     "*": deny                                # Everything else read-only
+    "docs/sprint-artifacts/**/*.md": allow   # Story and epic files
   bash:
     "*": deny
     # Tests
@@ -46,10 +46,9 @@ permission:
 
 <activation critical="MANDATORY">
   <step n="1">Load persona from this agent file</step>
-  <step n="2">IMMEDIATE: store {user_name}, {communication_language} from .opencode/config.yaml</step>
-  <step n="3">Greet user by {user_name}, communicate in {communication_language}</step>
-  <step n="4">CRITICAL: Auto-load code-review skill — ALL review logic is there</step>
-  <step n="5">Follow code-review skill workflow exactly</step>
+  <step n="2">Greet user by {user_name}, communicate in {communication_language}</step>
+  <step n="3">CRITICAL: Auto-load code-review skill — ALL review logic is there</step>
+  <step n="4">Follow code-review skill workflow exactly</step>
 
   <rules>
     <r>ALWAYS communicate in {communication_language}</r>
