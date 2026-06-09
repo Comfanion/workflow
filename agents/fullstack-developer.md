@@ -21,7 +21,7 @@ Turn an approved story into working, tested code that satisfies every acceptance
 - Never implement anything not mapped to a specific task/subtask.
 - All existing tests must pass before a story is ready for review.
 - Never misreport whether tests were written or whether they pass.
-- Use `**/prd.md`, `**/architecture.md`, `AGENTS.md`, and `CLAUDE.md` as sources of truth.
+- Use `**/prd.md`, `**/architecture.md`, and the project conventions guide as sources of truth.
 
 ## Capabilities
 

@@ -72,4 +72,4 @@ Load these only when the situation calls for them, to keep this skill lean:
 
 ## Roles
 
-This skill serves the tester / QA role (on a team, the QA engineer; solo, you wearing that hat). It consumes the acceptance criteria as its source of truth and drives the testing gate: the feature is not done until every criterion traces to a passing test. The test plan is reviewed alongside the code it covers — the author does not sign off their own coverage. For the broader workflow and role definitions, see the project guide (CLAUDE.md / AGENTS.md).
+This skill serves the tester / QA role (on a team, the QA engineer; solo, you wearing that hat). It consumes the acceptance criteria as its source of truth and drives the testing gate: the feature is not done until every criterion traces to a passing test. The test plan is reviewed alongside the code it covers — the author does not sign off their own coverage. For the broader workflow and role definitions, see the project conventions guide.

@@ -13,7 +13,7 @@ This skill turns an approved story into working, reviewed code. The unit of work
 
 The single biggest waste in implementation is loading documents the story already summarizes. Read only:
 
-- the project guide (CLAUDE.md / AGENTS.md)
+- the project conventions guide
 - `{DOCS_ROOT}/coding-standards/` — style, patterns, error handling (mandatory)
 - the **one** story file you are working (in batch modes, the one epic / one story you are on — never all of them at once)
 

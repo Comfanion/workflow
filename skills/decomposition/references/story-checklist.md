@@ -101,7 +101,7 @@ Use this checklist to validate stories before marking them "ready-for-dev".
 - [ ] All tasks/subtasks complete
 - [ ] Unit tests written and passing
 - [ ] Integration tests (if required)
-- [ ] Code follows CLAUDE.md patterns
+- [ ] Code follows the project conventions
 - [ ] Code reviewed
 - [ ] No linting errors
 - [ ] Documentation updated

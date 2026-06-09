@@ -27,7 +27,7 @@ Turn an approved client-side story into working, tested UI that satisfies every 
 - Never implement anything not mapped to a specific task/subtask.
 - All existing tests must pass before a story is ready for review.
 - Never misreport whether tests were written or whether they pass.
-- Use `**/prd.md`, `**/architecture.md`, the design handoff, `AGENTS.md`, and `CLAUDE.md` as sources of truth.
+- Use `**/prd.md`, `**/architecture.md`, the design handoff, and the project conventions guide as sources of truth.
 
 ## Capabilities
 

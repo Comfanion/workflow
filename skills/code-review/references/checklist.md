@@ -18,7 +18,7 @@ Use this checklist when reviewing implemented code before marking story as "done
 ## Code Quality
 
 ### Architecture Compliance
-- [ ] Follows project's chosen architecture pattern (the project guide: CLAUDE.md / AGENTS.md)
+- [ ] Follows project's chosen architecture pattern (the project conventions guide)
 - [ ] Business logic isolated from infrastructure
 - [ ] Clear separation of concerns
 - [ ] Explicit mapping (no reflection libraries)

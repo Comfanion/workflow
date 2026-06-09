@@ -14,7 +14,7 @@ The most common failure in review is treating every observation as equally urgen
 Reviewing code without knowing what it was supposed to do produces opinions, not findings. Before reading the diff:
 
 - Read the plan or story the change implements, and list its acceptance criteria — these are what "correct" means for this change.
-- Read the project's coding standards (default `{DOCS_ROOT}/coding-standards/`) and the project guide (CLAUDE.md / AGENTS.md) for architecture and convention expectations.
+- Read the project's coding standards (default `{DOCS_ROOT}/coding-standards/`) and the project conventions guide for architecture and convention expectations.
 - Identify the changed files (the diff, or the change's file list).
 - Look up similar existing patterns in the codebase so your judgments about "this is wrong" or "this duplicates X" are grounded in how the project already does things, not in personal preference.
 

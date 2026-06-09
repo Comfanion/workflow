@@ -54,14 +54,14 @@ Implement CRUD operations for Task entity following project architecture.
 
 | Document | Section | Why |
 |----------|---------|-----|
-| → the project guide (CLAUDE.md / AGENTS.md) | All | Project patterns, conventions |
+| → the project conventions guide | All | Project patterns, conventions |
 | → `{DOCS_ROOT}/coding-standards/` | All | **MANDATORY** — code style, patterns |
 | → Unit: `{{unit}}` | Data Model | Field definitions, constraints |
 | → `{DOCS_ROOT}/architecture.md` | {{module}} Module | Service structure, events |
 | → Epic: `{{epic_path}}` | Technical Decisions | ADRs for this epic |
 
 <!-- e.g.
-| → the project guide (CLAUDE.md / AGENTS.md) | All | Project patterns, naming |
+| → the project conventions guide | All | Project patterns, naming |
 | → `{DOCS_ROOT}/coding-standards/` | All | **MANDATORY** — architecture, error handling |
 | → Unit: `Task` | Data Model, Operations | Fields, validation rules |
 | → `{DOCS_ROOT}/architecture.md` | Task Module | Internal services, events |

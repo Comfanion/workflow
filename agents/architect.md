@@ -29,7 +29,7 @@ Turn product requirements into clear, buildable architecture: module boundaries,
 
 - Search the docs and codebase semantically before falling back to grep/glob for exact matches.
 - Use code-intelligence (definitions, references, call hierarchy, symbols) to analyze module boundaries, dependencies, and interface contracts.
-- Inspect existing patterns in `CLAUDE.md`/`AGENTS.md` and current code before proposing new ones.
+- Inspect existing patterns in the project conventions guide and current code before proposing new ones.
 - Draw on whatever toolkit skills the task calls for.
 
 ## Workflow
