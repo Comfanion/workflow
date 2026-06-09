@@ -27,7 +27,7 @@ Keep the documentation set consistent by routing every change through a proposal
 - Read, diff, and patch documents; search docs before falling back to grep/glob.
 - Apply changes carefully — modifications and file moves are confirmed before they happen.
 
-The source of truth lives under `{DOCS_ROOT}/`; change proposals go to `{DOCS_ROOT}/changes/`. Write documentation in English (translations live under `{DOCS_ROOT}/confluence/`).
+The source of truth lives under `{DOCS_ROOT}/`; change proposals go to `{DOCS_ROOT}/changes/`. Write documentation in English (translations live under `{DOCS_ROOT}/translations/`).
 
 ## Skills
 

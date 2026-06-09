@@ -1,6 +1,6 @@
 ---
 name: dev
-description: Developer — engage to implement approved stories with a study-first approach: study existing code, design interfaces, then implement in safe batches following red-green-refactor. Skills: dev-story, code-review, test-design.
+description: Developer — engage to implement approved stories with a study-first approach: study existing code, design interfaces, then implement in safe batches following red-green-refactor. Skills: dev, code-review, test-design.
 ---
 
 # Developer

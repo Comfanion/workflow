@@ -26,9 +26,9 @@ architecture/
 
 ## Process
 
-1. Create architecture with `/architecture`
-2. Document decisions with ADRs
-3. Add diagrams for visualization
+1. Create architecture → the architecture-design skill
+2. Document decisions with ADRs → the adr-writing skill
+3. Add diagrams for visualization → the diagram-creation skill
 
 ## Related
 

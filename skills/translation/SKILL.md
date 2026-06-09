@@ -12,13 +12,13 @@ The failure to avoid is treating a translation as authoritative. The moment some
 ## The flow
 
 ```
-{DOCS_ROOT}/ (English, canonical)        {DOCS_ROOT}/confluence/ (translated, derived)
+{DOCS_ROOT}/ (English, canonical)        {DOCS_ROOT}/translations/ (translated, derived)
   PRD.md                          →        prd-uk.md / prd-uk.confluence
   architecture.md                 →        architecture-uk.md
   epic-01.md                      →        epic-01-uk.md
 ```
 
-`{DOCS_ROOT}` defaults to `docs/` at the project root (so translations land in `docs/confluence/`); honor the project's configured docs location if one is set. Technical docs always stay in English under `{DOCS_ROOT}`; translations always go to the `confluence/` subfolder.
+`{DOCS_ROOT}` defaults to `docs/` at the project root (so translations land in `docs/translations/`); honor the project's configured docs location if one is set. Technical docs always stay in English under `{DOCS_ROOT}`; translations always go to the `translations/` subfolder.
 
 ## What to translate — and what to leave alone
 
@@ -68,15 +68,15 @@ Ukrainian translation — prose translated, the Given/When/Then keywords localiz
 1. **Identify the source.** If a path was given, use it; otherwise list the available documents under `{DOCS_ROOT}/` and ask which to translate.
 2. **Pick the target language.** Use the one given; otherwise use the project's configured default and confirm it.
 3. **Pick the output format** — Confluence wiki markup, Markdown, HTML, or all of them.
-4. **Translate and convert.** Read the source, translate the prose while preserving everything in the "leave alone" list, convert to the chosen format, and save under `{DOCS_ROOT}/confluence/`.
+4. **Translate and convert.** Read the source, translate the prose while preserving everything in the "leave alone" list, convert to the chosen format, and save under `{DOCS_ROOT}/translations/`.
 5. **Report** what was produced: source path and language, output path and language, sections translated, and how many technical terms were preserved.
 
-For a batch export, repeat steps 4–5 for every document marked for translation, then generate a `{DOCS_ROOT}/confluence/README.md` index linking each translation back to its English original.
+For a batch export, repeat steps 4–5 for every document marked for translation, then generate a `{DOCS_ROOT}/translations/README.md` index linking each translation back to its English original.
 
 ## File naming
 
 ```
-{DOCS_ROOT}/confluence/
+{DOCS_ROOT}/translations/
   {doc-name}-{lang}.{format}     e.g. prd-uk.confluence, prd-uk.md, architecture-uk.md
   html/                          HTML exports + style.css
   README.md                      index of all translations

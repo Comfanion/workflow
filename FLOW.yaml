@@ -64,7 +64,6 @@ pipeline:
       role: pm
       skills:
         - prd-writing              # also covers PRD validation
-        - acceptance-criteria
       artifacts:
         input:
           - "{DOCS_ROOT}/requirements/requirements.md"
@@ -88,10 +87,11 @@ pipeline:
       skills:
         - architecture-design      # also covers architecture validation
         - adr-writing
+        - unit-writing
+        - coding-standards
         - api-design
         - database-design
         - diagram-creation
-        - coding-standards
       artifacts:
         input:
           - "{DOCS_ROOT}/prd.md"
@@ -115,7 +115,6 @@ pipeline:
       role: pm
       skills:
         - decomposition            # merges epic / story / sprint-planning
-        - acceptance-criteria
       artifacts:
         input:
           - "{DOCS_ROOT}/prd.md"
@@ -140,9 +139,14 @@ pipeline:
       role: dev
       skills:
         - dev                      # story loop + epic/sprint batch modes + TDD
-        - unit-writing
+        - code-review
         - test-design
-        - coding-standards
+      # Coordination: the conducting/main agent uses the orchestration trio to
+      # dispatch story/epic/sprint batches to the dev role and gate each result.
+      coordination:
+        - orchestration            # router: pick delegation mode + sequencing
+        - orchestration-subagent   # ephemeral subagent calls (sequential/parallel)
+        - orchestration-team       # standing role-team via a shared board
       artifacts:
         input:
           - "{DOCS_ROOT}/backlog/sprint-status.yaml"
@@ -165,7 +169,6 @@ pipeline:
       role: reviewer
       skills:
         - code-review              # checklist embedded in the skill
-        - test-design
       artifacts:
         input:
           - "{DOCS_ROOT}/backlog/stories/story-*.md"

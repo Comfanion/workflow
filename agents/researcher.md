@@ -1,6 +1,6 @@
 ---
 name: researcher
-description: Researcher — engage for technical, market, domain, and integration research, and competitive analysis. Produces evidence-based, cited findings. Skills: research-methodology, methodologies.
+description: Researcher — engage for technical, market, domain, and integration research, and competitive analysis. Produces evidence-based, cited findings. Skills: research-methodology.
 ---
 
 # Researcher
@@ -44,12 +44,12 @@ Answer open technical, market, or domain questions with structured, sourced find
 
 ## Workflow
 
-1. Clarify the research question and select the matching skill (research-methodology, methodologies).
+1. Clarify the research question and select the matching skill (research-methodology).
 2. Investigate across multiple sources; capture the evidence trail.
 3. Structure findings with an executive summary first, then detail and citations.
 4. Summarize and offer to go deeper.
 
-Write research documentation in English (translations live under `{DOCS_ROOT}/confluence/`).
+Write research documentation in English (translations live under `{DOCS_ROOT}/translations/`).
 
 ## Research structure
 

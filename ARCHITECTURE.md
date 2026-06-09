@@ -16,7 +16,7 @@ the portable model.
 ### Agents (WHO — roles / personas)
 
 **Purpose:** Specialized roles with a defined domain of expertise.
-**Location:** `.opencode/agents/<name>.md`
+**Location:** `agents/<name>.md`
 
 An agent is a **persona**, not a procedure. Each agent:
 
@@ -37,8 +37,8 @@ analyst:
 
 **Purpose:** Reusable, role-agnostic knowledge: how to do a specific thing, with the
 templates and checklists needed to do it well.
-**Location:** `.opencode/skills/<name>/SKILL.md`, with supporting files under
-`.opencode/skills/<name>/references/`.
+**Location:** `skills/<name>/SKILL.md`, with supporting files under
+`skills/<name>/references/`.
 
 Each skill:
 
@@ -62,16 +62,21 @@ prd-writing:
 | Agent | Expertise | Typical skills |
 |-------|-----------|----------------|
 | `analyst` | Requirements engineering | requirements-gathering, acceptance-criteria |
-| `pm` | Product management | prd-writing, decomposition, acceptance-criteria |
-| `architect` | System design | architecture-design, adr-writing, api-design, database-design, diagram-creation, coding-standards |
-| `dev` | Implementation | dev, unit-writing, test-design, coding-standards |
-| `reviewer` | Quality / code review | code-review, test-design |
+| `pm` | Product management | prd-writing, decomposition |
+| `architect` | System design | architecture-design, adr-writing, unit-writing, coding-standards, api-design, database-design, diagram-creation |
+| `dev` | Implementation | dev, code-review, test-design |
+| `reviewer` | Quality / code review | code-review |
 | `researcher` | Investigation | research-methodology |
-| `change-manager` | Change & release hygiene | changelog, archiving, doc-todo, translation |
+| `change-manager` | Change & release hygiene | doc-todo, archiving |
+
+Skill ownership above is taken verbatim from each agent's `Skills:` frontmatter line —
+the single source of truth. Two skills are **cross-cutting utilities** owned by no single
+role: `changelog` and `translation`. Any role (or the main agent) may invoke them as the
+work demands.
 
 ---
 
-## Skills (19)
+## Skills (22)
 
 ### Requirements & Product
 | Skill | Purpose |
@@ -103,17 +108,56 @@ prd-writing:
 ### Documentation & Change
 | Skill | Purpose |
 |-------|---------|
-| `changelog` | Maintain a changelog |
+| `changelog` | Maintain a changelog (cross-cutting) |
 | `archiving` | Archive completed artifacts |
 | `doc-todo` | Track documentation TODOs |
-| `translation` | Translate documents |
+| `translation` | Translate documents (cross-cutting) |
+
+### Orchestration & Coordination
+| Skill | Purpose |
+|-------|---------|
+| `orchestration` | Router: run work across agents — choose delegation mode and sequencing |
+| `orchestration-subagent` | Mechanics for ephemeral subagent calls (sequential review-gated or parallel fan-out) |
+| `orchestration-team` | Mechanics for a standing role-team coordinated via a shared board |
+
+The orchestration trio is loaded by the **conducting / main agent** (the one you talk to),
+not by any role agent — see [Coordination Layer](#coordination-layer).
+
+---
+
+## Coordination Layer
+
+Above the roles sits a thin **coordination layer**: the conducting agent — the main agent
+you talk to — that holds the goal and the plan and runs the work *through* the role agents
+rather than doing every step itself. It does not own a domain of expertise; it owns
+sequencing, delegation, and quality gates.
+
+This layer is driven by the orchestration trio:
+
+- **`orchestration`** — the router. Establishes the principles that apply to any
+  delegation (construct context deliberately, review gates, model selection, continuous
+  execution) and points to the right mechanics skill.
+- **`orchestration-subagent`** — mechanics for spawning ephemeral, isolated subagents:
+  one crafted task per agent, either sequentially with a review gate after each, or in
+  parallel across independent problem domains.
+- **`orchestration-team`** — mechanics for a standing, role-specialized team coordinated
+  through a shared board/dispatcher (e.g. a kanban dispatcher routing tasks to profiles),
+  with declared dependencies and hand-offs.
+
+The conducting agent maps each pipeline phase (see `FLOW.yaml`) to the role that owns it,
+dispatches the work via one of the two mechanics, and gates each result before advancing.
+The role agents remain personas that know *which* skills to apply; the coordination layer
+decides *who* runs *when* and whether the output is good enough.
 
 ---
 
 ## Directory Structure
 
+The repo is **flat**: skills live at `skills/<name>/`, agents at `agents/<name>.md`. There
+is no harness-specific prefix — packaging for a given harness is layered on elsewhere.
+
 ```
-.opencode/
+.
 ├── FLOW.yaml                    # Workflow pipeline definition
 ├── ARCHITECTURE.md              # This file
 │

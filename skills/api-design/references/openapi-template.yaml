@@ -1,0 +1,99 @@
+# OpenAPI specification template
+#
+# For REST, an OpenAPI spec is the machine-readable form of the REST design guide
+# (references/rest.md) — it generates clients, mocks, and docs, so the contract lives
+# in one file instead of scattered prose. Use this as the starting shape.
+#
+# Define every schema once under `components` and `$ref` it everywhere — the same
+# field-consistency discipline as the rest of this skill, enforced by the tooling.
+
+openapi: 3.1.0
+info:
+  title: Tasks API
+  version: 1.0.0
+
+servers:
+  - url: https://api.example.com/v1
+
+paths:
+  /tasks:
+    get:
+      summary: List tasks
+      operationId: listTasks
+      tags: [Tasks]
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/TaskStatus'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskList'
+    post:
+      summary: Create task
+      operationId: createTask
+      tags: [Tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+components:
+  schemas:
+    Task:
+      type: object
+      required: [id, title, status, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string, maxLength: 255 }
+        status: { $ref: '#/components/schemas/TaskStatus' }
+        createdAt: { type: string, format: date-time }
+
+    TaskStatus:
+      type: string
+      enum: [todo, in_progress, done]
+
+    CreateTaskRequest:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 255 }
+        assigneeId: { type: string, format: uuid }
+
+  responses:
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

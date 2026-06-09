@@ -23,11 +23,9 @@ sprint-artifacts/
 
 ## Workflow
 
-1. Create epics from PRD → `/epics`
-2. Create stories for epic → `/stories {epic-id}`
-3. Plan sprint → `/sprint-plan`
-4. Sync to Jira → `/jira-sync`
-5. Implement → `/dev-story`
+1. Create epics and stories from the PRD → the decomposition skill
+2. Plan sprints → the decomposition skill
+3. Implement → the dev skill
 
 ## Naming Conventions
 
