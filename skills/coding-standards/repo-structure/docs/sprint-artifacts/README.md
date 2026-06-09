@@ -18,7 +18,6 @@ sprint-artifacts/
 │       └── story-*.md
 ├── sprint-2/              # Sprint 2
 │   └── ...
-└── jira-sync-report.md    # Last Jira sync
 ```
 
 ## Workflow

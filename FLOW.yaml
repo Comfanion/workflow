@@ -72,7 +72,7 @@ pipeline:
         input:
           - "{DOCS_ROOT}/requirements/requirements.md"
         output:
-          - "{DOCS_ROOT}/prd.md"
+          - "{DOCS_ROOT}/prds/<slug>/PRD.md"
       validation:
         skill: prd-writing
         checklist: skills/prd-writing/references/checklist.md
@@ -141,7 +141,7 @@ pipeline:
         - decomposition            # merges epic / story / sprint-planning
       artifacts:
         input:
-          - "{DOCS_ROOT}/prd.md"
+          - "{DOCS_ROOT}/prds/<slug>/PRD.md"
           - "{DOCS_ROOT}/architecture.md"
         output:
           - "{DOCS_ROOT}/backlog/epic-*.md"
@@ -254,7 +254,7 @@ artifacts:
     template: skills/requirements-gathering/references/template.md
 
   prd:
-    path: "{DOCS_ROOT}/prd.md"
+    path: "{DOCS_ROOT}/prds/<slug>/PRD.md"
     template: skills/prd-writing/references/template.md
 
   prd-qa:
