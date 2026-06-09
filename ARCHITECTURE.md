@@ -69,7 +69,7 @@ none of the entries below imply ownership of a skill set.
 
 ---
 
-## Skills (29)
+## Skills (30)
 
 A single shared library. Any role draws from it; skills surface by task match (each skill's
 own description), **not** by role assignment. The grouping below is by purpose only — it
@@ -115,11 +115,12 @@ does not bind any skill to a role.
 |-------|---------|
 | `release-engineering` | CI/CD and release: build, deploy, and the deploy gate |
 
-### Research (cross-cutting)
+### Research & Ideation (cross-cutting)
 | Skill | Purpose |
 |-------|---------|
 | `research-methodology` | Run technical, market, or domain research |
 | `research-planning` | Plan a research effort — scope questions, pick sources and methods |
+| `brainstorm` | Facilitate structured ideation/problem-analysis (Five Whys, HMW, SCAMPER, empathy/journey maps); produces ranked ideas + action items |
 
 ### Orchestration
 | Skill | Purpose |

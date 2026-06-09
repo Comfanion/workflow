@@ -33,7 +33,7 @@ research → requirements → prd → architecture → design → decomposition 
 - **testing** — **test-scenarios** (author concrete cases/edge scenarios during dev) and **test-execution** (run the plan + QA gate).
 - **deploy** — **release-engineering**: CI/CD, deploy strategies, rollback, and a hard deploy gate (ship on green + confirmation).
 - **orchestration / orchestration-subagent / orchestration-team** — run the work: ephemeral subagent calls (sequential review-gated or parallel fan-out) or a standing role-team coordinated via a board.
-- Cross-cutting: **research-methodology** (do research), **research-planning** (scope spikes for unknowns). Utilities: **changelog**, **doc-todo**, **archiving**, **translation**.
+- Cross-cutting: **brainstorm** (facilitated ideation / problem analysis — Five Whys, HMW, SCAMPER, empathy/journey maps), **research-methodology** (do research), **research-planning** (scope spikes for unknowns). Utilities: **changelog**, **doc-todo**, **archiving**, **translation**.
 
 The architecture altitude ladder is the toolkit's sharpest rule: **system → service → unit**. Keep landscape decisions out of a service's internal design, and vice-versa.
 
@@ -79,4 +79,4 @@ Skills describe **capabilities** ("search the codebase", "spawn a subagent") rat
 
 ## Status
 
-29 skills, 11 agent roles. Harness-neutral and consistent. Packaging present for Claude Code, Codex, Hermes (tap + profile setup); opencode via symlinks is best-effort and unverified after the flatten.
+30 skills, 11 agent roles. Harness-neutral and consistent. Packaging present for Claude Code, Codex, Hermes (tap + profile setup); opencode via symlinks is best-effort and unverified after the flatten.
