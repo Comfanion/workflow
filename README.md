@@ -8,7 +8,7 @@ It is deliberately lean: no plugins, no MCP servers, no harness-specific tooling
 
 Three ideas, kept strictly separate:
 
-- **Roles (`agents/`)** are viewpoints — analyst, architect, pm, dev, reviewer, researcher, change-manager. Each is a perspective with a mission and a scope. A role does **not** own a fixed set of skills, and it never references another role; it just knows its own job.
+- **Roles (`agents/`)** are viewpoints — analyst, architect, pm, designer, fullstack/backend/frontend-developer, tester, reviewer, researcher, change-manager, devops. Each is a perspective with a mission and a scope. A role does **not** own a fixed set of skills, and it never references another role; it just knows its own job.
 - **Skills (`skills/`)** are a single shared library. Any role draws from whichever skills the task needs. Skills surface by task match — each skill's own `description` decides when it applies — so nothing is bound to a role.
 - **Orchestration** is how the work actually runs across roles. The agent you talk to conducts: it dispatches work and enforces review gates, using the `orchestration*` skills. Roles never coordinate each other directly.
 
@@ -17,7 +17,7 @@ Three ideas, kept strictly separate:
 The skills compose into a recommended flow (see `FLOW.yaml` for the full map):
 
 ```
-research → requirements → prd → architecture → decomposition → implementation → review
+research → requirements → prd → architecture → design → decomposition → implementation → testing → review → deploy
 ```
 
 - **requirements-gathering** — elicit and validate functional/non-functional requirements (the source of truth).
@@ -27,10 +27,13 @@ research → requirements → prd → architecture → decomposition → impleme
   - **service-architecture** — one service's internals: style (Layered/Hexagonal/Clean/Vertical-Slices), modules, data ownership, stack.
   - **unit-writing** — one module's detailed contract (data model, API, events).
   - Supporting: **adr-writing**, **api-design**, **database-design**, **diagram-creation**, **coding-standards**.
+- **design** — **ux-design** (user flows, wireframes, interaction, all UI states, handoff) and **design-system** (tokens, components, visual language).
 - **decomposition** — break scope into epics → stories → sprints at the right granularity, each carrying enough context that the next level can act without asking.
-- **dev** — the implementation loop (single story + epic/sprint batch modes, TDD), with **test-design**, **code-review**, **acceptance-criteria**.
+- **dev** — the implementation loop (single story + epic/sprint batch modes, TDD), shared by the fullstack/backend/frontend developer roles, with **test-design**, **code-review**, **acceptance-criteria**.
+- **testing** — **test-scenarios** (author concrete cases/edge scenarios during dev) and **test-execution** (run the plan + QA gate).
+- **deploy** — **release-engineering**: CI/CD, deploy strategies, rollback, and a hard deploy gate (ship on green + confirmation).
 - **orchestration / orchestration-subagent / orchestration-team** — run the work: ephemeral subagent calls (sequential review-gated or parallel fan-out) or a standing role-team coordinated via a board.
-- Utilities: **research-methodology**, **changelog**, **doc-todo**, **archiving**, **translation**.
+- Cross-cutting: **research-methodology** (do research), **research-planning** (scope spikes for unknowns). Utilities: **changelog**, **doc-todo**, **archiving**, **translation**.
 
 The architecture altitude ladder is the toolkit's sharpest rule: **system → service → unit**. Keep landscape decisions out of a service's internal design, and vice-versa.
 
@@ -76,4 +79,4 @@ Skills describe **capabilities** ("search the codebase", "spawn a subagent") rat
 
 ## Status
 
-23 skills, 7 agent roles. Harness-neutral and consistent. Packaging present for Claude Code, Codex, Hermes (tap + profile setup); opencode via symlinks is best-effort and unverified after the flatten.
+29 skills, 12 agent roles. Harness-neutral and consistent. Packaging present for Claude Code, Codex, Hermes (tap + profile setup); opencode via symlinks is best-effort and unverified after the flatten.
