@@ -65,7 +65,7 @@ none of the entries below imply ownership of a skill set.
 
 ---
 
-## Skills (22)
+## Skills (23)
 
 A single shared library. Any role draws from it; skills surface by task match (each skill's
 own description), **not** by role assignment. The grouping below is by purpose only — it
@@ -81,7 +81,8 @@ does not bind any skill to a role.
 ### Design
 | Skill | Purpose |
 |-------|---------|
-| `architecture-design` | Design system architecture; also covers architecture validation |
+| `system-architecture` | Design the system landscape: services, boundaries, inter-service contracts, topology (multi-service only); covers system-arch validation |
+| `service-architecture` | Design one service's internals: style, modules, data ownership, stack; covers service-arch validation |
 | `adr-writing` | Write Architecture Decision Records |
 | `api-design` | Design APIs |
 | `database-design` | Design data models / schemas |
@@ -98,7 +99,7 @@ does not bind any skill to a role.
 |-------|---------|
 | `dev` | Implementation loop: single story, plus epic/sprint batch modes, with TDD |
 | `test-design` | Specify module and integration tests |
-| `unit-writing` | Write unit tests |
+| `unit-writing` | Write per-module/domain unit docs (data model, API surface, event schemas) |
 | `code-review` | Review code for quality and correctness (checklist embedded) |
 | `research-methodology` | Run technical, market, or domain research |
 
@@ -179,7 +180,8 @@ is no harness-specific prefix — packaging for a given harness is layered on el
 Examples of `references/` payloads:
 
 - `prd-writing/references/{template.md, checklist.md}`
-- `architecture-design/references/{template.md, checklist.md}`
+- `system-architecture/references/{template.md, checklist.md}`
+- `service-architecture/references/{template.md, checklist.md}`
 - `requirements-gathering/references/{template.md, checklist.md}`
 - `decomposition/references/{epic-template.md, story-template.md, sprint-template.yaml, story-checklist.md}`
 - `acceptance-criteria/references/template.md`
@@ -198,8 +200,9 @@ The agents and skills above produce a chain of artifacts under `{DOCS_ROOT}` (de
 ```
 research          → {DOCS_ROOT}/research/...        (researcher + research-methodology)
 requirements      → {DOCS_ROOT}/requirements/...    (analyst + requirements-gathering)
-prd               → {DOCS_ROOT}/prd.md               (pm + prd-writing)
-architecture      → {DOCS_ROOT}/architecture.md      (architect + architecture-design + adr-writing)
+prd               → {DOCS_ROOT}/prds/<slug>/PRD.md    (pm + prd-writing)
+system arch       → {DOCS_ROOT}/architecture/system.md (architect + system-architecture, multi-service only)
+service arch      → {DOCS_ROOT}/architecture.md or architecture/<service>.md (architect + service-architecture + adr-writing)
 epics/stories     → {DOCS_ROOT}/backlog/...          (pm + decomposition)
 sprint plan       → {DOCS_ROOT}/backlog/sprint-status.yaml (pm + decomposition)
 implementation    → source code + tests             (dev + dev/unit-writing/test-design)

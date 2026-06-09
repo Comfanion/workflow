@@ -88,7 +88,8 @@ pipeline:
       description: Design and validate system architecture from the PRD
       role: architect
       skills:
-        - architecture-design      # also covers architecture validation
+        - system-architecture      # multi-service landscape; also covers its validation
+        - service-architecture     # one service's internals; also covers its validation
         - adr-writing
         - unit-writing
         - coding-standards
@@ -97,13 +98,16 @@ pipeline:
         - diagram-creation
       artifacts:
         input:
-          - "{DOCS_ROOT}/prd.md"
+          - "{DOCS_ROOT}/prds/<slug>/PRD.md"
         output:
-          - "{DOCS_ROOT}/architecture.md"
+          - "{DOCS_ROOT}/architecture/system.md   # multi-service only"
+          - "{DOCS_ROOT}/architecture.md           # single service, or architecture/<service>.md per service"
           - "{DOCS_ROOT}/architecture/adr/*.md"
       validation:
-        skill: architecture-design
-        checklist: skills/architecture-design/references/checklist.md
+        skills: [system-architecture, service-architecture]
+        checklists:
+          - skills/system-architecture/references/checklist.md
+          - skills/service-architecture/references/checklist.md
         required: true
       qa:
         artifact: "{DOCS_ROOT}/architecture-integration-tests.md"
@@ -199,9 +203,14 @@ artifacts:
     template: skills/acceptance-criteria/references/template.md
     mandatory: true
 
+  system-architecture:
+    path: "{DOCS_ROOT}/architecture/system.md"
+    template: skills/system-architecture/references/template.md
+    note: multi-service systems only
+
   architecture:
     path: "{DOCS_ROOT}/architecture.md"
-    template: skills/architecture-design/references/template.md
+    template: skills/service-architecture/references/template.md
 
   adr:
     path: "{DOCS_ROOT}/architecture/adr/*.md"
