@@ -1,0 +1,21 @@
+{
+  "name": "comfanion",
+  "version": "5.0.0",
+  "description": "Harness-neutral agentic-development toolkit: skills and agent roles for requirements, PRDs, system/service architecture, decomposition, implementation, review, and multi-agent orchestration.",
+  "author": {
+    "name": "Evgeniy Stepanchuk"
+  },
+  "homepage": "https://github.com/Comfanion/workflow",
+  "repository": "https://github.com/Comfanion/workflow",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "agents",
+    "workflow",
+    "architecture",
+    "orchestration",
+    "agentic-development"
+  ],
+  "skills": "./skills/",
+  "agents": "./agents/"
+}

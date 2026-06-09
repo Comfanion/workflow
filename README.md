@@ -43,6 +43,12 @@ skills/<name>/
 agents/<role>.md    # role viewpoints
 ARCHITECTURE.md     # the two-layer model + full skill/role catalog
 FLOW.yaml           # the recommended pipeline: phase → role(s) → skill(s) → artifact(s)
+docs/
+  capability-map.md # capability → concrete tool per harness
+.claude-plugin/     # Claude Code plugin + marketplace manifests
+.codex-plugin/      # Codex manifest
+.opencode/          # opencode symlinks → root skills/agents (best-effort)
+templates/hermes/   # setup-team.sh — create Hermes profiles from agents/
 ```
 
 Conventions every skill follows:
@@ -54,14 +60,20 @@ Conventions every skill follows:
 
 ## Using it
 
-Each skill is a portable `SKILL.md`, so any harness that loads Markdown skills can use this repo today by pointing its skills directory at `skills/` (and its agents/subagents at `agents/`):
+One `skills/` source serves every harness; each gets a thin manifest pointing at it.
 
-- **opencode** — the native format this toolkit grew from; place under your project's skills/agents dirs.
-- **Claude Code** — skills load from a plugin or skills directory; agents map to subagents.
-- **Codex / Hermes** — skills are portable; Hermes installs skill repos as a tap.
+- **Claude Code** — install as a plugin. The marketplace manifest lives at `.claude-plugin/marketplace.json`; add the repo as a plugin marketplace and install `comfanion`. Skills load from `skills/` and roles become subagents from `agents/` automatically.
+- **Codex** — `.codex-plugin/plugin.json` declares `skills: ./skills/` and `agents: ./agents/`. Point Codex at the repo.
+- **Hermes** — add the repo as a skill tap, then install per role profile:
+  ```
+  hermes skills tap add <git-url-of-this-repo>
+  hermes -p <role> skills install <tap>/<skill>
+  ```
+  Create the role profiles first with `templates/hermes/setup-team.sh` (profiles are host-side; see the script).
+- **opencode** — `.opencode/skills` and `.opencode/agents` symlink to the root source (best-effort; see `.opencode/INSTALL.md`).
 
-First-class per-harness packaging — a Claude Code plugin manifest, a Codex manifest, a Hermes tap, and a capability→tool mapping so skills reference capabilities rather than a specific harness's tools — is the next step (not yet in this repo).
+Skills describe **capabilities** ("search the codebase", "spawn a subagent") rather than naming a harness's tools — `docs/capability-map.md` maps each capability to the concrete tool per harness.
 
 ## Status
 
-23 skills, 7 agent roles. Harness-neutral and consistent. Multi-harness packaging is in progress.
+23 skills, 7 agent roles. Harness-neutral and consistent. Packaging present for Claude Code, Codex, Hermes (tap + profile setup); opencode via symlinks is best-effort and unverified after the flatten.
