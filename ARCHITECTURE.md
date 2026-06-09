@@ -48,7 +48,7 @@ Each skill:
 
 ---
 
-## Roles (12)
+## Roles (11)
 
 Roles are viewpoints, not skill bundles. Any role selects whatever skills the task needs;
 none of the entries below imply ownership of a skill set.
@@ -65,7 +65,6 @@ none of the entries below imply ownership of a skill set.
 | `tester` | Validation lens — authors test scenarios and runs the QA gate |
 | `reviewer` | Quality lens — judges correctness, risk, and adherence to standards |
 | `researcher` | Investigation lens — gathers and weighs evidence before commitments are made |
-| `change-manager` | Release-hygiene lens — keeps artifacts, history, and follow-ups in order |
 | `devops` | Delivery lens — owns CI/CD and the deploy gate (ship on green + confirmation) |
 
 ---
@@ -182,7 +181,6 @@ is no harness-specific prefix — packaging for a given harness is layered on el
 │   ├── analyst.md
 │   ├── architect.md
 │   ├── backend-developer.md
-│   ├── change-manager.md
 │   ├── designer.md
 │   ├── devops.md
 │   ├── frontend-developer.md

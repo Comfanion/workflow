@@ -8,7 +8,7 @@ It is deliberately lean: no plugins, no MCP servers, no harness-specific tooling
 
 Three ideas, kept strictly separate:
 
-- **Roles (`agents/`)** are viewpoints — analyst, architect, pm, designer, fullstack/backend/frontend-developer, tester, reviewer, researcher, change-manager, devops. Each is a perspective with a mission and a scope. A role does **not** own a fixed set of skills, and it never references another role; it just knows its own job.
+- **Roles (`agents/`)** are viewpoints — analyst, architect, pm, designer, fullstack/backend/frontend-developer, tester, reviewer, researcher, devops. Each is a perspective with a mission and a scope. A role does **not** own a fixed set of skills, and it never references another role; it just knows its own job.
 - **Skills (`skills/`)** are a single shared library. Any role draws from whichever skills the task needs. Skills surface by task match — each skill's own `description` decides when it applies — so nothing is bound to a role.
 - **Orchestration** is how the work actually runs across roles. The agent you talk to conducts: it dispatches work and enforces review gates, using the `orchestration*` skills. Roles never coordinate each other directly.
 
@@ -79,4 +79,4 @@ Skills describe **capabilities** ("search the codebase", "spawn a subagent") rat
 
 ## Status
 
-29 skills, 12 agent roles. Harness-neutral and consistent. Packaging present for Claude Code, Codex, Hermes (tap + profile setup); opencode via symlinks is best-effort and unverified after the flatten.
+29 skills, 11 agent roles. Harness-neutral and consistent. Packaging present for Claude Code, Codex, Hermes (tap + profile setup); opencode via symlinks is best-effort and unverified after the flatten.

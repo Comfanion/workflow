@@ -41,7 +41,7 @@ This choice lives *inside* each model; both `orchestration-subagent` and `orches
 - **Input:** the tasks/stories produced by `decomposition` — already sized and carrying their required reading.
 - **What a dispatched implementer runs:** the `dev` skill (the per-story build loop).
 - **The review gate:** the `code-review` skill.
-- **Who the work goes to:** the role agents in `agents/` (analyst, architect, pm, dev, reviewer, researcher, change-manager).
+- **Who the work goes to:** the role agents in `agents/` (analyst, architect, pm, designer, the developer roles, tester, reviewer, researcher, devops).
 
 ## Roles
 

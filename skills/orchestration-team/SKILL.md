@@ -24,11 +24,13 @@ Assign by what each role owns (these are the agents in `agents/`):
 
 - **analyst** — requirements gathering & validation, acceptance criteria.
 - **pm** — PRD, decomposition into epics/stories, sprint planning, prioritization.
-- **architect** — system design, ADRs, API/DB/unit docs, coding standards.
-- **dev** — implementing stories (the `dev` loop); the main executor.
+- **architect** — system/service architecture, ADRs, API/DB/unit docs, coding standards.
+- **designer** — UX flows, interface design, design system.
+- **fullstack/backend/frontend-developer** — implementing stories (the `dev` loop); the main executors.
+- **tester** — test cases/scenarios and the QA gate.
 - **reviewer** — code/security review gate.
 - **researcher** — technical/market/domain research, pulled in on demand.
-- **change-manager** — change proposals, delta tracking, document reviews.
+- **devops** — CI/CD, release, and the deploy gate.
 
 Keep the assignment map honest: if a role for some work doesn't exist on your team, either add it deliberately or fold the work into an existing role — don't route into the void.
 
