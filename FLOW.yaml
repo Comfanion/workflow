@@ -1,18 +1,21 @@
 # Workflow Pipeline
-# Defines the end-to-end pipeline for AI-assisted delivery as a sequence of phases.
-# Each phase maps to the role(s) that run it, the skill(s) they use, and the
-# artifact(s) produced. Harness-neutral: roles and skills are portable across
-# Claude Code, opencode, Codex, and Hermes; packaging/invocation is per-harness.
+# A RECOMMENDED end-to-end workflow for AI-assisted delivery, as a sequence of phases.
+# Each phase notes the role that typically drives it, the skills typically involved,
+# and the artifact(s) produced. Skills are a shared library — they are typically
+# involved in a phase, not owned by any role; any role draws whatever the task needs.
+# Harness-neutral: roles and skills are portable across Claude Code, opencode, Codex,
+# and Hermes; packaging/invocation is per-harness.
 
 name: workflow-pipeline
 version: "4.0"
 description: |
-  End-to-end pipeline from research to implementation and review.
+  Recommended end-to-end pipeline from research to implementation and review.
 
-  Model: Phases → Roles (WHO) → Skills (HOW) → Artifacts (WHAT).
-  - Roles  (agents): the persona that runs the phase.
-  - Skills:          the reusable knowledge/templates the role applies.
-  - Artifacts:       the documents or code the phase produces.
+  Model: Phases → Role that typically drives → Skills typically involved → Artifacts.
+  - Role:       the viewpoint that typically drives the phase (a perspective, not a skill bundle).
+  - Skills:     the shared-library skills typically involved in the phase; surfaced by
+                task match, not bound to any role — any role draws whatever it needs.
+  - Artifacts:  the documents or code the phase produces.
 
   Output paths default under {DOCS_ROOT} (default: docs/).
 

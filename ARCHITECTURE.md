@@ -11,32 +11,30 @@ the portable model.
 
 ---
 
-## Two-Layer Model: Agents + Skills
+## Two-Layer Model: Roles + Skills
 
-### Agents (WHO — roles / personas)
+The toolkit separates **who** is looking at the problem from **how** the work gets done.
+Roles are viewpoints; skills are a shared library. The two are **not** wired together —
+no role owns a fixed set of skills.
 
-**Purpose:** Specialized roles with a defined domain of expertise.
+### Roles (WHO — viewpoints)
+
+**Purpose:** A role is a **perspective** on the work — a mission, a set of
+responsibilities, and a scope. It frames *whose* lens the task is approached from
+(the analyst's, the architect's, the reviewer's…).
 **Location:** `agents/<name>.md`
 
-An agent is a **persona**, not a procedure. Each agent:
+Each role:
 
-1. Owns one area of expertise (analysis, product, architecture, development, review…).
-2. Knows *which* skills apply to its work and *when* to reach for them.
-3. Maintains a consistent working style and judgment.
-4. Does **not** embed step-by-step how-to content — that lives in skills.
+1. Carries a mission and a defined scope of responsibility.
+2. Applies the judgment and priorities of that viewpoint.
+3. Does **not** own a skill list and does **not** reference other roles.
+4. Selects whatever skills the task at hand needs — drawing freely from the shared library.
 
-```
-# Agent = WHO (role)
-analyst:
-  expertise: Requirements engineering
-  style: Methodical, asks clarifying questions, uncovers hidden needs
-  uses: requirements-gathering, acceptance-criteria
-```
+### Skills (HOW — shared library)
 
-### Skills (HOW — knowledge modules)
-
-**Purpose:** Reusable, role-agnostic knowledge: how to do a specific thing, with the
-templates and checklists needed to do it well.
+**Purpose:** A shared pool of reusable, role-agnostic knowledge: how to do a specific
+thing, with the templates and checklists needed to do it well.
 **Location:** `skills/<name>/SKILL.md`, with supporting files under
 `skills/<name>/references/`.
 
@@ -44,48 +42,43 @@ Each skill:
 
 1. Describes HOW to produce a specific artifact or perform a specific task.
 2. Ships its templates and checklists under `references/`.
-3. Is agent-agnostic — any agent may load any skill.
-4. Is loaded on demand, not always-on.
-
-```
-# Skill = HOW (knowledge)
-prd-writing:
-  what: How to write and validate a PRD
-  references: references/template.md, references/checklist.md
-  used-by: pm, analyst
-```
+3. Is role-agnostic — **any** role may load **any** skill.
+4. **Auto-surfaces by its own description** when a task matches it; it is not bound to a
+   role and is loaded on demand, not always-on.
 
 ---
 
-## Agents (7)
+## Roles (7)
 
-| Agent | Expertise | Typical skills |
-|-------|-----------|----------------|
-| `analyst` | Requirements engineering | requirements-gathering, acceptance-criteria |
-| `pm` | Product management | prd-writing, decomposition |
-| `architect` | System design | architecture-design, adr-writing, unit-writing, coding-standards, api-design, database-design, diagram-creation |
-| `dev` | Implementation | dev, code-review, test-design |
-| `reviewer` | Quality / code review | code-review |
-| `researcher` | Investigation | research-methodology |
-| `change-manager` | Change & release hygiene | doc-todo, archiving |
+Roles are viewpoints, not skill bundles. Any role selects whatever skills the task needs;
+none of the entries below imply ownership of a skill set.
 
-Skill ownership above is taken verbatim from each agent's `Skills:` frontmatter line —
-the single source of truth. Two skills are **cross-cutting utilities** owned by no single
-role: `changelog` and `translation`. Any role (or the main agent) may invoke them as the
-work demands.
+| Role | Mission / viewpoint |
+|------|---------------------|
+| `analyst` | Requirements lens — uncovers real needs, surfaces hidden constraints and conflicts |
+| `pm` | Product lens — frames value, scope, and priorities; turns needs into a delivery plan |
+| `architect` | System-design lens — shapes structure, boundaries, and the key technical decisions |
+| `dev` | Implementation lens — turns specs into working, tested code |
+| `reviewer` | Quality lens — judges correctness, risk, and adherence to standards |
+| `researcher` | Investigation lens — gathers and weighs evidence before commitments are made |
+| `change-manager` | Release-hygiene lens — keeps artifacts, history, and follow-ups in order |
 
 ---
 
 ## Skills (22)
 
-### Requirements & Product
+A single shared library. Any role draws from it; skills surface by task match (each skill's
+own description), **not** by role assignment. The grouping below is by purpose only — it
+does not bind any skill to a role.
+
+### Planning & Requirements
 | Skill | Purpose |
 |-------|---------|
 | `requirements-gathering` | Elicit FR/NFR; also covers requirements validation (SMART, no conflicts) |
 | `prd-writing` | Write the PRD; also covers PRD validation / completeness |
 | `acceptance-criteria` | Write testable acceptance criteria (Given/When/Then) |
 
-### Architecture & Design
+### Design
 | Skill | Purpose |
 |-------|---------|
 | `architecture-design` | Design system architecture; also covers architecture validation |
@@ -95,33 +88,37 @@ work demands.
 | `diagram-creation` | Produce architecture and flow diagrams |
 | `coding-standards` | Define coding patterns, style, git, security, and testing conventions |
 
-### Planning & Implementation
+### Decomposition
 | Skill | Purpose |
 |-------|---------|
-| `decomposition` | Break work into epics → stories → sprints (merges the old epic/story/sprint-planning skills) |
-| `dev` | Implementation loop: single story, plus epic/sprint batch modes, with TDD (merges the old dev-story / dev-epic / dev-sprint / methodologies) |
+| `decomposition` | Break work into epics → stories → sprints |
+
+### Implementation & Quality
+| Skill | Purpose |
+|-------|---------|
+| `dev` | Implementation loop: single story, plus epic/sprint batch modes, with TDD |
 | `test-design` | Specify module and integration tests |
 | `unit-writing` | Write unit tests |
 | `code-review` | Review code for quality and correctness (checklist embedded) |
 | `research-methodology` | Run technical, market, or domain research |
 
-### Documentation & Change
+### Orchestration
 | Skill | Purpose |
 |-------|---------|
-| `changelog` | Maintain a changelog (cross-cutting) |
-| `archiving` | Archive completed artifacts |
-| `doc-todo` | Track documentation TODOs |
-| `translation` | Translate documents (cross-cutting) |
-
-### Orchestration & Coordination
-| Skill | Purpose |
-|-------|---------|
-| `orchestration` | Router: run work across agents — choose delegation mode and sequencing |
+| `orchestration` | Router: run work across roles — choose delegation mode and sequencing |
 | `orchestration-subagent` | Mechanics for ephemeral subagent calls (sequential review-gated or parallel fan-out) |
 | `orchestration-team` | Mechanics for a standing role-team coordinated via a shared board |
 
+### Utilities
+| Skill | Purpose |
+|-------|---------|
+| `changelog` | Maintain a changelog |
+| `archiving` | Archive completed artifacts |
+| `doc-todo` | Track documentation TODOs |
+| `translation` | Translate documents |
+
 The orchestration trio is loaded by the **conducting / main agent** (the one you talk to),
-not by any role agent — see [Coordination Layer](#coordination-layer).
+not by any role — see [Coordination Layer](#coordination-layer).
 
 ---
 
@@ -144,10 +141,10 @@ This layer is driven by the orchestration trio:
   through a shared board/dispatcher (e.g. a kanban dispatcher routing tasks to profiles),
   with declared dependencies and hand-offs.
 
-The conducting agent maps each pipeline phase (see `FLOW.yaml`) to the role that owns it,
-dispatches the work via one of the two mechanics, and gates each result before advancing.
-The role agents remain personas that know *which* skills to apply; the coordination layer
-decides *who* runs *when* and whether the output is good enough.
+The conducting agent maps each pipeline phase (see `FLOW.yaml`) to the role that typically
+drives it, dispatches the work via one of the two mechanics, and gates each result before
+advancing. Each role is a viewpoint that selects whatever skills the task needs; the
+coordination layer decides *who* runs *when* and whether the output is good enough.
 
 ---
 
@@ -216,9 +213,10 @@ artifact(s) involved.
 
 ## Why This Separation
 
-1. **Reusability** — a skill is written once and used by any agent.
-2. **Maintainability** — update a skill in one place; every agent gets the update.
+1. **Reusability** — a skill is written once and drawn on by any role.
+2. **Maintainability** — update a skill in one place; every role gets the update.
 3. **Clarity** — roles say *who*; skills say *how*; artifacts say *what*.
 4. **Portability** — the same building blocks run across multiple harnesses; only
    packaging differs.
-5. **Composability** — agents compose skills as the work demands.
+5. **Composability** — any role selects whatever skills the task needs; nothing is bound
+   in advance.
