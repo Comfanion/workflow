@@ -26,8 +26,9 @@ description: |
 # =============================================================================
 # PIPELINE
 # =============================================================================
-# research (opt) → requirements → prd → architecture
-#   → decomposition (epics/stories/sprints) → implementation → review
+# research (opt) → requirements → prd → architecture → design
+#   → decomposition (epics/stories/sprints) → implementation → testing
+#   → review → deploy
 #
 pipeline:
   phases:
@@ -114,6 +115,22 @@ pipeline:
         description: Integration test specifications
         template: skills/test-design/references/template-integration.md
         mandatory: true
+      next: design
+
+    - id: design
+      name: Design (UX & Design System)
+      description: Shape UX flows, interface design, and the design system from the architecture
+      role: designer
+      skills:
+        - ux-design
+        - design-system
+      artifacts:
+        input:
+          - "{DOCS_ROOT}/prds/<slug>/PRD.md"
+          - "{DOCS_ROOT}/architecture.md"
+        output:
+          - "{DOCS_ROOT}/design/ux-flows.md"
+          - "{DOCS_ROOT}/design/design-system.md"
       next: decomposition
 
     - id: decomposition
@@ -143,11 +160,17 @@ pipeline:
     - id: implementation
       name: Implementation
       description: Implement stories with TDD; supports single-story plus epic/sprint batch modes
-      role: dev
+      roles:
+        - fullstack-developer      # general / cross-cutting
+        - backend-developer        # server / data / API
+        - frontend-developer       # UI / UX-fidelity
       skills:
-        - dev                      # story loop + epic/sprint batch modes + TDD
+        - dev                      # story loop + epic/sprint batch modes + TDD (shared by all three dev roles)
         - code-review
         - test-design
+        - test-scenarios           # author concrete test cases alongside implementation
+        # research-planning is cross-cutting: callable wherever unknowns surface,
+        # the same way research-methodology is.
       # Coordination: the conducting/main agent uses the orchestration trio to
       # dispatch story/epic/sprint batches to the dev role and gate each result.
       coordination:
@@ -168,6 +191,22 @@ pipeline:
         story: Implement a single story (red-green-refactor)
         epic: Implement all stories in an epic sequentially
         sprint: Implement all epics in a sprint sequentially
+      next: testing
+
+    - id: testing
+      name: Testing & QA Gate
+      description: Author test scenarios, run them, and apply the QA gate before review
+      role: tester
+      skills:
+        - test-scenarios           # primary: author concrete cases/scenarios (also done during implementation)
+        - test-execution           # run tests + QA gate
+      artifacts:
+        input:
+          - "{DOCS_ROOT}/backlog/stories/story-*.md"
+          - Implementation code
+        output:
+          - "{DOCS_ROOT}/test/..."
+          - "{DOCS_ROOT}/validation/test-report-*.md"
       next: review
 
     - id: review
@@ -183,7 +222,27 @@ pipeline:
         output:
           - Review notes
           - Review follow-up tasks
-      next: implementation         # loop back if changes requested
+      next: deploy                 # loops back to implementation if changes requested
+
+    - id: deploy
+      name: Deploy (Ship)
+      description: Build and ship the release; final step in the pipeline
+      role: devops
+      skills:
+        - release-engineering      # CI/CD, build, deploy
+      artifacts:
+        input:
+          - Implementation code
+          - "{DOCS_ROOT}/validation/test-report-*.md"
+        output:
+          - "{DOCS_ROOT}/ops/release-*.md"
+      gate:
+        type: deploy
+        hard: true
+        description: >
+          HARD deploy gate. Ship only on explicit human confirmation AND green checks
+          (tests pass, review approved, QA gate cleared). Never deploy unprompted.
+      next: null                   # end of pipeline
 
 # =============================================================================
 # ARTIFACT TEMPLATES
@@ -216,6 +275,14 @@ artifacts:
     path: "{DOCS_ROOT}/architecture/adr/*.md"
     template: skills/adr-writing/references/template.md
 
+  design:
+    path: "{DOCS_ROOT}/design/ux-flows.md"
+    template: skills/ux-design/references/template.md
+
+  design-system:
+    path: "{DOCS_ROOT}/design/design-system.md"
+    template: skills/design-system/references/template.md
+
   architecture-qa:
     path: "{DOCS_ROOT}/architecture-integration-tests.md"
     template: skills/test-design/references/template-integration.md
@@ -237,3 +304,11 @@ artifacts:
     path: "{DOCS_ROOT}/backlog/sprint-status.yaml"
     template: skills/decomposition/references/sprint-template.yaml
     format: yaml
+
+  test-report:
+    path: "{DOCS_ROOT}/validation/test-report-*.md"
+    template: skills/test-execution/references/template.md
+
+  release:
+    path: "{DOCS_ROOT}/ops/release-*.md"
+    template: skills/release-engineering/references/template.md

@@ -48,7 +48,7 @@ Each skill:
 
 ---
 
-## Roles (7)
+## Roles (12)
 
 Roles are viewpoints, not skill bundles. Any role selects whatever skills the task needs;
 none of the entries below imply ownership of a skill set.
@@ -56,16 +56,21 @@ none of the entries below imply ownership of a skill set.
 | Role | Mission / viewpoint |
 |------|---------------------|
 | `analyst` | Requirements lens — uncovers real needs, surfaces hidden constraints and conflicts |
-| `pm` | Product lens — frames value, scope, and priorities; turns needs into a delivery plan |
 | `architect` | System-design lens — shapes structure, boundaries, and the key technical decisions |
-| `dev` | Implementation lens — turns specs into working, tested code |
+| `pm` | Product lens — frames value, scope, and priorities; turns needs into a delivery plan |
+| `designer` | Experience lens — shapes UX flows, interface design, and the design system |
+| `fullstack-developer` | Implementation lens (general/cross-cutting) — turns specs into working, tested code across the stack |
+| `backend-developer` | Implementation lens (server/data/API) — services, data models, and API internals |
+| `frontend-developer` | Implementation lens (UI/UX-fidelity) — interface code true to the design |
+| `tester` | Validation lens — authors test scenarios and runs the QA gate |
 | `reviewer` | Quality lens — judges correctness, risk, and adherence to standards |
 | `researcher` | Investigation lens — gathers and weighs evidence before commitments are made |
 | `change-manager` | Release-hygiene lens — keeps artifacts, history, and follow-ups in order |
+| `devops` | Delivery lens — owns CI/CD and the deploy gate (ship on green + confirmation) |
 
 ---
 
-## Skills (23)
+## Skills (29)
 
 A single shared library. Any role draws from it; skills surface by task match (each skill's
 own description), **not** by role assignment. The grouping below is by purpose only — it
@@ -88,6 +93,8 @@ does not bind any skill to a role.
 | `database-design` | Design data models / schemas |
 | `diagram-creation` | Produce architecture and flow diagrams |
 | `coding-standards` | Define coding patterns, style, git, security, and testing conventions |
+| `ux-design` | Design UX flows, interaction patterns, and interface layouts |
+| `design-system` | Define and maintain the design system (tokens, components, guidelines) |
 
 ### Decomposition
 | Skill | Purpose |
@@ -99,9 +106,21 @@ does not bind any skill to a role.
 |-------|---------|
 | `dev` | Implementation loop: single story, plus epic/sprint batch modes, with TDD |
 | `test-design` | Specify module and integration tests |
+| `test-scenarios` | Author concrete test cases / scenarios (also done during implementation) |
+| `test-execution` | Run tests and apply the QA gate |
 | `unit-writing` | Write per-module/domain unit docs (data model, API surface, event schemas) |
 | `code-review` | Review code for quality and correctness (checklist embedded) |
+
+### Delivery / Ops
+| Skill | Purpose |
+|-------|---------|
+| `release-engineering` | CI/CD and release: build, deploy, and the deploy gate |
+
+### Research (cross-cutting)
+| Skill | Purpose |
+|-------|---------|
 | `research-methodology` | Run technical, market, or domain research |
+| `research-planning` | Plan a research effort — scope questions, pick sources and methods |
 
 ### Orchestration
 | Skill | Purpose |
@@ -162,11 +181,16 @@ is no harness-specific prefix — packaging for a given harness is layered on el
 ├── agents/                      # Roles (WHO)
 │   ├── analyst.md
 │   ├── architect.md
+│   ├── backend-developer.md
 │   ├── change-manager.md
-│   ├── dev.md
+│   ├── designer.md
+│   ├── devops.md
+│   ├── frontend-developer.md
+│   ├── fullstack-developer.md
 │   ├── pm.md
 │   ├── researcher.md
-│   └── reviewer.md
+│   ├── reviewer.md
+│   └── tester.md
 │
 └── skills/                      # Knowledge (HOW)
     ├── <skill-name>/
@@ -203,10 +227,13 @@ requirements      → {DOCS_ROOT}/requirements/...    (analyst + requirements-ga
 prd               → {DOCS_ROOT}/prds/<slug>/PRD.md    (pm + prd-writing)
 system arch       → {DOCS_ROOT}/architecture/system.md (architect + system-architecture, multi-service only)
 service arch      → {DOCS_ROOT}/architecture.md or architecture/<service>.md (architect + service-architecture + adr-writing)
+design            → {DOCS_ROOT}/design/...            (designer + ux-design/design-system)
 epics/stories     → {DOCS_ROOT}/backlog/...          (pm + decomposition)
 sprint plan       → {DOCS_ROOT}/backlog/sprint-status.yaml (pm + decomposition)
-implementation    → source code + tests             (dev + dev/unit-writing/test-design)
+implementation    → source code + tests             (fullstack/backend/frontend-developer + dev/unit-writing/test-design)
+testing           → {DOCS_ROOT}/test/... + {DOCS_ROOT}/validation/test-report-*.md (tester + test-scenarios/test-execution)
 review            → review notes / follow-ups        (reviewer + code-review)
+deploy            → {DOCS_ROOT}/ops/release-*.md      (devops + release-engineering, deploy gate)
 ```
 
 See `FLOW.yaml` for the full pipeline: each phase maps to the agent(s), skill(s), and

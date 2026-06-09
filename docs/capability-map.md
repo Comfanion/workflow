@@ -15,6 +15,7 @@ If a capability has no equivalent on a harness, the agent falls back to the near
 | **Coordinate a standing role-team (board)** | tracked task list + per-item subagents | tracked task list + subagents | tracked task list | kanban dispatcher + profiles (`--parent` for deps) |
 | **Track tasks / todos** | TodoWrite | `todowrite` / `todoread` | todo list | kanban board |
 | **Web research** | WebSearch / WebFetch (or an MCP) | web tooling / browser | web tooling | web backend if configured, else browser |
+| **Build & deploy a release (CI/CD + deploy)** | Bash (CI scripts / `gh` / deploy CLI) | `bash` (CI scripts / deploy CLI) | shell (CI scripts / deploy CLI) | shell (CI scripts / deploy CLI) |
 
 ## Notes per harness
 
@@ -22,5 +23,7 @@ If a capability has no equivalent on a harness, the agent falls back to the near
 - **opencode** — the native origin of these skills; `search()`/`codeindex()`/`todowrite()` come from the workflow's own plugins. If those plugins aren't installed, the agent falls back to grep/glob and a plain todo.
 - **Codex** — skills are portable Markdown; tool names differ but every capability above has a near-equivalent.
 - **Hermes** — standing work belongs on the kanban board routed to profiles; ephemeral subagent calls exist but the board is the idiomatic path (see `orchestration-team`). Profiles are created host-side (see `templates/hermes/setup-team.sh`).
+
+The **build & deploy** capability resolves to whatever shell/CI tooling the harness exposes; it is driven by the `release-engineering` skill. The `devops` role owns the deploy gate — shipping requires explicit confirmation plus green checks (see the `deploy` phase in `FLOW.yaml`).
 
 This map is reference, not configuration — the skills do not read it. It exists so a human or agent can translate the prose to whatever the current harness provides.
