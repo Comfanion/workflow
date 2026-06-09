@@ -1,0 +1,224 @@
+# Workflow Pipeline
+# Defines the end-to-end pipeline for AI-assisted delivery as a sequence of phases.
+# Each phase maps to the role(s) that run it, the skill(s) they use, and the
+# artifact(s) produced. Harness-neutral: roles and skills are portable across
+# Claude Code, opencode, Codex, and Hermes; packaging/invocation is per-harness.
+
+name: workflow-pipeline
+version: "4.0"
+description: |
+  End-to-end pipeline from research to implementation and review.
+
+  Model: Phases → Roles (WHO) → Skills (HOW) → Artifacts (WHAT).
+  - Roles  (agents): the persona that runs the phase.
+  - Skills:          the reusable knowledge/templates the role applies.
+  - Artifacts:       the documents or code the phase produces.
+
+  Output paths default under {DOCS_ROOT} (default: docs/).
+
+  Project size is declared in the PRD (first section, mandatory). Roles read the
+  PRD to gauge size, which sets the depth of every downstream artifact
+  (PRD, architecture, epics, stories).
+
+# =============================================================================
+# PIPELINE
+# =============================================================================
+# research (opt) → requirements → prd → architecture
+#   → decomposition (epics/stories/sprints) → implementation → review
+#
+pipeline:
+  phases:
+
+    # OPTIONAL: investigation before requirements
+    - id: research
+      name: Research (Optional)
+      description: Technical, market, or domain research before requirements
+      optional: true
+      role: researcher
+      skills:
+        - research-methodology
+      artifacts:
+        output:
+          - "{DOCS_ROOT}/research/[type]/[topic]-research.md"
+      next: requirements
+
+    - id: requirements
+      name: Requirements Gathering & Validation
+      description: Elicit FR/NFR through stakeholder interviews, then validate
+      role: analyst
+      skills:
+        - requirements-gathering   # also covers requirements validation
+        - acceptance-criteria
+      artifacts:
+        output:
+          - "{DOCS_ROOT}/requirements/requirements.md"
+      validation:
+        skill: requirements-gathering
+        checklist: skills/requirements-gathering/references/checklist.md
+        required: true
+      next: prd
+
+    - id: prd
+      name: Product Requirements Document
+      description: Create and validate the PRD from validated requirements
+      role: pm
+      skills:
+        - prd-writing              # also covers PRD validation
+        - acceptance-criteria
+      artifacts:
+        input:
+          - "{DOCS_ROOT}/requirements/requirements.md"
+        output:
+          - "{DOCS_ROOT}/prd.md"
+      validation:
+        skill: prd-writing
+        checklist: skills/prd-writing/references/checklist.md
+        required: true
+      qa:
+        artifact: "{DOCS_ROOT}/prd-acceptance-criteria.md"
+        description: Acceptance criteria for all FRs
+        template: skills/acceptance-criteria/references/template.md
+        mandatory: true
+      next: architecture
+
+    - id: architecture
+      name: Architecture Design & Validation
+      description: Design and validate system architecture from the PRD
+      role: architect
+      skills:
+        - architecture-design      # also covers architecture validation
+        - adr-writing
+        - api-design
+        - database-design
+        - diagram-creation
+        - coding-standards
+      artifacts:
+        input:
+          - "{DOCS_ROOT}/prd.md"
+        output:
+          - "{DOCS_ROOT}/architecture.md"
+          - "{DOCS_ROOT}/architecture/adr/*.md"
+      validation:
+        skill: architecture-design
+        checklist: skills/architecture-design/references/checklist.md
+        required: true
+      qa:
+        artifact: "{DOCS_ROOT}/architecture-integration-tests.md"
+        description: Integration test specifications
+        template: skills/test-design/references/template-integration.md
+        mandatory: true
+      next: decomposition
+
+    - id: decomposition
+      name: Decomposition (Epics / Stories / Sprints)
+      description: Break the PRD and architecture into epics, then stories, then sprints
+      role: pm
+      skills:
+        - decomposition            # merges epic / story / sprint-planning
+        - acceptance-criteria
+      artifacts:
+        input:
+          - "{DOCS_ROOT}/prd.md"
+          - "{DOCS_ROOT}/architecture.md"
+        output:
+          - "{DOCS_ROOT}/backlog/epic-*.md"
+          - "{DOCS_ROOT}/backlog/stories/story-*.md"
+          - "{DOCS_ROOT}/backlog/sprint-status.yaml"
+      validation:
+        skill: decomposition
+        checklist: skills/decomposition/references/story-checklist.md
+        required: true
+        rules:
+          - All epics have acceptance criteria
+          - All stories have Given/When/Then AC
+          - All stories have tasks/subtasks
+      next: implementation
+
+    - id: implementation
+      name: Implementation
+      description: Implement stories with TDD; supports single-story plus epic/sprint batch modes
+      role: dev
+      skills:
+        - dev                      # story loop + epic/sprint batch modes + TDD
+        - unit-writing
+        - test-design
+        - coding-standards
+      artifacts:
+        input:
+          - "{DOCS_ROOT}/backlog/sprint-status.yaml"
+          - "{DOCS_ROOT}/backlog/epic-*.md"
+          - "{DOCS_ROOT}/backlog/stories/story-*.md"
+        output:
+          - Implementation code
+          - Unit tests
+          - Integration tests
+          - Updated sprint-status.yaml
+      modes:
+        story: Implement a single story (red-green-refactor)
+        epic: Implement all stories in an epic sequentially
+        sprint: Implement all epics in a sprint sequentially
+      next: review
+
+    - id: review
+      name: Code Review
+      description: Review implemented code for quality and correctness
+      role: reviewer
+      skills:
+        - code-review              # checklist embedded in the skill
+        - test-design
+      artifacts:
+        input:
+          - "{DOCS_ROOT}/backlog/stories/story-*.md"
+          - Implementation code
+        output:
+          - Review notes
+          - Review follow-up tasks
+      next: implementation         # loop back if changes requested
+
+# =============================================================================
+# ARTIFACT TEMPLATES
+# =============================================================================
+# Output paths default under {DOCS_ROOT} (default: docs/).
+artifacts:
+  requirements:
+    path: "{DOCS_ROOT}/requirements/requirements.md"
+    template: skills/requirements-gathering/references/template.md
+
+  prd:
+    path: "{DOCS_ROOT}/prd.md"
+    template: skills/prd-writing/references/template.md
+
+  prd-qa:
+    path: "{DOCS_ROOT}/prd-acceptance-criteria.md"
+    template: skills/acceptance-criteria/references/template.md
+    mandatory: true
+
+  architecture:
+    path: "{DOCS_ROOT}/architecture.md"
+    template: skills/architecture-design/references/template.md
+
+  adr:
+    path: "{DOCS_ROOT}/architecture/adr/*.md"
+    template: skills/adr-writing/references/template.md
+
+  architecture-qa:
+    path: "{DOCS_ROOT}/architecture-integration-tests.md"
+    template: skills/test-design/references/template-integration.md
+    mandatory: true
+
+  epic:
+    path: "{DOCS_ROOT}/backlog/epic-*.md"
+    template: skills/decomposition/references/epic-template.md
+    naming: "epic-{NN}-{module}-{description}.md"
+    id_format: "{MODULE}-E{NN}"
+
+  story:
+    path: "{DOCS_ROOT}/backlog/stories/story-*.md"
+    template: skills/decomposition/references/story-template.md
+    naming: "story-{EPIC}-{NN}-{description}.md"
+    id_format: "{MODULE}-S{EPIC}-{NN}"
+
+  sprint-status:
+    path: "{DOCS_ROOT}/backlog/sprint-status.yaml"
+    template: skills/decomposition/references/sprint-template.yaml
+    format: yaml
