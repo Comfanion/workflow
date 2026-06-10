@@ -142,24 +142,30 @@ dispatch cycle. Same wall-clock logic as lean handoff: the cheapest correct acti
 3. `skills/orchestration/SKILL.md` — add the phase-domain axis; route
    secretary↔planning, orchestrator↔execution; keep the existing two axes; add the
    "Conduct vs act directly" principle to the core principles.
-4. `skills/orchestration-team/SKILL.md` — add the granularity model and the
-   "don't breed tasks" rule; add the secretary→board→orchestrator handoff; rewrite the
-   "not a separate agent" stance to "conducting is your session on CC, the
-   secretary/orchestrator profiles on a standing team"; sharpen the lean-handoff rule.
+4. `skills/orchestration-team/SKILL.md` — make the **conceptual-board framing
+   canonical** ("imagine this is a kanban board"; bind per harness — see the table);
+   add the granularity model and the "don't breed tasks" rule; add the
+   secretary→board→orchestrator handoff; rewrite the "not a separate agent" stance to
+   "conducting is your session on CC, the secretary/orchestrator profiles on a standing
+   team"; sharpen the lean-handoff rule.
 5. `templates/hermes/skill-matrix.md` — the matrix above, with the install commands.
 6. `templates/hermes/setup-team.sh` — already reads `agents/*.md`, so it picks up the
    two new profiles automatically; add a note pointing to the skill matrix.
 
-## Harness neutrality
+## Harness neutrality — the board is the universal abstraction
 
-All rules are written at the capability level (create item, link parent, assign by
-role, transition status) — never specific Hermes commands — consistent with
-`FLOW.yaml` and `docs/capability-map.md`. On Claude Code the same roles collapse into
-the main session; the secretary/orchestrator files serve as reference for how that
-session should behave.
+The skills are written against a **conceptual kanban board**, not any harness's CLI:
+"imagine this is a kanban board" with items (epics/stories/tasks), lanes/status,
+parent-links for dependencies, and assignment by role. Every rule speaks board, never
+specific commands. Each harness binds the abstraction:
 
-## Open assumptions
+| Harness | The board is… |
+|---------|---------------|
+| Hermes | the native kanban dispatcher (real board); the agent maps board verbs to its own CLI |
+| Claude Code / opencode | a simulated board — a tracked task list (TodoWrite); the main session conducts |
 
-- [assumed] Hermes kanban exposes: item create, parent-link, assign-to-profile,
-  status-transition. If the real surface differs, the matrix and handoff wording adjust;
-  the model does not.
+This is why no concrete `hermes kanban` surface is needed and no command playbook is
+written: the board metaphor is the contract, and the harness supplies the mechanics.
+Consistent with `FLOW.yaml` and `docs/capability-map.md`. On Claude Code the
+secretary/orchestrator roles collapse into the main session; their files are the
+reference for how that session conducts the simulated board.
