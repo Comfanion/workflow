@@ -98,7 +98,7 @@ Profiles do not own skills; each profile installs the skills its job needs.
 
 | Profile | Skills |
 |---------|--------|
-| secretary | brainstorm, requirements-gathering, acceptance-criteria, orchestration, orchestration-team |
+| secretary | all skills (full library) — so it can act directly on trivial work instead of dispatching it |
 | orchestrator | orchestration, orchestration-team, orchestration-subagent, code-review |
 | analyst | requirements-gathering, acceptance-criteria |
 | pm | prd-writing, decomposition, acceptance-criteria |
@@ -110,16 +110,38 @@ Profiles do not own skills; each profile installs the skills its job needs.
 | reviewer | code-review |
 | researcher | research-methodology, research-planning |
 
-secretary and orchestrator carry the orchestration skills; the role agents carry the
-authoring/execution skills. secretary holds intake/approval skills only — it conducts,
-it does not author the PRD or architecture.
+orchestrator carries the orchestration + gating skills; the role agents carry the
+authoring/execution skills. secretary carries the **full library** so it can act
+directly on trivial work (see "Conduct vs act directly") rather than paying dispatch
+overhead — e.g. fix a PRD line itself instead of crafting a task telling an agent
+exactly what to change and where.
+
+## Conduct vs act directly
+
+A conductor's default is to delegate, but delegation has a cost: crafting the task,
+dispatching, and gating the result. For trivial work that cost exceeds the work itself.
+The rule:
+
+- **Act directly** when the change is small, the action is already known, it is a
+  direct instruction, and it needs no testing — e.g. updating a PRD line, fixing a
+  typo in a story, correcting a path. Doing it inline is cheaper than describing it to
+  an agent.
+- **Delegate** when the work is substantial, benefits from an isolated context, needs a
+  specialist's judgment, or requires testing/verification — i.e. anything where an
+  agent's focused context or a review gate earns its keep.
+
+This does not reopen "the conductor implements features." It draws a line: the conductor
+still never takes on substantial or testable build work — that is always dispatched and
+gated. It only absorbs trivial, direct, no-test edits that would otherwise waste a full
+dispatch cycle. Same wall-clock logic as lean handoff: the cheapest correct action wins.
 
 ## Deliverables
 
 1. `agents/secretary.md` — planning conductor + intake role.
 2. `agents/orchestrator.md` — execution conductor role.
 3. `skills/orchestration/SKILL.md` — add the phase-domain axis; route
-   secretary↔planning, orchestrator↔execution; keep the existing two axes.
+   secretary↔planning, orchestrator↔execution; keep the existing two axes; add the
+   "Conduct vs act directly" principle to the core principles.
 4. `skills/orchestration-team/SKILL.md` — add the granularity model and the
    "don't breed tasks" rule; add the secretary→board→orchestrator handoff; rewrite the
    "not a separate agent" stance to "conducting is your session on CC, the
