@@ -9,6 +9,14 @@ This skill turns an approved story into working, reviewed code. The unit of work
 
 `{DOCS_ROOT}` below defaults to `docs/` at the project root; honor the project's configured docs location if one is set.
 
+## The Iron Law
+
+```
+NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
+```
+
+The TDD core of this loop is rigid: write the test, watch it fail for the right reason, then write the code. Wrote the code first? Delete it and start from the test — do not keep it "as reference" and adapt it, because adapting it is testing-after wearing a disguise. The only exceptions are throwaway prototypes and generated code, and those are the user's call, not yours. (The STUB-before-test case — a concrete type that must exist before the test compiles — moves the ordering of a *declaration*, not of the implementation; the test-first principle holds.)
+
 ## Keep context minimal
 
 The single biggest waste in implementation is loading documents the story already summarizes. Read only:
@@ -96,6 +104,18 @@ Parse the sprint plan to get the epic list for the target sprint, and build one 
 Loop over the epics **in order**, running each through epic mode (which manages its own nested story loop). When an epic's stories are all done, set the epic to review, run its integration tests, fix and re-test on failure (up to three rounds), then mark it done and move to the next. Record progress after each epic/story so a resume lands in the right place. Never work two stories or epics at once, and never proceed past a failed epic review — stop and report.
 
 The sprint finalizes the same way: all epics done → sprint to review → run sprint integration tests → fix on failure → sprint done, with a final summary and metrics.
+
+## Red flags — stop, you have left the loop
+
+- Writing implementation before the test exists
+- A test that passes the moment you write it (you tested existing behavior, or tested a mock)
+- Jumping a story straight to `done` without the review step
+- "I'll add tests after" / "too simple to test" / "just this once"
+- Implementing a whole story in one shot instead of task-by-task
+- Reordering, merging, or "optimizing" the story sequence in batch mode
+- Marking done on the strength of "it should work" — done requires the `verification-before-completion` gate: run the suite, read the output, then claim it
+
+When you catch one of these: stop, return to the red-green loop. A failing test you never saw fail is not TDD.
 
 ## Roles
 

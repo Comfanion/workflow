@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# SessionStart hook for the comfanion plugin.
+#
+# This is the toolkit's ONE optional, harness-specific addition: on Claude Code
+# it surfaces the harness-neutral `using-comfanion` dispatcher skill at session
+# start, so the skill library actually gets invoked instead of skipped. The
+# skill itself is portable Markdown; only this injection is CC-specific. Remove
+# this hooks/ directory to run the toolkit purely harness-neutral.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+using_comfanion_content=$(cat "${PLUGIN_ROOT}/skills/using-comfanion/SKILL.md" 2>&1 || echo "Error reading using-comfanion skill")
+
+# Escape for JSON embedding via bash parameter substitution (single-pass each).
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+
+content_escaped=$(escape_for_json "$using_comfanion_content")
+session_context="<IMPORTANT>\nThis project uses the comfanion toolkit. Below is the full 'using-comfanion' skill — your entry point for finding and using the skill library. Follow it: check for an applicable skill before responding. For every other skill, use the harness's skill mechanism (the 'Skill' tool on Claude Code).\n\n${content_escaped}\n</IMPORTANT>"
+
+# Claude Code reads hookSpecificOutput.additionalContext; other harnesses that
+# reuse this script fall back to the SDK-standard top-level additionalContext.
+if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
+  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context"
+else
+  printf '{\n  "additionalContext": "%s"\n}\n' "$session_context"
+fi
+
+exit 0

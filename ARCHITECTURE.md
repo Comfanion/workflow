@@ -72,11 +72,16 @@ roles — they run the work rather than author an artifact (see [Coordination La
 
 ---
 
-## Skills (37)
+## Skills (41)
 
 A single shared library. Any role draws from it; skills surface by task match (each skill's
 own description), **not** by role assignment. The grouping below is by purpose only — it
 does not bind any skill to a role.
+
+### Toolkit entry point
+| Skill | Purpose |
+|-------|---------|
+| `using-comfanion` | The router: at the start of a task, check whether a skill applies and invoke it before improvising; user instructions outrank skills. The one skill surfaced automatically (others load on demand) — on Claude Code via an optional SessionStart hook |
 
 ### Planning & Requirements
 | Skill | Purpose |
@@ -119,6 +124,9 @@ does not bind any skill to a role.
 | `review-tests` | Review dimension — suite health and coverage of core paths |
 | `review-performance` | Review dimension — hot-path cost, N+1, allocation |
 | `review-complexity` | Review dimension — maintainability and complexity shape |
+| `receiving-code-review` | Act on review feedback with rigor — verify each comment before implementing or pushing back; the author's side of the review loop |
+| `systematic-debugging` | Find root cause before fixing — read/reproduce/trace, one hypothesis, fix the source; rigid (Iron Law, 3-fix architecture rule) |
+| `verification-before-completion` | The completion gate — no "done/fixed/passing" claim without fresh command output proving it; cross-cutting, rigid |
 
 ### Delivery / Ops
 | Skill | Purpose |
@@ -181,6 +189,14 @@ drives it, dispatches the work via one of the two mechanics, and gates each resu
 advancing. Each role is a viewpoint that selects whatever skills the task needs; the
 coordination layer decides *who* runs *when* and whether the output is good enough.
 
+The conducting agent enters through **`using-comfanion`** — the router that, at the start of
+a task, checks whether a skill applies and invokes it before improvising. On Claude Code an
+optional `SessionStart` hook (the toolkit's one harness-specific addition, under `hooks/`)
+surfaces that skill automatically; remove `hooks/` to run purely harness-neutral. Two craft
+gates apply across every phase regardless of role: **`verification-before-completion`** (no
+completion claim without fresh evidence) and **`systematic-debugging`** (root cause before
+any fix). **`receiving-code-review`** governs the author's side of the review gate.
+
 ---
 
 ## Directory Structure
@@ -208,14 +224,24 @@ is no harness-specific prefix — packaging for a given harness is layered on el
 │   ├── secretary.md
 │   └── tester.md
 │
-└── skills/                      # Knowledge (HOW)
-    ├── <skill-name>/
-    │   ├── SKILL.md             # The how-to
-    │   └── references/          # Templates, checklists, examples
-    │       ├── template.md
-    │       └── checklist.md
-    └── ...
+├── skills/                      # Knowledge (HOW)
+│   ├── <skill-name>/
+│   │   ├── SKILL.md             # The how-to
+│   │   └── references/          # Templates, checklists, examples
+│   │       ├── template.md
+│   │       └── checklist.md
+│   └── ...
+│
+└── hooks/                       # OPTIONAL, Claude Code only — the one
+    ├── hooks.json               # harness-specific layer: a SessionStart
+    ├── run-hook.cmd             # hook that surfaces `using-comfanion`.
+    └── session-start            # Delete this dir to stay fully neutral.
 ```
+
+The skill/role library is harness-neutral Markdown. The only harness-specific piece is the
+optional `hooks/` directory: on Claude Code it injects the `using-comfanion` router at
+session start so the library is actually used rather than skipped. It is opt-in by presence —
+removing `hooks/` changes nothing about the skills themselves.
 
 Examples of `references/` payloads:
 

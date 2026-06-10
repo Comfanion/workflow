@@ -7,6 +7,14 @@ description: Review a code change for security defects only — injection, broke
 
 The security dimension of a code review. One job: find ways this change can be abused. Security findings are never "medium" — a single real one blocks the merge. The cost of being wrong is a breach, irreversible in a way a style issue never is.
 
+## The Iron Law
+
+```
+A REAL SECURITY FINDING BLOCKS THE MERGE — NEVER DOWNGRADE IT TO PASS
+```
+
+There is no "ship it and fix the auth check next sprint." Every checklist item is actually checked against the diff — "looks secure" is a rubber stamp, not a review — and PASS is earned only when every item was checked and is clean. A finding is downgraded only by being proven not exploitable, never by schedule pressure or because the rest of the change is good.
+
 ## Scope
 Applies to every change that touches input handling, auth, data access, secrets, crypto, serialization, file/network IO, or dependencies. If none of these are touched, say so explicitly and return PASS — do not invent findings.
 

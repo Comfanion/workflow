@@ -205,6 +205,9 @@ pipeline:
         - code-review
         - test-design
         - test-scenarios           # author concrete test cases alongside implementation
+        - systematic-debugging     # cross-cutting: root-cause discipline when a test won't pass
+        - verification-before-completion  # cross-cutting gate: no "done" without fresh evidence
+        - receiving-code-review    # act on the reviewer's findings with rigor (author side of the gate)
         # research-planning is cross-cutting: callable wherever unknowns surface,
         # the same way research-methodology is.
         # release-engineering is cross-cutting too: callable when a story carries
@@ -239,6 +242,8 @@ pipeline:
       skills:
         - test-scenarios           # primary: author concrete cases/scenarios (also done during implementation)
         - test-execution           # run tests + QA gate
+        - systematic-debugging     # cross-cutting: diagnose a failing case at its root
+        - verification-before-completion  # cross-cutting gate: the QA "green" claim rests on read output
       artifacts:
         input:
           - "{DOCS_ROOT}/backlog/stories/story-*.md"
@@ -259,6 +264,8 @@ pipeline:
         - review-tests
         - review-performance
         - review-complexity
+        # receiving-code-review is the author's counterpart to this gate: the developer
+        # verifies each finding before implementing it or pushing back with evidence.
       artifacts:
         input:
           - "{DOCS_ROOT}/backlog/stories/story-*.md"
