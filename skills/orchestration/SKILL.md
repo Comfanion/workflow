@@ -17,10 +17,16 @@ These come from a hard-won observation: orchestration succeeds or fails on how w
 - **Work is not done until it is reviewed.** Build a review gate into the flow (spec compliance, then quality). An agent reporting "done" is a claim, not a verdict.
 - **Use the least powerful model that can do the task.** Mechanical, well-specified work → a fast cheap model. Integration/judgment → standard. Architecture/design/review → the most capable. This conserves cost and time without lowering the ceiling where it matters.
 - **Execute continuously; stop only on a real blocker.** Once the plan is agreed, don't pause to ask "should I continue?" between tasks — that wastes the user's time. Stop only for a blocker you can't resolve, genuine ambiguity, or completion.
+- **Conduct vs act directly.** Delegation has a cost — crafting the task, dispatching, gating. For a trivial, direct, already-known, no-test change (fix a PRD line, correct a path), do it yourself: doing it inline is cheaper than describing it to an agent. Delegate when the work is substantial, needs an isolated context or a specialist, or requires testing. This never reopens "the conductor implements features" — substantial or testable build work is always dispatched and gated.
+- **Hand work off by reference, not by re-authoring.** Decomposition already produced right-sized items carrying their required reading and AC. Point the agent at the artifact (path + the sections it needs); never re-paste or re-explain the brief. The item is the brief — this is what keeps orchestration lean.
 
 ## Choosing how to delegate
 
-Two independent questions decide your approach.
+Three independent questions decide your approach.
+
+**0. Which phase-domain? (planning vs execution)**
+
+Orchestration is not one job. Orchestrating agents to **plan** a feature (research → requirements → prd → architecture → design → decomposition) is distinct from orchestrating agents to **execute** it (implementation → testing → review → deploy). On a standing team the two are owned by two conducting profiles — `secretary` (planning) and `orchestrator` (execution); on Claude Code the main session plays both. Each phase-domain still chooses a delegation model and a sequencing below.
 
 **1. Which delegation model? (the big choice)**
 
@@ -45,4 +51,4 @@ This choice lives *inside* each model; both `orchestration-subagent` and `orches
 
 ## Roles
 
-This skill is for whoever is conducting — the main agent you talk to, not a separate "orchestrator" agent. It assigns work to the specialist roles and owns the gates, but never does the implementation itself.
+Conducting is a role, played differently per harness — not a fixed agent. On Claude Code / opencode it's your main session, which plays both phase-domains. On a standing team it's two profiles: `secretary` conducts planning and owns the intake/approval gate; `orchestrator` conducts execution and owns the build gates. Either way the conductor assigns work to the specialist roles and owns the gates, and never does substantial implementation itself — only trivial, direct, no-test edits (see "Conduct vs act directly").
