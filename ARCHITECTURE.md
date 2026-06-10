@@ -48,13 +48,16 @@ Each skill:
 
 ---
 
-## Roles (11)
+## Roles (13)
 
 Roles are viewpoints, not skill bundles. Any role selects whatever skills the task needs;
-none of the entries below imply ownership of a skill set.
+none of the entries below imply ownership of a skill set. The first two are **conducting**
+roles — they run the work rather than author an artifact (see [Coordination Layer](#coordination-layer)).
 
 | Role | Mission / viewpoint |
 |------|---------------------|
+| `secretary` | Planning-conductor + intake lens — receives the request, frames the plan, and acts directly on trivial work instead of dispatching it |
+| `orchestrator` | Execution-conductor lens — routes work across roles and enforces review gates; authors nothing |
 | `analyst` | Requirements lens — uncovers real needs, surfaces hidden constraints and conflicts |
 | `architect` | System-design lens — shapes structure, boundaries, and the key technical decisions |
 | `pm` | Product lens — frames value, scope, and priorities; turns needs into a delivery plan |
@@ -81,6 +84,7 @@ does not bind any skill to a role.
 | `requirements-gathering` | Elicit FR/NFR; also covers requirements validation (SMART, no conflicts) |
 | `prd-writing` | Write the PRD; also covers PRD validation / completeness |
 | `acceptance-criteria` | Write testable acceptance criteria (Given/When/Then) |
+| `security-requirements` | Abuse cases + security NFRs — security at requirements time; feeds threat-modeling |
 
 ### Design
 | Skill | Purpose |
@@ -94,6 +98,7 @@ does not bind any skill to a role.
 | `coding-standards` | Define coding patterns, style, git, security, and testing conventions |
 | `ux-design` | Design UX flows, interaction patterns, and interface layouts |
 | `design-system` | Define and maintain the design system (tokens, components, guidelines) |
+| `threat-modeling` | Design-time STRIDE / attack-surface analysis; feeds review-security |
 
 ### Decomposition
 | Skill | Purpose |
@@ -108,7 +113,12 @@ does not bind any skill to a role.
 | `test-scenarios` | Author concrete test cases / scenarios (also done during implementation) |
 | `test-execution` | Run tests and apply the QA gate |
 | `unit-writing` | Write per-module/domain unit docs (data model, API surface, event schemas) |
-| `code-review` | Review code for quality and correctness (checklist embedded) |
+| `code-review` | Umbrella router: runs the review dimensions below and aggregates one PASS/CHANGES/BLOCKED verdict |
+| `review-security` | Review dimension — code-level security (secrets, injection, authz); always blocks on a real finding |
+| `review-correctness` | Review dimension — logic, unmet acceptance criteria, races |
+| `review-tests` | Review dimension — suite health and coverage of core paths |
+| `review-performance` | Review dimension — hot-path cost, N+1, allocation |
+| `review-complexity` | Review dimension — maintainability and complexity shape |
 
 ### Delivery / Ops
 | Skill | Purpose |
@@ -149,6 +159,11 @@ you talk to — that holds the goal and the plan and runs the work *through* the
 rather than doing every step itself. It does not own a domain of expertise; it owns
 sequencing, delegation, and quality gates.
 
+Two roles formalize this layer. The **`secretary`** conducts *planning* — it takes the
+intake, frames the plan, and handles trivial work inline. The **`orchestrator`** conducts
+*execution* — it dispatches the planned work across the authoring roles and enforces the
+review gates. Both author nothing themselves; they drive the orchestration trio below.
+
 This layer is driven by the orchestration trio:
 
 - **`orchestration`** — the router. Establishes the principles that apply to any
@@ -186,9 +201,11 @@ is no harness-specific prefix — packaging for a given harness is layered on el
 │   ├── devops.md
 │   ├── frontend-developer.md
 │   ├── fullstack-developer.md
+│   ├── orchestrator.md
 │   ├── pm.md
 │   ├── researcher.md
 │   ├── reviewer.md
+│   ├── secretary.md
 │   └── tester.md
 │
 └── skills/                      # Knowledge (HOW)
