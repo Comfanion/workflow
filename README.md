@@ -17,7 +17,7 @@ Three ideas, kept strictly separate:
 The skills compose into a recommended flow (see `FLOW.yaml` for the full map):
 
 ```
-research → requirements → prd → architecture → design → decomposition → implementation → testing → review → deploy
+research → requirements → prd → architecture → delivery-design → design → decomposition → implementation → testing → review → deploy
 ```
 
 - **requirements-gathering** — elicit and validate functional/non-functional requirements (the source of truth).
@@ -27,6 +27,7 @@ research → requirements → prd → architecture → design → decomposition 
   - **service-architecture** — one service's internals: style (Layered/Hexagonal/Clean/Vertical-Slices), modules, data ownership, stack.
   - **unit-writing** — one module's detailed contract (data model, API, events).
   - Supporting: **adr-writing**, **api-design**, **database-design**, **diagram-creation**, **coding-standards**.
+- **delivery-design** (optional) — **release-engineering** early: plan how the system ships — CI/CD pipeline, environment topology, deploy strategy, rollback runbooks — before stories are cut. The early half of the devops lens; `deploy` is the late half. Skip for TOY/library scope.
 - **design** — **ux-design** (user flows, wireframes, interaction, all UI states, handoff) and **design-system** (tokens, components, visual language).
 - **decomposition** — break scope into epics → stories → sprints at the right granularity, each carrying enough context that the next level can act without asking.
 - **dev** — the implementation loop (single story + epic/sprint batch modes, TDD), shared by the fullstack/backend/frontend developer roles, with **test-design**, **code-review**, **acceptance-criteria**.

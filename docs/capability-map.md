@@ -24,6 +24,6 @@ If a capability has no equivalent on a harness, the agent falls back to the near
 - **Codex** — skills are portable Markdown; tool names differ but every capability above has a near-equivalent.
 - **Hermes** — standing work belongs on the kanban board routed to profiles; ephemeral subagent calls exist but the board is the idiomatic path (see `orchestration-team`). Profiles are created host-side (see `templates/hermes/setup-team.sh`).
 
-The **build & deploy** capability resolves to whatever shell/CI tooling the harness exposes; it is driven by the `release-engineering` skill. The `devops` role owns the deploy gate — shipping requires explicit confirmation plus green checks (see the `deploy` phase in `FLOW.yaml`).
+The **build & deploy** capability resolves to whatever shell/CI tooling the harness exposes; it is driven by the `release-engineering` skill. The `devops` role spans two pipeline points: it plans how the system ships in the optional `delivery-design` phase (CI/CD, environments, rollback runbooks) and owns the deploy gate in `deploy` — shipping requires explicit confirmation plus green checks (see both phases in `FLOW.yaml`).
 
 This map is reference, not configuration — the skills do not read it. It exists so a human or agent can translate the prose to whatever the current harness provides.

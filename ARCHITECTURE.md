@@ -65,7 +65,7 @@ none of the entries below imply ownership of a skill set.
 | `tester` | Validation lens — authors test scenarios and runs the QA gate |
 | `reviewer` | Quality lens — judges correctness, risk, and adherence to standards |
 | `researcher` | Investigation lens — gathers and weighs evidence before commitments are made |
-| `devops` | Delivery lens — owns CI/CD and the deploy gate (ship on green + confirmation) |
+| `devops` | Delivery lens — plans how it ships early (delivery-design) and owns the deploy gate late (ship on green + confirmation) |
 
 ---
 
@@ -226,6 +226,7 @@ requirements      → {DOCS_ROOT}/requirements/...    (analyst + requirements-ga
 prd               → {DOCS_ROOT}/prds/<slug>/PRD.md    (pm + prd-writing)
 system arch       → {DOCS_ROOT}/architecture/system.md (architect + system-architecture, multi-service only)
 service arch      → {DOCS_ROOT}/architecture.md or architecture/<service>.md (architect + service-architecture + adr-writing)
+delivery design   → {DOCS_ROOT}/ops/ci-cd|environments|runbooks/*.md (devops + release-engineering, optional — plan how it ships)
 design            → {DOCS_ROOT}/design/...            (designer + ux-design/design-system)
 epics/stories     → {DOCS_ROOT}/backlog/...          (pm + decomposition)
 sprint plan       → {DOCS_ROOT}/backlog/sprint-status.yaml (pm + decomposition)

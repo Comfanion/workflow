@@ -26,9 +26,15 @@ description: |
 # =============================================================================
 # PIPELINE
 # =============================================================================
-# research (opt) → requirements → prd → architecture → design
-#   → decomposition (epics/stories/sprints) → implementation → testing
+# research (opt) → requirements → prd → architecture → delivery-design (opt)
+#   → design → decomposition (epics/stories/sprints) → implementation → testing
 #   → review → deploy
+#
+# Delivery (devops) lens spans two points, like any role designs early and
+# executes late: delivery-design plans how it ships (CI/CD, environments,
+# rollback) right after architecture; deploy executes the ship at the end.
+# release-engineering is also cross-cutting — callable from architecture,
+# decomposition, and implementation wherever delivery concerns surface.
 #
 pipeline:
   phases:
@@ -97,6 +103,10 @@ pipeline:
         - api-design
         - database-design
         - diagram-creation
+        # release-engineering is cross-cutting: callable here so deployment
+        # topology, environments, and infra NFRs are shaped with the design,
+        # not bolted on at ship time.
+        - release-engineering
       artifacts:
         input:
           - "{DOCS_ROOT}/prds/<slug>/PRD.md"
@@ -115,6 +125,28 @@ pipeline:
         description: Integration test specifications
         template: skills/test-design/references/template-integration.md
         mandatory: true
+      next: delivery-design
+
+    # OPTIONAL: plan how the system ships, right after architecture
+    - id: delivery-design
+      name: Delivery Design (Optional)
+      description: >
+        Plan how the system ships before stories are cut: CI/CD pipeline,
+        environment topology, deploy strategy, and rollback runbooks. The
+        early half of the devops lens (deploy executes the late half). Skip
+        for TOY/library scope; include where infra is real.
+      optional: true
+      role: devops
+      skills:
+        - release-engineering
+      artifacts:
+        input:
+          - "{DOCS_ROOT}/architecture.md"
+          - "{DOCS_ROOT}/prds/<slug>/PRD.md"
+        output:
+          - "{DOCS_ROOT}/ops/ci-cd/*.md"
+          - "{DOCS_ROOT}/ops/environments/*.md"
+          - "{DOCS_ROOT}/ops/runbooks/*.md"
       next: design
 
     - id: design
@@ -139,6 +171,8 @@ pipeline:
       role: pm
       skills:
         - decomposition            # merges epic / story / sprint-planning
+        # cross-cutting: carve infra / ops / deploy stories alongside feature work
+        - release-engineering
       artifacts:
         input:
           - "{DOCS_ROOT}/prds/<slug>/PRD.md"
@@ -171,6 +205,9 @@ pipeline:
         - test-scenarios           # author concrete test cases alongside implementation
         # research-planning is cross-cutting: callable wherever unknowns surface,
         # the same way research-methodology is.
+        # release-engineering is cross-cutting too: callable when a story carries
+        # CI/CD, environment, or deploy work.
+        - release-engineering
       # Coordination: the conducting/main agent uses the orchestration trio to
       # dispatch story/epic/sprint batches to the dev role and gate each result.
       coordination:
