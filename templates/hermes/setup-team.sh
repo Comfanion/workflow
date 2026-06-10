@@ -37,4 +37,5 @@ echo
 echo "Next: add this repo as a tap and install skills per profile —"
 echo "  hermes skills tap add <git-url-of-this-repo>"
 echo "  hermes -p <role> skills install <tap>/<skill>"
-echo "Profiles do not own skills; install whichever skills each role should reach."
+echo "Profiles do not own skills; see templates/hermes/skill-matrix.md for which"
+echo "skills each profile should install (secretary gets the full library)."
