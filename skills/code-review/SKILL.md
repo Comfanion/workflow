@@ -25,7 +25,7 @@ Dispatch each applicable dimension as its own focused review. Each returns a dim
 | Security | `review-security` | HIGH — always blocks on a real finding |
 | Correctness | `review-correctness` | HIGH — unmet criterion / logic / race blocks |
 | Tests | `review-tests` | HIGH — failing suite / untested core path blocks |
-| Performance | `review-performance` | MED — blocks only at hot-path scale |
+| Performance | `review-performance` | MED — blocks when impact is user-visible or cost grows unbounded (hot-path rule defined in `review-performance`) |
 | Complexity / maintainability | `review-complexity` | LOW/MED — shapes, rarely blocks |
 
 On a team each dimension can run as a separate reviewer pass (parallel); solo, work them in the order above. Do not let one dimension's findings excuse skipping another — run all that apply.

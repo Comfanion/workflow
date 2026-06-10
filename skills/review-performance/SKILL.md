@@ -32,3 +32,11 @@ PERFORMANCE: {PASS | FINDINGS}
 - [MED] `path/file:line` — {what scales badly, at what N} → {fix}
 ```
 Performance findings are usually MEDIUM (shape, rarely block) — except an O(n²)/N+1 on a hot path at real scale, which is HIGH.
+
+**What counts as a hot path** — pin the call, don't leave it to reviewer mood. A path is hot when any of these holds:
+
+- it runs per-request or per-event (not one-off: a migration or admin script is cold);
+- it sits on a core data path — ingestion, search, sync — where volume is the product;
+- its cost is visible in a user-facing response time.
+
+A finding **blocks** (HIGH) when the impact is user-visible or the cost grows unbounded with data or traffic — O(n²)/N+1 qualifies regardless of today's frequency, because n grows even when req/s doesn't. Everything else on a cold path is MEDIUM at most. The rule is auditable: name which clause fired in the finding.

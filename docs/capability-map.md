@@ -14,6 +14,7 @@ If a capability has no equivalent on a harness, the agent falls back to the near
 | **Run independent work in parallel** | multiple Agent calls in one turn | parallel subagents | parallel tasks | kanban items with no dependency edge |
 | **Coordinate a standing role-team (board)** | tracked task list + per-item subagents | tracked task list + subagents | tracked task list | kanban dispatcher + profiles (`--parent` for deps) |
 | **Track tasks / todos** | TodoWrite | `todowrite` / `todoread` | todo list | kanban board |
+| **Invoke a skill** | Skill tool (instructions injected for the session) | skill mechanism | skill file as instructions | `skill_view(name)` (returns content as a tool result — NOT pinned; re-invoke per phase) |
 | **Web research** | WebSearch / WebFetch (or an MCP) | web tooling / browser | web tooling | web backend if configured, else browser |
 | **Build & deploy a release (CI/CD + deploy)** | Bash (CI scripts / `gh` / deploy CLI) | `bash` (CI scripts / deploy CLI) | shell (CI scripts / deploy CLI) | shell (CI scripts / deploy CLI) |
 
@@ -22,7 +23,7 @@ If a capability has no equivalent on a harness, the agent falls back to the near
 - **Claude Code** — roles map to subagents (the Agent tool's `subagent_type`, resolved from `agents/`). Parallelism = several Agent calls in one message. There is no long-lived dispatcher, so "team mode" is simulated with a tracked task list (see `orchestration-team`).
 - **opencode** — the native origin of these skills; `search()`/`codeindex()`/`todowrite()` come from the workflow's own plugins. If those plugins aren't installed, the agent falls back to grep/glob and a plain todo.
 - **Codex** — skills are portable Markdown; tool names differ but every capability above has a near-equivalent.
-- **Hermes** — standing work belongs on the kanban board routed to profiles; ephemeral subagent calls exist but the board is the idiomatic path (see `orchestration-team`). Profiles are created host-side (see `templates/hermes/setup-team.sh`).
+- **Hermes** — standing work belongs on the kanban board routed to profiles; ephemeral subagent calls exist but the board is the idiomatic path (see `orchestration-team`). Profiles are created host-side (see `templates/hermes/setup-team.sh`). Skill loading differs from Claude Code: `skill_view` returns content as a tool result rather than injecting instructions, and no SessionStart hook fires — so worker profiles must carry the routing discipline themselves; embed `templates/hermes/skill-routing-cheatsheet.md` in each profile's SOUL.md.
 
 The **build & deploy** capability resolves to whatever shell/CI tooling the harness exposes; it is driven by the `release-engineering` skill. The `devops` role spans two pipeline points: it plans how the system ships in the optional `delivery-design` phase (CI/CD, environments, rollback runbooks) and owns the deploy gate in `deploy` — shipping requires explicit confirmation plus green checks (see both phases in `FLOW.yaml`).
 
