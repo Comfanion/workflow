@@ -16,13 +16,13 @@ Write and think against a **conceptual kanban board**: items (epics → stories 
 | Harness | The board is… |
 |---------|---------------|
 | Hermes | the native kanban dispatcher (a real board); the agent maps board verbs to its own CLI |
-| Claude Code / opencode | a simulated board — a tracked task list; the main session conducts it |
+| Claude Code / opencode | a simulated board — a tracked task list (e.g. TodoWrite); the main session conducts it |
 
 The board metaphor is the contract; the harness supplies the mechanics. You never need a specific kanban CLI to follow these rules.
 
 ## The loop
 
-On a standing team the board has two conductors across the phase-domain split: `secretary` runs planning — gathers requirements, conducts the planning roles, and lays **approved** epics/stories on the board — then hands off to `orchestrator`, which runs execution. The loop below is the execution conductor's; the secretary's planning loop is the same shape one phase earlier.
+On a standing team the board has two conductors across the phase-domain split: `secretary` runs planning — gathers requirements, conducts the planning roles, and lays **approved** epics/stories on the board — then hands off to `orchestrator`, which runs execution. The loop below is the execution conductor's; the secretary's planning loop has the same shape one phase earlier — stage, assign, gate, monitor — run over the planning roles (analyst → pm → architect → designer) instead of the build roles (see the `secretary` role's Workflow).
 
 1. **Stage the work on the board.** Take the tasks/stories from `decomposition` and create a board item per unit. Each item must carry what its assignee needs to start cold — the required reading and acceptance criteria the decomposition already produced. Don't make an agent reconstruct context from chat.
 2. **Assign by role.** Route each item to the role that owns it (see the roster below). Never assign to a role that doesn't exist — check the available agents first.
