@@ -13,6 +13,8 @@ Sub-agents are ephemeral: fresh context, one task, return to you, gone. They are
 
 A board, if one exists, records the *outcomes* of your session (stories, tasks, results) — never the helpers you used to produce them.
 
+This rule is about the helpers, not about where execution work belongs. Whether a story should be a persistent board item with its own session — its own branch, worktree, and dev → review → test lifecycle — is the delegation-model choice made in `orchestration`, set by project rules. On a harness with a board, substantial stories that need testing and parallel review usually go to the board (`orchestration-team`); don't force them through in-session calls just to avoid creating tickets. Planning and the fan-outs *inside* one worker's task are where in-session sub-agents shine.
+
 Pick the sub-mode by how the tasks relate.
 
 ## Sequential mode — review-gated, one task at a time

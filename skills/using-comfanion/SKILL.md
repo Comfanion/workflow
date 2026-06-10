@@ -68,7 +68,7 @@ Each skill says which it is. **Rigid** skills (`verification-before-completion`,
 
 Skills are written in capability prose ("search the codebase", "spawn a subagent"), not harness-specific tool names. `docs/capability-map.md` translates each capability to the concrete tool on Claude Code, opencode, Codex, and Hermes. On Claude Code, invoke skills with the `Skill` tool; on other harnesses, use that harness's skill mechanism. Never `Read` a skill file to "use" it — invoke it through the harness so it loads as an instruction.
 
-Not every harness pins an invoked skill in context. Claude Code's `Skill` tool injects the instructions for the rest of the session; Hermes's `skill_view` returns the content as a tool result, which fades as the conversation grows. On a tool-result harness, re-invoke the skill at the start of each phase it governs, and re-state its discipline in your own working notes when a task spans many turns — otherwise the skill silently degrades into "I read it once." Workers spawned without this skill in context should load the standalone routing cheatsheet (`templates/hermes/skill-routing-cheatsheet.md`) from their profile.
+Not every harness pins an invoked skill in context — if yours returns skill content as a tool result rather than injecting it, re-invoke the skill at the start of each phase it governs (per-harness behavior: `docs/capability-map.md`).
 
 ## Roles
 

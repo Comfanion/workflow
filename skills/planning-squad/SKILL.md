@@ -57,4 +57,4 @@ Create the board items: the validated stories and dev sub-tasks, each carrying i
 
 ## Roles
 
-For the conducting agent of the planning phase (on a standing team, `secretary`; on Claude Code, your main session). The squad members are the planning roles from `agents/` (pm, architect, analyst, devops).
+For the conducting agent of the planning phase (on a standing team, `secretary` or the orchestrator decomposing a claimed task; solo, your main session). The squad members are the planning roles from `agents/` (pm, architect, analyst, devops).

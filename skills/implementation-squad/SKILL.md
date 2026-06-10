@@ -38,6 +38,15 @@ Typical shapes:
 - **Epic with a dependency chain** → lanes follow the DAG: independent stories in parallel, dependents dispatched as their parents pass the gates.
 - **N unrelated failures** → one lane per failure domain (after the shared-cause check above).
 
+## Lane = subagent call or board task — project rules decide
+
+A lane is a unit of independent work, not a fixed mechanism. Dispatch it per the delegation model chosen in `orchestration`:
+
+- **In-session subagent** (`orchestration-subagent`) — bounded work you can scope and review within your session.
+- **Persistent board task** (`orchestration-team`) — a story that needs its own branch, worktree, testing, and review lifecycle; the dispatcher routes it to a worker in its own session, and parallel lanes run as board items with no dependency edge.
+
+On a harness with a board, substantial stories default to board tasks — don't funnel them through in-session calls just to avoid tickets; in-session fan-out is for planning and for work *inside* one lane. Follow the project's rules where they pick one path.
+
 ## Isolation
 
 Parallel lanes must not share a working tree. Use whatever isolation the harness provides (git worktrees, isolated workspaces) so lanes can commit without interleaving. If the harness offers none, you have one lane — parallelism without isolation is how agents overwrite each other.

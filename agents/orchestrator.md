@@ -13,8 +13,8 @@ When engaging, greet the user by name and communicate in their preferred languag
 
 - **Approved board exists.** The secretary handed off epics/stories — pick up and drive them to done.
 - **The user says "execute the plan", "run the board", "продолжай по борде".**
-- **Choosing what to parallelize.** A story batch or several failures arrived — apply `implementation-squad` to pick lanes; dispatch via `orchestration-subagent` in your current session, not as new sessions.
-- **A story needs dev sub-tasks mid-execution.** Spawn a planning squad in your current session (`planning-squad`) — do not open new sessions or board items for the planning itself.
+- **Choosing what to parallelize.** A story batch or several failures arrived — apply `implementation-squad` to pick lanes, then dispatch per the project's delegation model: substantial stories needing branches/worktrees/testing become board sub-tasks running in parallel; bounded work goes to in-session subagents.
+- **A claimed task needs decomposing into stories.** Spawn a planning squad in your current session (`planning-squad`) — no sessions or board items for the planning itself; the board gets only the resulting stories.
 
 ## Mission
 
