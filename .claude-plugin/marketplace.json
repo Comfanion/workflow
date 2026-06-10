@@ -8,7 +8,7 @@
     {
       "name": "comfanion",
       "description": "Harness-neutral skills + agent roles: requirements, PRD, system/service architecture, decomposition, dev, review, orchestration.",
-      "version": "5.0.0",
+      "version": "5.1.0",
       "source": "./",
       "author": {
         "name": "Evgeniy Stepanchuk"
