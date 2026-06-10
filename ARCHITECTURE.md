@@ -48,13 +48,16 @@ Each skill:
 
 ---
 
-## Roles (11)
+## Roles (13)
 
 Roles are viewpoints, not skill bundles. Any role selects whatever skills the task needs;
-none of the entries below imply ownership of a skill set.
+none of the entries below imply ownership of a skill set. The first two are **conducting**
+roles — they run the work rather than author an artifact (see [Coordination Layer](#coordination-layer)).
 
 | Role | Mission / viewpoint |
 |------|---------------------|
+| `secretary` | Planning-conductor + intake lens — receives the request, frames the plan, and acts directly on trivial work instead of dispatching it |
+| `orchestrator` | Execution-conductor lens — routes work across roles and enforces review gates; authors nothing |
 | `analyst` | Requirements lens — uncovers real needs, surfaces hidden constraints and conflicts |
 | `architect` | System-design lens — shapes structure, boundaries, and the key technical decisions |
 | `pm` | Product lens — frames value, scope, and priorities; turns needs into a delivery plan |
@@ -69,11 +72,16 @@ none of the entries below imply ownership of a skill set.
 
 ---
 
-## Skills (37)
+## Skills (41)
 
 A single shared library. Any role draws from it; skills surface by task match (each skill's
 own description), **not** by role assignment. The grouping below is by purpose only — it
 does not bind any skill to a role.
+
+### Toolkit entry point
+| Skill | Purpose |
+|-------|---------|
+| `using-comfanion` | The router: at the start of a task, check whether a skill applies and invoke it before improvising; user instructions outrank skills. The one skill surfaced automatically (others load on demand) — on Claude Code via an optional SessionStart hook |
 
 ### Planning & Requirements
 | Skill | Purpose |
@@ -81,6 +89,7 @@ does not bind any skill to a role.
 | `requirements-gathering` | Elicit FR/NFR; also covers requirements validation (SMART, no conflicts) |
 | `prd-writing` | Write the PRD; also covers PRD validation / completeness |
 | `acceptance-criteria` | Write testable acceptance criteria (Given/When/Then) |
+| `security-requirements` | Abuse cases + security NFRs — security at requirements time; feeds threat-modeling |
 
 ### Design
 | Skill | Purpose |
@@ -94,6 +103,7 @@ does not bind any skill to a role.
 | `coding-standards` | Define coding patterns, style, git, security, and testing conventions |
 | `ux-design` | Design UX flows, interaction patterns, and interface layouts |
 | `design-system` | Define and maintain the design system (tokens, components, guidelines) |
+| `threat-modeling` | Design-time STRIDE / attack-surface analysis; feeds review-security |
 
 ### Decomposition
 | Skill | Purpose |
@@ -108,7 +118,15 @@ does not bind any skill to a role.
 | `test-scenarios` | Author concrete test cases / scenarios (also done during implementation) |
 | `test-execution` | Run tests and apply the QA gate |
 | `unit-writing` | Write per-module/domain unit docs (data model, API surface, event schemas) |
-| `code-review` | Review code for quality and correctness (checklist embedded) |
+| `code-review` | Umbrella router: runs the review dimensions below and aggregates one PASS/CHANGES/BLOCKED verdict |
+| `review-security` | Review dimension — code-level security (secrets, injection, authz); always blocks on a real finding |
+| `review-correctness` | Review dimension — logic, unmet acceptance criteria, races |
+| `review-tests` | Review dimension — suite health and coverage of core paths |
+| `review-performance` | Review dimension — hot-path cost, N+1, allocation |
+| `review-complexity` | Review dimension — maintainability and complexity shape |
+| `receiving-code-review` | Act on review feedback with rigor — verify each comment before implementing or pushing back; the author's side of the review loop |
+| `systematic-debugging` | Find root cause before fixing — read/reproduce/trace, one hypothesis, fix the source; rigid (Iron Law, 3-fix architecture rule) |
+| `verification-before-completion` | The completion gate — no "done/fixed/passing" claim without fresh command output proving it; cross-cutting, rigid |
 
 ### Delivery / Ops
 | Skill | Purpose |
@@ -149,6 +167,11 @@ you talk to — that holds the goal and the plan and runs the work *through* the
 rather than doing every step itself. It does not own a domain of expertise; it owns
 sequencing, delegation, and quality gates.
 
+Two roles formalize this layer. The **`secretary`** conducts *planning* — it takes the
+intake, frames the plan, and handles trivial work inline. The **`orchestrator`** conducts
+*execution* — it dispatches the planned work across the authoring roles and enforces the
+review gates. Both author nothing themselves; they drive the orchestration trio below.
+
 This layer is driven by the orchestration trio:
 
 - **`orchestration`** — the router. Establishes the principles that apply to any
@@ -165,6 +188,14 @@ The conducting agent maps each pipeline phase (see `FLOW.yaml`) to the role that
 drives it, dispatches the work via one of the two mechanics, and gates each result before
 advancing. Each role is a viewpoint that selects whatever skills the task needs; the
 coordination layer decides *who* runs *when* and whether the output is good enough.
+
+The conducting agent enters through **`using-comfanion`** — the router that, at the start of
+a task, checks whether a skill applies and invokes it before improvising. On Claude Code an
+optional `SessionStart` hook (the toolkit's one harness-specific addition, under `hooks/`)
+surfaces that skill automatically; remove `hooks/` to run purely harness-neutral. Two craft
+gates apply across every phase regardless of role: **`verification-before-completion`** (no
+completion claim without fresh evidence) and **`systematic-debugging`** (root cause before
+any fix). **`receiving-code-review`** governs the author's side of the review gate.
 
 ---
 
@@ -186,19 +217,31 @@ is no harness-specific prefix — packaging for a given harness is layered on el
 │   ├── devops.md
 │   ├── frontend-developer.md
 │   ├── fullstack-developer.md
+│   ├── orchestrator.md
 │   ├── pm.md
 │   ├── researcher.md
 │   ├── reviewer.md
+│   ├── secretary.md
 │   └── tester.md
 │
-└── skills/                      # Knowledge (HOW)
-    ├── <skill-name>/
-    │   ├── SKILL.md             # The how-to
-    │   └── references/          # Templates, checklists, examples
-    │       ├── template.md
-    │       └── checklist.md
-    └── ...
+├── skills/                      # Knowledge (HOW)
+│   ├── <skill-name>/
+│   │   ├── SKILL.md             # The how-to
+│   │   └── references/          # Templates, checklists, examples
+│   │       ├── template.md
+│   │       └── checklist.md
+│   └── ...
+│
+└── hooks/                       # OPTIONAL, Claude Code only — the one
+    ├── hooks.json               # harness-specific layer: a SessionStart
+    ├── run-hook.cmd             # hook that surfaces `using-comfanion`.
+    └── session-start            # Delete this dir to stay fully neutral.
 ```
+
+The skill/role library is harness-neutral Markdown. The only harness-specific piece is the
+optional `hooks/` directory: on Claude Code it injects the `using-comfanion` router at
+session start so the library is actually used rather than skipped. It is opt-in by presence —
+removing `hooks/` changes nothing about the skills themselves.
 
 Examples of `references/` payloads:
 

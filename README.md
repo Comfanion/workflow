@@ -2,7 +2,7 @@
 
 A harness-neutral toolkit for running software projects with AI agents — a set of **skills** (reusable procedures) and **agent roles** that take a project from a rough idea through requirements, design, decomposition, implementation, and review.
 
-It is deliberately lean: no plugins, no MCP servers, no harness-specific tooling — just skills and roles in clean Markdown. The same content is meant to run anywhere an agent can read skills: Claude Code, opencode, Codex, and Hermes.
+It is deliberately lean: no MCP servers, just skills and roles in clean Markdown. The same content runs anywhere an agent can read skills: Claude Code, opencode, Codex, and Hermes. The one harness-specific piece is optional — a Claude Code SessionStart hook (under `hooks/`) that surfaces the `using-comfanion` router at session start; delete that directory to stay fully neutral.
 
 ## The model
 
@@ -34,6 +34,7 @@ research → requirements → prd → architecture → delivery-design → desig
 - **testing** — **test-scenarios** (author concrete cases/edge scenarios during dev) and **test-execution** (run the plan + QA gate).
 - **deploy** — **release-engineering**: CI/CD, deploy strategies, rollback, and a hard deploy gate (ship on green + confirmation).
 - **orchestration / orchestration-subagent / orchestration-team** — run the work: ephemeral subagent calls (sequential review-gated or parallel fan-out) or a standing role-team coordinated via a board.
+- Craft discipline (cross-cutting, rigid — each carries an Iron Law): **verification-before-completion** (no "done" without fresh evidence proving it), **systematic-debugging** (root cause before any fix; the 3-fix architecture rule), **receiving-code-review** (act on review feedback with rigor, not reflexive agreement). The entry point **using-comfanion** routes a task to the right skill before improvising.
 - Cross-cutting: **brainstorm** (facilitated ideation / problem analysis — Five Whys, HMW, SCAMPER, empathy/journey maps), **research-methodology** (do research), **research-planning** (scope spikes for unknowns). Utilities: **changelog**, **doc-todo**, **archiving**, **translation**.
 
 The architecture altitude ladder is the toolkit's sharpest rule: **system → service → unit**. Keep landscape decisions out of a service's internal design, and vice-versa.
@@ -49,6 +50,7 @@ ARCHITECTURE.md     # the two-layer model + full skill/role catalog
 FLOW.yaml           # the recommended pipeline: phase → role(s) → skill(s) → artifact(s)
 docs/
   capability-map.md # capability → concrete tool per harness
+hooks/              # OPTIONAL, Claude Code only — SessionStart hook that surfaces using-comfanion
 .claude-plugin/     # Claude Code plugin + marketplace manifests
 .codex-plugin/      # Codex manifest
 .opencode/          # opencode symlinks → root skills/agents (best-effort)
@@ -80,4 +82,4 @@ Skills describe **capabilities** ("search the codebase", "spawn a subagent") rat
 
 ## Status
 
-37 skills, 13 agent roles. Harness-neutral and consistent. Packaging present for Claude Code, Codex, Hermes (tap + profile setup); opencode via symlinks is best-effort and unverified after the flatten.
+41 skills, 13 agent roles. Harness-neutral and consistent. Packaging present for Claude Code, Codex, Hermes (tap + profile setup); opencode via symlinks is best-effort and unverified after the flatten.

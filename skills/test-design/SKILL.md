@@ -9,6 +9,14 @@ Test design answers one question before any test is written: **what must be true
 
 The most common failure is testing implementation instead of behavior: asserting on internal calls and private state so that any refactor breaks the suite even when behavior is unchanged. Test what the code *does* (observable inputs and outputs), not *how* it does it. The second most common failure is chasing a coverage number instead of covering the cases that matter — 100% line coverage with no error-path tests is worse than 70% that exercises every failure mode.
 
+## The Iron Law
+
+```
+EVERY ACCEPTANCE CRITERION MAPS TO A TEST; TEST BEHAVIOR, NOT IMPLEMENTATION
+```
+
+A criterion with no test is an unproven requirement — that is the gap this skill exists to close, so the mapping is not optional. And a test that asserts on internal calls or private state proves nothing about correctness; it just pins the current implementation and breaks on every refactor. If you cannot test a behavior without reaching into internals, the design is too coupled — that is a finding, not a reason to test the internals.
+
 ## Start from acceptance criteria
 
 Tests exist to prove acceptance criteria hold. Before designing, get the acceptance criteria for the feature (default location `{DOCS_ROOT}/acceptance-criteria.md`; honor the project's configured docs location if one is set). If they don't exist, that is a gap — flag it, because untraceable tests are how requirements silently go unverified.
@@ -69,6 +77,16 @@ Load these only when the situation calls for them, to keep this skill lean:
 - Mocking and isolation — dependency injection, test doubles (stub/mock/spy/fake), avoiding mock hell. Load when a component has external dependencies you must isolate: `unit-tests-mocking.md`.
 - Module test-case template — domain/use-case/API/event/DB test matrices for one module. Load when documenting a module's full test plan: `references/template-module.md`.
 - Integration test template — module contracts, events, DB, API boundary, auth, NFR verification. Load when specifying integration tests against an architecture: `references/template-integration.md`.
+
+## Red flags — stop, this plan won't prove correctness
+
+- An acceptance criterion with no test case mapped to it
+- Asserting on private methods, internal calls, or getters/setters instead of observable behavior
+- Only happy-path cases — no error, edge, or auth cases for a behavior that has them
+- An E2E test doing a unit test's job (a calculation, a validation rule) — slow, flaky, imprecise
+- Chasing a coverage percentage as the goal rather than covering the cases that carry risk
+- Mocking your own domain logic or pure functions — that asserts the test's own assumptions
+- "It worked when I tried it" offered in place of an automated, re-runnable test
 
 ## Roles
 

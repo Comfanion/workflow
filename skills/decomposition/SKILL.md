@@ -65,9 +65,40 @@ At every level, ask: *can the next actor proceed without coming back to me?* Thi
 
 If a downstream agent would have to ask "which fields?", "which doc?", "what counts as done?" — the unit isn't finished.
 
+## Dependency links — direction and shape
+
+When decomposition output feeds an execution board with blocking semantics (e.g. a Hermes kanban dispatcher where `parents_not_done` holds an item until its parents finish), the dependency links you declare *are* the schedule. Get the direction wrong and the board deadlocks — every item waiting on an item that waits on it. This is the most expensive decomposition bug because it stops all work, not one task.
+
+Two distinct relationships exist; never conflate them:
+
+- **Hierarchy** — epic *contains* stories, story *contains* tasks. This is composition. If you decompose X into parts, **X is the parent and the parts are its children** — never the reverse. A `Phase A` umbrella is the parent of the `A-*` items it groups, not their child.
+- **Blocking dependency** — when item B can only start after item A finishes, **A is the prerequisite (the blocking parent) and B is the dependent (the child that waits)**. In the templates, "B Depends on A" and "A ──► B" both mean the edge points A→B: A is done first. On a board with `parents_not_done`, A is B's parent.
+
+Concretely: an `implement` task is the parent of the `verify` task that checks it (implement finishes first); never make `verify` the parent of `implement`. A `ship` task depends on everything it ships — it is a child of those, parent of nothing downstream.
+
+The link graph **must be a DAG**. Before emitting it, validate:
+
+- **No cycles** — A→B→C→A deadlocks the whole chain. Walk the edges; if you can return to a node you started from, the graph is invalid.
+- **No inverted edges** — a later-phase item (verify, ship, QA) is never the parent of the earlier-phase item it follows.
+- **No self-parent** — an item never lists itself as a parent.
+- **Independent items carry no parent** — if nothing must precede it, leave it unlinked so it can be claimed immediately. A spurious parent link blocks just as hard as a wrong one.
+
+## Don't explode review / test / QA into board children
+
+A review, test, verification, or QA unit is **one** board item, not a parent that breeds children. The failure to avoid: a single `verify` item decomposed into five kanban children (review-umbrella, ADR-audit, baseline-test, endpoint-test, integration-test) — twenty board items the worker agents don't know how to coordinate, and the user drowning in tasks.
+
+The right shape: keep the verify/review/test as one board task assigned to its owning role (reviewer or tester); that worker then fans the dimensions out internally as ephemeral sub-agents via `orchestration-subagent` (the review dimensions, the test levels). The fan-out is a runtime concern of the worker, not a decomposition artifact on the board.
+
+Trigger words in a unit — **review, verify, test, QA, audit** — mean: do not create board children for it. Decompose feature/implementation work into tasks where genuine independence exists; decompose verification into a sub-agent prompt the worker runs, not into board items.
+
 ## Validating decomposition
 
 Before stories go to development, check them against `references/story-checklist.md` and emit a **READY-FOR-DEV / NEEDS REVISION** verdict. The checks that matter most: single focus and right size; AC in Given/When/Then covering happy + error + edge; tasks atomic and ordered with file paths; traceability back to epic and FR; and a complete Definition of Done. For epics, verify each delivers demonstrable value, has explicit dependencies, and holds 2-10 stories (a one-story epic is a story; a 15+-story epic should split).
+
+Two more checks are mandatory before any unit reaches an execution board, because they fail the board hard rather than producing a weak story:
+
+- **Dependency graph is a valid DAG** — run the checks above (no cycles, no inverted edges, no self-parent, independent items unlinked). A broken graph deadlocks the board; do not emit it.
+- **Every named skill exists** — for each skill a sub-task body names, assert it is in the toolkit's skill catalog before creating the item (on Hermes, check `hermes skills list`; elsewhere, the `skills/` directory). A task that names a non-existent skill (e.g. `security-testing` when only `review-security` exists) crashes its worker on pickup. Fail fast with a clear message — "task T names skill `X`, not in catalog; available: …" — rather than letting the worker discover it at runtime.
 
 ## Roles
 
