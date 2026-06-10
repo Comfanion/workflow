@@ -1,7 +1,7 @@
 {
   "name": "comfanion",
   "description": "Harness-neutral agentic-development toolkit: skills and agent roles for requirements, PRDs, system/service architecture, decomposition, implementation, review, and multi-agent orchestration.",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "author": {
     "name": "Evgeniy Stepanchuk"
   },

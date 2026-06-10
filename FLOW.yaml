@@ -183,6 +183,13 @@ pipeline:
           - "{DOCS_ROOT}/backlog/epic-*.md"
           - "{DOCS_ROOT}/backlog/stories/story-*.md"
           - "{DOCS_ROOT}/backlog/sprint-status.yaml"
+      # Coordination: produce the decomposition as a planning squad — specialist
+      # perspectives fanned out in the conductor's current session, synthesized
+      # into the templates (no sessions or board items per planning role).
+      coordination:
+        - orchestration            # router: pick delegation mode + sequencing
+        - orchestration-subagent   # ephemeral subagent calls (dispatch mechanics)
+        - planning-squad           # squad composition: who to spawn, what each returns
       validation:
         skill: decomposition
         checklist: skills/decomposition/references/story-checklist.md
@@ -218,6 +225,7 @@ pipeline:
       coordination:
         - orchestration            # router: pick delegation mode + sequencing
         - orchestration-subagent   # ephemeral subagent calls (sequential/parallel)
+        - implementation-squad     # squad composition: lanes + independence test for parallelism
         - orchestration-team       # standing role-team via a shared board
       artifacts:
         input:

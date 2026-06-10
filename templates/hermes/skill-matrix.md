@@ -16,7 +16,7 @@ rather than assumed.
 | Profile | Skills |
 |---------|--------|
 | secretary | all skills (full library) — so it can act directly on trivial work instead of dispatching it |
-| orchestrator | using-comfanion, orchestration, orchestration-team, orchestration-subagent, code-review, verification-before-completion |
+| orchestrator | using-comfanion, orchestration, orchestration-team, orchestration-subagent, planning-squad, implementation-squad, code-review, verification-before-completion |
 | analyst | using-comfanion, requirements-gathering, acceptance-criteria, security-requirements |
 | pm | using-comfanion, prd-writing, decomposition, acceptance-criteria |
 | architect | using-comfanion, system-architecture, service-architecture, adr-writing, api-design, database-design, unit-writing, coding-standards, diagram-creation, threat-modeling, release-engineering |

@@ -144,8 +144,10 @@ does not bind any skill to a role.
 | Skill | Purpose |
 |-------|---------|
 | `orchestration` | Router: run work across roles — choose delegation mode and sequencing |
-| `orchestration-subagent` | Mechanics for ephemeral subagent calls (sequential review-gated or parallel fan-out) |
+| `orchestration-subagent` | Mechanics for ephemeral subagent calls (sequential review-gated or parallel fan-out), all inside one session |
 | `orchestration-team` | Mechanics for a standing role-team coordinated via a shared board |
+| `planning-squad` | Squad composition for planning fan-out: who to spawn (PO/architect/analyst/devops), what each returns, how to synthesize |
+| `implementation-squad` | Squad composition for execution: lanes of implementer + reviewers, the independence test for parallelism |
 
 ### Utilities
 | Skill | Purpose |
@@ -155,7 +157,7 @@ does not bind any skill to a role.
 | `doc-todo` | Track documentation TODOs |
 | `translation` | Translate documents |
 
-The orchestration trio is loaded by the **conducting / main agent** (the one you talk to),
+The orchestration skills are loaded by the **conducting / main agent** (the one you talk to),
 not by any role — see [Coordination Layer](#coordination-layer).
 
 ---
@@ -172,17 +174,22 @@ intake, frames the plan, and handles trivial work inline. The **`orchestrator`**
 *execution* — it dispatches the planned work across the authoring roles and enforces the
 review gates. Both author nothing themselves; they drive the orchestration trio below.
 
-This layer is driven by the orchestration trio:
+This layer is driven by the orchestration skills:
 
 - **`orchestration`** — the router. Establishes the principles that apply to any
   delegation (construct context deliberately, review gates, model selection, continuous
   execution) and points to the right mechanics skill.
 - **`orchestration-subagent`** — mechanics for spawning ephemeral, isolated subagents:
   one crafted task per agent, either sequentially with a review gate after each, or in
-  parallel across independent problem domains.
+  parallel across independent problem domains — all inside the conductor's current
+  session, never as new sessions or board items.
 - **`orchestration-team`** — mechanics for a standing, role-specialized team coordinated
   through a shared board/dispatcher (e.g. a kanban dispatcher routing tasks to profiles),
   with declared dependencies and hand-offs.
+- **`planning-squad`** / **`implementation-squad`** — squad compositions over the
+  subagent mechanics: who to spawn and what to parallelize for the planning and
+  execution phase-domains respectively, so the conductor never derives a squad from
+  scratch.
 
 The conducting agent maps each pipeline phase (see `FLOW.yaml`) to the role that typically
 drives it, dispatches the work via one of the two mechanics, and gates each result before

@@ -34,6 +34,7 @@ research → requirements → prd → architecture → delivery-design → desig
 - **testing** — **test-scenarios** (author concrete cases/edge scenarios during dev) and **test-execution** (run the plan + QA gate).
 - **deploy** — **release-engineering**: CI/CD, deploy strategies, rollback, and a hard deploy gate (ship on green + confirmation).
 - **orchestration / orchestration-subagent / orchestration-team** — run the work: ephemeral subagent calls (sequential review-gated or parallel fan-out) or a standing role-team coordinated via a board.
+- **planning-squad / implementation-squad** — squad compositions over the subagent mechanics: who to spawn and what to parallelize when planning a scope or executing decomposed work, all in one session.
 - Craft discipline (cross-cutting, rigid — each carries an Iron Law): **verification-before-completion** (no "done" without fresh evidence proving it), **systematic-debugging** (root cause before any fix; the 3-fix architecture rule), **receiving-code-review** (act on review feedback with rigor, not reflexive agreement). The entry point **using-comfanion** routes a task to the right skill before improvising.
 - Cross-cutting: **brainstorm** (facilitated ideation / problem analysis — Five Whys, HMW, SCAMPER, empathy/journey maps), **research-methodology** (do research), **research-planning** (scope spikes for unknowns). Utilities: **changelog**, **doc-todo**, **archiving**, **translation**.
 

@@ -18,7 +18,7 @@ These come from a hard-won observation: orchestration succeeds or fails on how w
 - **Use the least powerful model that can do the task.** Mechanical, well-specified work → a fast cheap model. Integration/judgment → standard. Architecture/design/review → the most capable. This conserves cost and time without lowering the ceiling where it matters.
 - **Execute continuously; stop only on a real blocker.** Once the plan is agreed, don't pause to ask "should I continue?" between tasks — that wastes the user's time. Stop only for a blocker you can't resolve, genuine ambiguity, or completion.
 - **Conduct vs act directly.** Delegation has a cost — crafting the task, dispatching, gating. For a trivial, direct, already-known, no-test change (fix a PRD line, correct a path), do it yourself: doing it inline is cheaper than describing it to an agent. Delegate when the work is substantial, needs an isolated context or a specialist, or requires testing. This never reopens "the conductor implements features" — substantial or testable build work is always dispatched and gated.
-- **Hand work off by reference, not by re-authoring.** Decomposition already produced right-sized items carrying their required reading and AC. Point the agent at the artifact (path + the sections it needs); never re-paste or re-explain the brief. The item is the brief — this is what keeps orchestration lean.
+- **Hand off by reference when the artifact is self-contained; by full text when it isn't.** A decomposed story carries its required reading and AC — point the agent at the file (path + the sections it needs); re-pasting or re-explaining it wastes your context and drifts from the source. A task inside a larger plan does not stand alone — extract its full text and context yourself and hand that over; never tell a subagent "read the plan", it will drown in scope that isn't its own. The test: could the agent act on what you handed it with zero other knowledge?
 
 ## Choosing how to delegate
 
@@ -26,7 +26,7 @@ Three independent questions decide your approach.
 
 **0. Which phase-domain? (planning vs execution)**
 
-Orchestration is not one job. Orchestrating agents to **plan** a feature (research → requirements → prd → architecture → design → decomposition) is distinct from orchestrating agents to **execute** it (implementation → testing → review → deploy). On a standing team the two are owned by two conducting profiles — `secretary` (planning) and `orchestrator` (execution); on Claude Code the main session plays both. Each phase-domain still chooses a delegation model and a sequencing below.
+Orchestration is not one job. Orchestrating agents to **plan** a feature (research → requirements → prd → architecture → design → decomposition) is distinct from orchestrating agents to **execute** it (implementation → testing → review → deploy). On a standing team the two are owned by two conducting profiles — `secretary` (planning) and `orchestrator` (execution); on Claude Code the main session plays both. Each phase-domain still chooses a delegation model and a sequencing below. When delegating via subagent calls, each phase-domain has a ready squad composition — `planning-squad` (specialist perspectives fanned out over a scope, synthesized in one session) and `implementation-squad` (lanes of implementer + reviewers over decomposed work) — so you never derive who-to-spawn from scratch.
 
 **1. Which delegation model? (the big choice)**
 

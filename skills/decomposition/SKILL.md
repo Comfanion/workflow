@@ -100,6 +100,10 @@ Two more checks are mandatory before any unit reaches an execution board, becaus
 - **Dependency graph is a valid DAG** — run the checks above (no cycles, no inverted edges, no self-parent, independent items unlinked). A broken graph deadlocks the board; do not emit it.
 - **Every named skill exists** — for each skill a sub-task body names, assert it is in the toolkit's skill catalog before creating the item (on Hermes, check `hermes skills list`; elsewhere, the `skills/` directory). A task that names a non-existent skill (e.g. `security-testing` when only `review-security` exists) crashes its worker on pickup. Fail fast with a clear message — "task T names skill `X`, not in catalog; available: …" — rather than letting the worker discover it at runtime.
 
+## Producing the decomposition
+
+This skill defines *what* a good cut looks like; it does not require you to fill the templates alone. When the scope is non-trivial, produce the decomposition as a planning squad — 3-4 specialist sub-agents in parallel (PO, architect, analyst, devops when deploys are in scope), synthesized by you in one session. The squad composition and merge discipline live in the `planning-squad` skill; the dispatch mechanics in `orchestration-subagent`. Analyze, fan out, synthesize, validate, emit board items — all without leaving your session.
+
 ## Roles
 
 Written for whoever holds the planning role (on a team, the product owner / scrum role; solo, you). Input is the approved PRD and architecture docs (for exact entity and field names); output feeds the developer, who implements stories via the `dev` skill.
