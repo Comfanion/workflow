@@ -69,7 +69,7 @@ none of the entries below imply ownership of a skill set.
 
 ---
 
-## Skills (30)
+## Skills (37)
 
 A single shared library. Any role draws from it; skills surface by task match (each skill's
 own description), **not** by role assignment. The grouping below is by purpose only — it

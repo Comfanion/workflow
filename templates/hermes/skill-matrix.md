@@ -12,16 +12,16 @@ hermes -p <profile> skills install <tap>/<skill>
 |---------|--------|
 | secretary | all skills (full library) — so it can act directly on trivial work instead of dispatching it |
 | orchestrator | orchestration, orchestration-team, orchestration-subagent, code-review |
-| analyst | requirements-gathering, acceptance-criteria |
+| analyst | requirements-gathering, acceptance-criteria, security-requirements |
 | pm | prd-writing, decomposition, acceptance-criteria |
-| architect | system-architecture, service-architecture, adr-writing, api-design, database-design, unit-writing, coding-standards, diagram-creation, release-engineering |
+| architect | system-architecture, service-architecture, adr-writing, api-design, database-design, unit-writing, coding-standards, diagram-creation, threat-modeling, release-engineering |
 | designer | ux-design, design-system |
 | devops | release-engineering |
 | backend-developer | dev, code-review, test-design, test-scenarios, research-planning |
 | frontend-developer | dev, code-review, test-design, test-scenarios, research-planning |
 | fullstack-developer | dev, code-review, test-design, test-scenarios, research-planning |
 | tester | test-scenarios, test-execution |
-| reviewer | code-review |
+| reviewer | code-review (umbrella), review-security, review-correctness, review-tests, review-performance, review-complexity |
 | researcher | research-methodology, research-planning |
 
 ## Why these scopes

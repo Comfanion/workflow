@@ -59,6 +59,7 @@ pipeline:
       skills:
         - requirements-gathering   # also covers requirements validation
         - acceptance-criteria
+        - security-requirements    # abuse cases + security NFRs — security at requirements time
       artifacts:
         output:
           - "{DOCS_ROOT}/requirements/requirements.md"
@@ -103,6 +104,7 @@ pipeline:
         - api-design
         - database-design
         - diagram-creation
+        - threat-modeling          # design-time STRIDE / attack surface; feeds review-security
         # release-engineering is cross-cutting: callable here so deployment
         # topology, environments, and infra NFRs are shaped with the design,
         # not bolted on at ship time.
@@ -251,7 +253,12 @@ pipeline:
       description: Review implemented code for quality and correctness
       role: reviewer
       skills:
-        - code-review              # checklist embedded in the skill
+        - code-review              # umbrella: routes the dimensions below + aggregates the verdict
+        - review-security
+        - review-correctness
+        - review-tests
+        - review-performance
+        - review-complexity
       artifacts:
         input:
           - "{DOCS_ROOT}/backlog/stories/story-*.md"
