@@ -33,4 +33,4 @@ architecture/
 ## Related
 
 - [PRD](../prd.md)
-- [Coding Standards](../coding-standards/)
+- [Standards](../standards/)

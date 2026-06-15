@@ -45,6 +45,8 @@ Most tasks map to a phase of the pipeline (see `FLOW.yaml`) and the skill(s) tha
 | Claiming anything is done | `verification-before-completion` |
 | Ideation / problem analysis | `brainstorm` |
 | Running work across roles | `orchestration` (then `-subagent` or `-team`; who to spawn: `planning-squad` / `implementation-squad`) |
+| Setting up / authoring project standards | `standards` (umbrella) → routes to `standards-coding`, `-testing`, `-security`, `-performance`, `-api`, `-database`, `-git`, `-temporary-decisions` |
+| Consuming already-written standards during design / dev / review | `using-standards` |
 
 **Process skills before implementation skills.** "Let's build X" → `brainstorm` / requirements first, then the implementation skills. "Fix this bug" → `systematic-debugging` first, then the domain skill. The process skill decides *how* you approach the task; deciding that after you have started is too late.
 

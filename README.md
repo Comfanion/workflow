@@ -26,7 +26,7 @@ research → requirements → prd → architecture → delivery-design → desig
   - **system-architecture** — the landscape: which services exist, their boundaries, inter-service contracts, data ownership, topology. Multi-service systems only.
   - **service-architecture** — one service's internals: style (Layered/Hexagonal/Clean/Vertical-Slices), modules, data ownership, stack.
   - **unit-writing** — one module's detailed contract (data model, API, events).
-  - Supporting: **adr-writing**, **api-design**, **database-design**, **diagram-creation**, **coding-standards**.
+  - Supporting: **adr-writing**, **api-design**, **database-design**, **diagram-creation**, **standards** (umbrella over **standards-coding/-testing/-security/-performance/-api/-database/-git/-temporary-decisions**), **using-standards** (consumer).
 - **delivery-design** (optional) — **release-engineering** early: plan how the system ships — CI/CD pipeline, environment topology, deploy strategy, rollback runbooks — before stories are cut. The early half of the devops lens; `deploy` is the late half. Skip for TOY/library scope.
 - **design** — **ux-design** (user flows, wireframes, interaction, all UI states, handoff) and **design-system** (tokens, components, visual language).
 - **decomposition** — break scope into epics → stories → sprints at the right granularity, each carrying enough context that the next level can act without asking.

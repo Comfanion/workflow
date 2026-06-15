@@ -91,9 +91,10 @@ Use this checklist to validate architecture before proceeding to epic/story crea
 - [ ] Event contracts documented (if event-driven)
 - [ ] Consistency strategy (eventual vs strong)
 
-## Coding Standards Alignment
+## Standards Alignment
 
-- [ ] Architecture follows the project coding-standards document
+- [ ] Architecture aligns with `{DOCS_ROOT}/standards/coding.md` (layering, naming, error handling)
+- [ ] Surface-specific standards align where applicable: `api.md` (if exposed), `database.md` (if owned), `performance.md` (NFRs), `security.md` (auth/secrets)
 - [ ] Chosen architecture pattern consistently applied
 - [ ] Testing strategy fits architecture
 

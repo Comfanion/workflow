@@ -100,8 +100,12 @@ pipeline:
         - service-architecture     # one service's internals; also covers its validation
         - adr-writing
         - unit-writing
-        - coding-standards
+        - standards                # umbrella router; routes to standards-coding/-testing/-security/-performance/-api/-database/-git/-temporary-decisions
+        - using-standards          # consumer of already-written standards during design
         - api-design
+        # standards group authoring (loaded by `standards` as needed):
+        # standards-coding, standards-testing, standards-security, standards-performance,
+        # standards-api, standards-database, standards-git, standards-temporary-decisions
         - database-design
         - diagram-creation
         - threat-modeling          # design-time STRIDE / attack surface; feeds review-security
@@ -173,6 +177,7 @@ pipeline:
       role: pm
       skills:
         - decomposition            # merges epic / story / sprint-planning
+        - using-standards          # so each story's Required Reading points at the right standards artifacts
         # cross-cutting: carve infra / ops / deploy stories alongside feature work
         - release-engineering
       artifacts:
@@ -209,6 +214,7 @@ pipeline:
         - frontend-developer       # UI / UX-fidelity
       skills:
         - dev                      # story loop + epic/sprint batch modes + TDD (shared by all three dev roles)
+        - using-standards          # load the right standards artifacts per story
         - code-review
         - test-design
         - test-scenarios           # author concrete test cases alongside implementation
@@ -267,10 +273,11 @@ pipeline:
       role: reviewer
       skills:
         - code-review              # umbrella: routes the dimensions below + aggregates the verdict
-        - review-security
-        - review-correctness
-        - review-tests
-        - review-performance
+        - using-standards          # each review-* dimension reads its source-of-truth artifact via this consumer
+        - review-security          # reads docs/standards/security.md
+        - review-correctness       # reads docs/standards/coding.md (+ api.md / database.md if surface applies)
+        - review-tests             # reads docs/standards/testing.md
+        - review-performance       # reads docs/standards/performance.md
         - review-complexity
         # receiving-code-review is the author's counterpart to this gate: the developer
         # verifies each finding before implementing it or pushing back with evidence.

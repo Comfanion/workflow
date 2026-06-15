@@ -12,7 +12,7 @@ A code review answers one question: is this change safe and correct to merge? Th
 Reviewing code without knowing what it was supposed to do produces opinions, not findings. Before dispatching dimensions:
 
 - Read the plan/story the change implements and list its acceptance criteria — these are what "correct" means.
-- Read the project's coding standards (default `{DOCS_ROOT}/coding-standards/`) and conventions guide.
+- Load the project's standards via `using-standards` (default `{DOCS_ROOT}/standards/`) — each dimension reads its own source of truth: `coding.md` (correctness/style), `security.md` (security), `performance.md` (performance), `testing.md` (tests), `api.md` / `database.md` (surface-specific correctness).
 - Identify the changed files (the diff / file list).
 - Look up similar existing patterns so "this is wrong" is grounded in the project, not personal preference.
 

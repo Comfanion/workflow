@@ -22,10 +22,10 @@ The TDD core of this loop is rigid: write the test, watch it fail for the right 
 The single biggest waste in implementation is loading documents the story already summarizes. Read only:
 
 - the project conventions guide
-- `{DOCS_ROOT}/coding-standards/` — style, patterns, error handling (mandatory)
+- the relevant subset of `{DOCS_ROOT}/standards/` — loaded via `using-standards`, which picks the artifacts matching the story's surface (always `coding.md` and `testing.md`; add `security.md`, `performance.md`, `api.md`, `database.md`, `git.md` only when the story touches that surface; consult `temporary-decisions.md` if the story interacts with a known shortcut)
 - the **one** story file you are working (in batch modes, the one epic / one story you are on — never all of them at once)
 
-Do **not** read the PRD or the full architecture document. The story already carries its required-reading list and acceptance criteria; the coding-standards already carry the patterns. Pulling in the PRD or architecture.md balloons context for nothing and crowds out the code you actually need to study. If a story genuinely needs an architecture section, it names that exact section in its Required Reading — read only that.
+Do **not** read the PRD or the full architecture document. The story already carries its required-reading list and acceptance criteria; the standards artifacts already carry the patterns. Pulling in the PRD or architecture.md balloons context for nothing and crowds out the code you actually need to study. If a story genuinely needs an architecture section, it names that exact section in its Required Reading — read only that.
 
 ## Working a single story (core loop)
 
@@ -38,7 +38,7 @@ Before writing anything, learn how this codebase already solves similar problems
 - what test pattern is used (table tests, fixtures, mocking style)
 - what imports and dependencies are common
 
-Then read the coding-standards. **Why first:** code that ignores existing patterns gets sent back in review, and you cannot write a good interface or a good test for a layer you have not seen. This step is what lets every later step be fast and correct.
+Then load the relevant standards via `using-standards`. **Why first:** code that ignores existing patterns gets sent back in review, and you cannot write a good interface or a good test for a layer you have not seen. This step is what lets every later step be fast and correct.
 
 Capture a short **Study Summary** in the story file: the patterns you will follow (with file paths), and — if tasks can run in parallel — the shared interfaces.
 
@@ -83,7 +83,7 @@ When all tasks are green, set the story to **review** and run the full test suit
 
 If the verdict is **changes requested**, turn the returned action items into fix tasks, run them through the same red-green loop, and re-review (up to three rounds). On **approved**, set the story to **done**.
 
-Before claiming done, the story must clear its **Definition of Done** and **security checklist**: acceptance criteria met, all tasks complete, code follows the coding-standards, tests pass, no lint errors, reviewed. The security checks are not optional — input validated/sanitized, protected endpoints require auth, **a user can only reach their own data** (the most common production hole), no hardcoded secrets, parameterized queries, output escaped, no PII or secrets in logs or error messages.
+Before claiming done, the story must clear its **Definition of Done** and **security checklist**: acceptance criteria met, all tasks complete, code follows the loaded `docs/standards/*.md` artifacts (notably `coding.md` and any sibling that applied), tests pass, no lint errors, reviewed. The security checks are not optional — drawn from `docs/standards/security.md`: input validated/sanitized, protected endpoints require auth, **a user can only reach their own data** (the most common production hole), no hardcoded secrets, parameterized queries, output escaped, no PII or secrets in logs or error messages. If the story introduced a conscious shortcut, an entry must exist in `docs/standards/temporary-decisions.md` before "done".
 
 ## Batch modes: epic and sprint
 

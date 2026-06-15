@@ -11,9 +11,16 @@ docs/
 ├── requirements/             # Requirements gathering
 │   └── README.md
 │
-├── coding-standards/         # Code conventions
-│   ├── README.md
-│   └── ...
+├── standards/                # Project-wide standards
+│   ├── README.md             # Index of which artifacts are active / skipped
+│   ├── coding.md             # Naming, layering, errors, critical rules
+│   ├── testing.md            # Coverage targets, types, gates
+│   ├── security.md           # Surface-scoped checklist
+│   ├── performance.md        # Budgets, hot paths, anti-patterns
+│   ├── api.md                # URL, envelope, errors, versioning
+│   ├── database.md           # Naming, migrations, query patterns
+│   ├── git.md                # Branching, commits, PR/MR process
+│   └── temporary-decisions.md # Living backlog of conscious shortcuts
 │
 ├── architecture/             # Architecture details
 │   ├── adr/                  # Architecture Decision Records
@@ -37,7 +44,7 @@ docs/
 |----------|--------|-------------|
 | [PRD](prd.md) | 📝 Draft | Product requirements |
 | [Architecture](architecture.md) | 📝 Draft | System design |
-| [Coding Standards](coding-standards/) | 📝 Draft | Code conventions |
+| [Standards](standards/) | 📝 Draft | Project-wide standards (coding, testing, security, …) |
 
 ## Documentation Workflow
 

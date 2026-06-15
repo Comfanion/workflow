@@ -10,6 +10,9 @@ The test dimension of a code review. One job: do the tests actually prove this c
 ## Scope
 Applies to any change that adds or alters behavior. Pure formatting/docs → PASS. If behavior changed but no test changed, that itself is a finding.
 
+## Source of truth: `{DOCS_ROOT}/standards/testing.md`
+The project's `standards-testing` artifact owns the coverage targets per layer, the test types and locations, the naming, and the quality gates — load it via `using-standards` before reviewing. The checklist below is the **baseline** when no artifact exists; if `testing.md` exists, its per-layer floors and gate rules win over these defaults.
+
 ## Checklist — work each item
 For each: checked → finding, or "checked, clean".
 

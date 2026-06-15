@@ -81,7 +81,7 @@ Validation is the same skill from the other side — run it before epics are cre
 - **NFR compliance** — every NFR has concrete, documented support (caching for latency, HA for uptime). "We'll handle performance" is a FAIL; name the mechanism.
 - **Module quality** — each internal module has a single responsibility, owns specific entities, documents its events, and defines its interface.
 - **No circular dependencies** — the internal module graph is a DAG. A cycle is a hard FAIL.
-- **Style compliance** — the chosen style is justified by an ADR, dependency direction follows it, business logic is isolated from infrastructure; aligns with the coding-standards document.
+- **Style compliance** — the chosen style is justified by an ADR, dependency direction follows it, business logic is isolated from infrastructure; aligns with `{DOCS_ROOT}/standards/coding.md` (and `database.md` / `api.md` where the service exposes those surfaces).
 - **ADR quality** — major decisions each have Context, Decision, Alternatives, Consequences, status.
 - **Altitude check** — the document is about THIS service's internals, not the service landscape. If it's deciding which services exist or how they interconnect, that content belongs in `system-architecture`.
 

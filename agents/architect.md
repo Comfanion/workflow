@@ -69,4 +69,4 @@ Rules: write technical documentation in English (translations live under `{DOCS_
 - `{DOCS_ROOT}/architecture/modules/` — bounded contexts
 - `{DOCS_ROOT}/architecture/services/` — standalone services
 - `{DOCS_ROOT}/architecture/domains/` — domains
-- `{DOCS_ROOT}/coding-standards/`
+- `{DOCS_ROOT}/standards/` — coding, testing, security, performance, api, database, git, temporary-decisions (authored via the `standards` group)

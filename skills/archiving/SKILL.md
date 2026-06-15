@@ -26,7 +26,7 @@ Do **not** archive things still in use: the current sprint's artifacts, active r
 
 ## How to archive
 
-The archive lives under `{DOCS_ROOT}/archive/`, mirroring the source layout with subfolders like `research/`, `prd/`, `architecture/`, `modules/`, `coding-standards/`, and `sprint-artifacts/`. Mirroring the structure means a reader finds the archived version where they'd expect the live one.
+The archive lives under `{DOCS_ROOT}/archive/`, mirroring the source layout with subfolders like `research/`, `prd/`, `architecture/`, `modules/`, `standards/`, and `sprint-artifacts/`. Mirroring the structure means a reader finds the archived version where they'd expect the live one.
 
 Work through these steps in order, because each depends on the previous:
 

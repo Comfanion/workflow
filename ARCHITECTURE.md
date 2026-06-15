@@ -72,7 +72,7 @@ roles — they run the work rather than author an artifact (see [Coordination La
 
 ---
 
-## Skills (41)
+## Skills (50)
 
 A single shared library. Any role draws from it; skills surface by task match (each skill's
 own description), **not** by role assignment. The grouping below is by purpose only — it
@@ -82,6 +82,7 @@ does not bind any skill to a role.
 | Skill | Purpose |
 |-------|---------|
 | `using-comfanion` | The router: at the start of a task, check whether a skill applies and invoke it before improvising; user instructions outrank skills. The one skill surfaced automatically (others load on demand) — on Claude Code via an optional SessionStart hook |
+| `using-standards` | The consumer of already-written standards — at the start of design / dev / review, find the project's standards index and load only the artifacts the task touches |
 
 ### Planning & Requirements
 | Skill | Purpose |
@@ -100,10 +101,22 @@ does not bind any skill to a role.
 | `api-design` | Design APIs |
 | `database-design` | Design data models / schemas |
 | `diagram-creation` | Produce architecture and flow diagrams |
-| `coding-standards` | Define coding patterns, style, git, security, and testing conventions |
 | `ux-design` | Design UX flows, interaction patterns, and interface layouts |
 | `design-system` | Define and maintain the design system (tokens, components, guidelines) |
 | `threat-modeling` | Design-time STRIDE / attack-surface analysis; feeds review-security |
+
+### Project Standards (authoring group)
+| Skill | Purpose |
+|-------|---------|
+| `standards` | Umbrella router — decide which standards artifacts the project needs; route to the matching authoring skill |
+| `standards-coding` | Authors `docs/standards/coding.md` — naming, layering, error handling, critical rules |
+| `standards-testing` | Authors `docs/standards/testing.md` — pyramid, coverage targets, types, quality gates |
+| `standards-security` | Authors `docs/standards/security.md` — surface-scoped checklist; source of truth for `review-security` |
+| `standards-performance` | Authors `docs/standards/performance.md` — what to measure, budgets, hot paths, anti-patterns |
+| `standards-api` | Authors `docs/standards/api.md` — URL, envelope, error shape, versioning |
+| `standards-database` | Authors `docs/standards/database.md` — naming, migrations, query patterns, indexes |
+| `standards-git` | Authors `docs/standards/git.md` — branching, commits, PR/MR process |
+| `standards-temporary-decisions` | Authors `docs/standards/temporary-decisions.md` — living backlog of conscious shortcuts with cost / trigger / deadline / owner |
 
 ### Decomposition
 | Skill | Purpose |
@@ -259,7 +272,14 @@ Examples of `references/` payloads:
 - `decomposition/references/{epic-template.md, story-template.md, sprint-template.yaml, story-checklist.md}`
 - `acceptance-criteria/references/template.md`
 - `test-design/references/{template-integration.md, template-module.md}`
-- `coding-standards/references/{template-git.md, template-security.md, template-testing.md, what-to-document.md}`
+- `standards-coding/references/{template.md, checklist.md}` (+ `repo-structure/` scaffold)
+- `standards-testing/references/{template.md, checklist.md}`
+- `standards-security/references/{template.md, checklist.md}`
+- `standards-performance/references/{template.md, checklist.md}`
+- `standards-api/references/{template.md, checklist.md}`
+- `standards-database/references/{template.md, checklist.md}`
+- `standards-git/references/{template.md, checklist.md}`
+- `standards-temporary-decisions/references/{template.md, checklist.md}`
 - `code-review/references/checklist.md`
 - `adr-writing/references/template.md`
 

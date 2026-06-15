@@ -18,6 +18,9 @@ There is no "ship it and fix the auth check next sprint." Every checklist item i
 ## Scope
 Applies to every change that touches input handling, auth, data access, secrets, crypto, serialization, file/network IO, or dependencies. If none of these are touched, say so explicitly and return PASS — do not invent findings.
 
+## Source of truth: `{DOCS_ROOT}/standards/security.md`
+The project's `standards-security` artifact is the checklist's source of truth — surfaces scoped to the project, with the project's libraries and concrete how-to-comply. Load it via `using-standards` before reviewing. The list below is the **baseline** when the project artifact is absent; if `security.md` exists, prefer its specific rules over these defaults. A real finding that the artifact does not cover is also a signal to file an update against `standards-security`.
+
 ## Checklist — work each item, do not skim
 For each item: state checked → finding, or "checked, clean". A blanket "looks secure" is a rubber stamp, not a review.
 

@@ -55,14 +55,16 @@ Implement CRUD operations for Task entity following project architecture.
 | Document | Section | Why |
 |----------|---------|-----|
 | → the project conventions guide | All | Project patterns, conventions |
-| → `{DOCS_ROOT}/coding-standards/` | All | **MANDATORY** — code style, patterns |
+| → `{DOCS_ROOT}/standards/coding.md` | All | **MANDATORY** — code style, patterns |
+| → `{DOCS_ROOT}/standards/testing.md` | All | Test types, coverage targets, structure |
+| → `{DOCS_ROOT}/standards/<sibling>.md` | Surface | Add `security.md`/`performance.md`/`api.md`/`database.md`/`git.md` as the story's surface dictates (loaded by `using-standards`) |
 | → Unit: `{{unit}}` | Data Model | Field definitions, constraints |
 | → `{DOCS_ROOT}/architecture.md` | {{module}} Module | Service structure, events |
 | → Epic: `{{epic_path}}` | Technical Decisions | ADRs for this epic |
 
 <!-- e.g.
 | → the project conventions guide | All | Project patterns, naming |
-| → `{DOCS_ROOT}/coding-standards/` | All | **MANDATORY** — architecture, error handling |
+| → `{DOCS_ROOT}/standards/coding.md` | All | **MANDATORY** — architecture, error handling |
 | → Unit: `Task` | Data Model, Operations | Fields, validation rules |
 | → `{DOCS_ROOT}/architecture.md` | Task Module | Internal services, events |
 | → `{DOCS_ROOT}/architecture.md#error-handling` | Error Handling | Error codes format |
@@ -77,7 +79,7 @@ Story is complete when:
 - [ ] {{edge_case_handled}}
 - [ ] {{error_case_handled}}
 - [ ] Tests pass (unit + integration)
-- [ ] Follows coding-standards
+- [ ] Follows `docs/standards/coding.md` (and any sibling that applied)
 - [ ] No lint errors
 
 <!-- e.g.
@@ -85,7 +87,7 @@ Story is complete when:
 - [ ] Empty title returns validation error (400, TASK_001)
 - [ ] Task ID is UUID format
 - [ ] Tests cover: create, validation, duplicate handling
-- [ ] Code follows architecture patterns from coding-standards
+- [ ] Code follows architecture patterns from `docs/standards/coding.md`
 -->
 
 ---
@@ -107,8 +109,8 @@ Story is complete when:
 **Read First:**
 | Document | Section | What to Look For |
 |----------|---------|------------------|
-| → `{DOCS_ROOT}/coding-standards/` | Naming | Struct/method naming |
-| → `{DOCS_ROOT}/coding-standards/` | Validation | Validation patterns |
+| → `{DOCS_ROOT}/standards/coding.md` | Naming | Struct/method naming |
+| → `{DOCS_ROOT}/standards/coding.md` | Validation | Validation patterns |
 | → Unit: `{{unit}}` | Data Model | All fields and types |
 | → `{{existing_code_path}}` | Example | Similar implementation |
 
@@ -123,7 +125,7 @@ Story is complete when:
 
 **Done when:**
 - [ ] {{specific_criterion}}
-- [ ] Follows patterns from coding-standards
+- [ ] Follows patterns from `docs/standards/coding.md`
 - [ ] Tests pass
 
 <!-- e.g.
@@ -134,9 +136,9 @@ Story is complete when:
 **Read First:**
 | Document | Section | What to Look For |
 |----------|---------|------------------|
-| → `{DOCS_ROOT}/coding-standards/` | Domain Layer | Entity patterns |
-| → `{DOCS_ROOT}/coding-standards/` | Validation | How to validate |
-| → `{DOCS_ROOT}/coding-standards/` | Errors | Error types, codes |
+| → `{DOCS_ROOT}/standards/coding.md` | Domain Layer | Entity patterns |
+| → `{DOCS_ROOT}/standards/coding.md` | Validation | How to validate |
+| → `{DOCS_ROOT}/standards/coding.md` | Errors | Error types, codes |
 | → Unit: `Task` | Data Model | All fields |
 | → `internal/user/domain/user.go` | Example | Similar entity |
 
@@ -152,7 +154,7 @@ Story is complete when:
 
 **Done when:**
 - [ ] Task struct matches Unit data model
-- [ ] Validation follows coding-standards patterns
+- [ ] Validation follows `docs/standards/coding.md` patterns
 - [ ] Error codes match architecture.md#error-handling
 - [ ] Tests cover happy path + all error cases
 -->
@@ -168,8 +170,8 @@ Story is complete when:
 **Read First:**
 | Document | Section | What to Look For |
 |----------|---------|------------------|
-| → `{DOCS_ROOT}/coding-standards/` | Repository | Interface patterns |
-| → `{DOCS_ROOT}/coding-standards/` | Database | SQLC usage |
+| → `{DOCS_ROOT}/standards/coding.md` | Repository | Interface patterns |
+| → `{DOCS_ROOT}/standards/database.md` | Query patterns | SQLC usage, parameterized queries |
 | → `{{similar_repo_path}}` | Example | Query patterns |
 
 **Output Files:**
@@ -181,7 +183,7 @@ Story is complete when:
 
 **Done when:**
 - [ ] {{criterion}}
-- [ ] Uses SQLC per coding-standards
+- [ ] Uses SQLC per `docs/standards/database.md`
 
 ---
 
@@ -194,8 +196,8 @@ Story is complete when:
 **Read First:**
 | Document | Section | What to Look For |
 |----------|---------|------------------|
-| → `{DOCS_ROOT}/coding-standards/` | Use Cases | Handler patterns |
-| → `{DOCS_ROOT}/coding-standards/` | Testing | Test structure |
+| → `{DOCS_ROOT}/standards/coding.md` | Use Cases | Handler patterns |
+| → `{DOCS_ROOT}/standards/testing.md` | All | Test structure, coverage targets |
 
 **Output Files:**
 - `{{path}}`
@@ -233,7 +235,8 @@ Before marking story as done, verify:
 - [ ] All acceptance criteria met
 - [ ] All tasks completed
 - [ ] Security checklist passed
-- [ ] Code follows `{DOCS_ROOT}/coding-standards/`
+- [ ] Code follows the relevant `{DOCS_ROOT}/standards/*.md` artifacts (coding + any sibling that applied)
+- [ ] Any conscious shortcut taken is logged in `{DOCS_ROOT}/standards/temporary-decisions.md`
 - [ ] Tests pass
 - [ ] Code reviewed
 - [ ] No lint errors

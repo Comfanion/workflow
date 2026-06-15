@@ -21,7 +21,7 @@
 |----------|-------------|
 | [PRD](docs/prd.md) | Product Requirements Document |
 | [Architecture](docs/architecture.md) | System Architecture |
-| [Coding Standards](docs/coding-standards/) | Code conventions |
+| [Standards](docs/standards/) | Coding, testing, security, performance, API, DB, git, temporary decisions |
 | [API Reference](docs/api/) | API documentation |
 
 ## Project Structure
@@ -32,7 +32,7 @@
 ├── docs/                   # Documentation
 │   ├── prd.md             # Product requirements
 │   ├── architecture.md    # System architecture
-│   ├── coding-standards/  # Coding conventions
+│   ├── standards/         # Project-wide standards (coding, testing, security, …)
 │   ├── sprint-artifacts/  # Epics, stories
 │   └── translations/      # Translated docs
 └── CHANGELOG.md           # Version history

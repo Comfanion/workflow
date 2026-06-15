@@ -19,7 +19,7 @@ rather than assumed.
 | orchestrator | using-comfanion, orchestration, orchestration-team, orchestration-subagent, planning-squad, implementation-squad, code-review, verification-before-completion |
 | analyst | using-comfanion, requirements-gathering, acceptance-criteria, security-requirements |
 | pm | using-comfanion, prd-writing, decomposition, acceptance-criteria |
-| architect | using-comfanion, system-architecture, service-architecture, adr-writing, api-design, database-design, unit-writing, coding-standards, diagram-creation, threat-modeling, release-engineering |
+| architect | using-comfanion, system-architecture, service-architecture, adr-writing, api-design, database-design, unit-writing, standards, standards-coding, standards-testing, standards-security, standards-performance, standards-api, standards-database, standards-git, standards-temporary-decisions, using-standards, diagram-creation, threat-modeling, release-engineering |
 | designer | using-comfanion, ux-design, design-system |
 | devops | using-comfanion, release-engineering, verification-before-completion, systematic-debugging |
 | backend-developer | using-comfanion, dev, code-review, receiving-code-review, test-design, test-scenarios, research-planning, systematic-debugging, verification-before-completion |

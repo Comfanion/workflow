@@ -10,6 +10,9 @@ The performance dimension of a code review. One job: find work this change does 
 ## Scope
 Applies to changes touching loops over collections, DB/network calls, request handlers, batch jobs, serialization, caching, or concurrency. Pure config/docs changes → PASS, say so.
 
+## Source of truth: `{DOCS_ROOT}/standards/performance.md`
+The project's `standards-performance` artifact decides what counts as a hot path, the latency/throughput budgets, and the anti-pattern list — load it via `using-standards` before reviewing. The checklist below is the **baseline** when no artifact exists; if `performance.md` exists, prefer its concrete budgets and its hot-path enumeration over these defaults. If a recurring class of finding is not in the artifact, file an update against `standards-performance`.
+
 ## Checklist — work each item
 For each: checked → finding, or "checked, clean".
 

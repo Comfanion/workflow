@@ -10,6 +10,9 @@ The correctness dimension of a code review. One job: does this change actually d
 ## Scope
 Always applies. The baseline is the acceptance criteria of the plan/story the change implements — read them first; they define "correct".
 
+## Source of truth: `{DOCS_ROOT}/standards/coding.md` (and surface siblings)
+The project's `standards-coding` artifact owns the layering, naming, error wrapping, and critical rules — load it via `using-standards` before reviewing. If the change touches an API or DB surface, also load `api.md` / `database.md` (response shape, error codes, query patterns). When the artifacts are absent, fall back to the project's conventions guide and the codebase patterns.
+
 ## Checklist — work each item
 For each: checked → finding, or "checked, clean".
 

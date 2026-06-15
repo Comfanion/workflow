@@ -313,7 +313,7 @@ Key user flows:
 
 → **Requirements (Source of Truth for FR/NFR):** `{DOCS_ROOT}/requirements/requirements.md`  
 → **Architecture:** `{DOCS_ROOT}/architecture.md`  
-→ **Coding Standards:** `{DOCS_ROOT}/coding-standards/README.md`
+→ **Standards:** `{DOCS_ROOT}/standards/README.md` (index — links to coding, testing, security, performance, api, database, git, temporary-decisions)
 
 ---
 
