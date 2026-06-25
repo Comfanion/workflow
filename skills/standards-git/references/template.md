@@ -2,8 +2,22 @@
 
 **Version:** 1.0
 **Status:** Active
+**Governing ADR(s):** {{ADR-NNN link, or "—"}}
+
+> This doc states the git rules; the branching model, merge strategy, or a protection rule that traces to a decision links its ADR above.
+> Where this doc and an ADR disagree, the **ADR wins** — fix the doc.
 
 ---
+
+## Reading guide
+
+Section-addressable — read only the sections your task needs; the whole doc is the source of truth when in doubt.
+
+| If you are… | Read |
+|-------------|------|
+| **Setting up / deciding** (tech lead) | Branching Strategy · Branch Protection Rules · CI/CD Integration |
+| **Implementing** (dev) | Branch Types · Branch Naming · Workflow · Commit Messages · Pull/Merge Request |
+| **Reviewing** (reviewer) | Commit Messages · Pull/Merge Request · Branch Protection Rules |
 
 ## Branching Strategy
 

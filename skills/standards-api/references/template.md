@@ -2,6 +2,20 @@
 
 **Project:** {{project_name}}
 **Last updated:** {{date}}
+**Governing ADR(s):** {{ADR-NNN link, or "—"}}
+
+> This doc states the API rules; the decision and rationale live in the ADR(s) above.
+> Where this doc and an ADR disagree, the **ADR wins** — fix the doc.
+
+## Reading guide
+
+Section-addressable — read only the sections your task needs; the whole doc is the source of truth when in doubt.
+
+| If you are… | Read |
+|-------------|------|
+| **Designing** the API surface (architect / planner) | §1 Protocol · §2 URL structure · §4 Request envelope · §5 Response envelope · §8 Versioning · §9 Authentication (mechanism) |
+| **Implementing** an endpoint (dev) | §3 Methods & status codes · §5 Response envelope · §6 Stable error codes · §7 Pagination · §10 Rate limiting · §11 Idempotency |
+| **Reviewing** a change (reviewer) | the rule sections for the surface touched, plus §3/§6 code consistency, §5 envelope shape, and §9 auth on protected routes |
 
 ## 1. Protocol(s)
 

@@ -30,9 +30,10 @@ Skip this skill entirely if the project does not expose an API surface clients d
 
 1. **Read the architecture and PRD NFRs.** If a contract test or a versioning SLA exists in the NFRs, the rule comes from there.
 2. **Decide one shape per concept.** One success envelope. One error shape. One pagination shape. Two of any of these is the bug this artifact prevents.
-3. **Anchor to a spec.** OpenAPI / Protobuf / GraphQL SDL — name the source of truth and the path where it lives (`docs/api/openapi.yaml`, `proto/`, `schema.graphql`). The artifact does not duplicate the spec; it sets the rules the spec must follow.
-4. **Draft from `references/template.md`.**
-5. **Validate against `references/checklist.md`.**
+3. **Anchor to a spec — rules only, no pasted copy.** OpenAPI / Protobuf / GraphQL SDL — name the source of truth and the path where it lives (`docs/api/openapi.yaml`, `proto/`, `schema.graphql`). Runnable artifacts (the spec, gateway config, scaffolding) live in the project's boilerplate/reference location; the artifact **references** that path and sets the rules the spec must follow — it never pastes a copy.
+4. **Cite the governing ADR.** When a rule (the envelope, the code list, the versioning policy) traces to a decision, link its governing ADR (see `authoring-standards`, `adr-writing`); the ADR holds the *why*. Where the standard and the ADR disagree, fix the standard.
+5. **Draft from `references/template.md`.**
+6. **Validate against `references/checklist.md`.**
 
 ## Response envelope — pick one and stick to it
 
@@ -84,6 +85,8 @@ The artifact states explicitly:
 - A client breaks on a non-breaking change → either re-classify the change as breaking, or document the field-stability rule that prevents it next time.
 - A new protocol joins (e.g. gRPC alongside REST) → add the protocol-specific section.
 
+File the update through `authoring-standards` (review before it propagates); don't fix it only in a reviewer's head.
+
 ## Templates and references
 
 - `references/template.md` — full `api.md` template.
@@ -103,6 +106,8 @@ Authored by the API owner (tech lead, architect, or solo developer). Reviewed by
 ## Related
 
 - `standards` — umbrella router.
+- `authoring-standards` — cross-cutting authoring rules (ADR-cite + boilerplate discipline); route updates through it.
+- `adr-writing` — write the ADR a rule cites.
 - `using-standards` — consumer protocol.
 - `api-design` — applies these standards to a specific feature's endpoints.
 - `standards-coding` — production-code conventions sibling.

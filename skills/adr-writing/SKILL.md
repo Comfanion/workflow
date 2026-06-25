@@ -95,3 +95,9 @@ If any of these fail, return to the relevant section above and fix it before pub
 ## Roles
 
 This skill is written for whoever holds the architecture role on the work (on a team, the architect or tech lead; solo, you). The deciders named in the header are the people accountable for the choice; downstream, the implementing role turns the decision into code, and a reviewer checks the record holds up before it is accepted.
+
+## Related
+
+- `system-architecture` / `service-architecture` — the broader designs whose decisions an ADR records and is linked back from; an architecture doc *names* a pattern and links its ADR rather than re-deciding it inline.
+- `standards` / `authoring-standards` — a standard **cites its governing ADR**: the ADR holds the *why* and is the source of truth, the standard states the rule. If a standard and its ADR disagree, the ADR wins — fix the standard. A decision that recurs across the codebase graduates from a per-case ADR into a standard.
+- `using-standards` — consumers follow the standard and open the linked ADR only when they need the rationale.

@@ -23,10 +23,12 @@ The artifact lives at `{DOCS_ROOT}/standards/git.md`. `{DOCS_ROOT}` defaults to 
 ## How to write it
 
 1. **Read the release-engineering artifact (if any).** The deploy pipeline often dictates which branch deploys; the git model has to align.
-2. **Pick one branching model.** Mixing GitFlow with trunk-based is the most common mess; the artifact prevents it by naming the model.
-3. **Use concrete examples.** Every branch-naming rule gets two examples; every commit type gets one example.
-4. **Draft from `references/template.md`.**
-5. **Validate against `references/checklist.md`.**
+2. **Pick one branching model** and write the reason next to it. Mixing GitFlow with trunk-based is the most common mess; the artifact prevents it by naming the model.
+3. **Use concrete examples.** Every branch-naming rule gets two examples; every commit type gets one example. Pull the actual default branch name, ticket-id format, and the host/forge (GitHub / GitLab / Bitbucket) from the real project — don't bake in a host this project doesn't run.
+4. **Cite the governing ADR.** When a rule (the chosen branching model, the merge strategy, a protection rule) traces to a decision, link its governing ADR (see `authoring-standards`, `adr-writing`); the ADR holds the *why*. Where the artifact and the ADR disagree, the ADR wins — fix the artifact.
+5. **Rules only — no pasted enforcement.** The runnable commit-lint config, pre-commit / commit-msg hooks, PR/MR template, and CODEOWNERS live in the project's boilerplate/reference location; the artifact **references** that path and states the rule it enforces — it never pastes a copy that drifts.
+6. **Draft from `references/template.md`.**
+7. **Validate against `references/checklist.md`.**
 
 ## Branching model — pick one
 
@@ -35,9 +37,9 @@ The artifact lives at `{DOCS_ROOT}/standards/git.md`. `{DOCS_ROOT}` defaults to 
 | Trunk-based | High-frequency deploys, feature flags | Requires flags; cheap reverts |
 | Epic branches | Multi-story epics, per-epic demo branches | Long-lived branches, integration cost |
 | GitFlow | Release-driven, multiple maintained versions | Heavy, slow; overkill for most |
-| GitHub Flow | Simple SaaS, one prod | Limited release-train support |
+| Short-lived branch + trunk | Simple SaaS, one prod | Limited release-train support |
 
-The artifact names the model **and the reason** — model without reason invites disagreement.
+The artifact names the model **and the reason** — model without reason invites disagreement. Pick exactly one; the choice is a decision, so cite its governing ADR (see `adr-writing`).
 
 ## Commit message — Conventional Commits baseline
 
@@ -49,7 +51,7 @@ The artifact names the model **and the reason** — model without reason invites
 [footer]
 ```
 
-Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`. Subject capped at 72 chars. Body wraps at 100. `BREAKING CHANGE:` footer when applicable.
+Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`. Subject capped at 72 chars. Body wraps at 100. `BREAKING CHANGE:` footer when applicable. The commit-msg hook and commit-lint config that enforce this shape live in the boilerplate — this artifact states the rule they check, not a pasted copy.
 
 ```
 feat(catalog): add product search endpoint
@@ -70,6 +72,8 @@ Even on a solo project:
 
 For a team, add: required approvals, dismiss stale reviews on push.
 
+A merge rule that the host doesn't enforce is decoration: the runnable protection config, the PR/MR template, and CODEOWNERS live in the boilerplate. This artifact states the rule; the boilerplate holds the artifact that enforces it.
+
 ## Hotfix flow
 
 The exception that proves the review rule. Document:
@@ -85,6 +89,8 @@ Without a written hotfix flow, every incident reinvents one.
 - A merge breaks history readability (force-merge, junk commits) → tighten the merge strategy and require squash where it fits.
 - A branch lingers > {{N}} days → file the rule that long-lived branches need integration cadence.
 - A required check is bypassed in an emergency → add the compensating-check rule to the hotfix flow.
+
+File the update through `authoring-standards` (review before it propagates); don't fix it only in a reviewer's head.
 
 ## Templates and references
 
@@ -104,5 +110,7 @@ Authored by the tech lead or release engineer. Reviewed by the project owner.
 ## Related
 
 - `standards` — umbrella router.
+- `authoring-standards` — cross-cutting authoring rules (ADR-cite + boilerplate discipline); route updates through it.
+- `adr-writing` — write the ADR a rule cites.
 - `using-standards` — consumer protocol.
 - `release-engineering` — CI/CD and deploy concerns.

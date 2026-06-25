@@ -30,8 +30,10 @@ For each section: the rule **and** the concrete how-to-comply, with a short exam
 
 1. **Read the architecture and the threat model (if it exists).** The scope section must match the surfaces the architecture actually exposes. A microservices system needs an inter-service auth section; a single-binary CLI does not.
 2. **Walk OWASP Top 10 once and translate, do not paste.** The artifact is the project's checklist, not the OWASP page. Translate each relevant item into a rule scoped to the stack, with the project's library and the project's example.
-3. **Draft from `references/template.md`.**
-4. **Validate against `references/checklist.md`.**
+3. **Cite the governing ADR.** When a rule traces to a decision (auth mechanism, approved crypto, secret store, blocking CVE severity), link its ADR — the ADR holds the *why*; if the two disagree, fix the artifact (see `authoring-standards`, `adr-writing`).
+4. **Keep runnable enforcement out of the artifact.** The SAST job, dependency-scan config, and secret-scanner config live in the project's reference/boilerplate location; this artifact states the rule and references those, never pastes a copy that drifts.
+5. **Draft from `references/template.md`.**
+6. **Validate against `references/checklist.md`.**
 
 ## OWASP Top 10 — mapping cheatsheet
 
@@ -55,6 +57,10 @@ Use this only to make sure no class is dropped silently; the artifact itself nam
 > **A user can only reach their own data. Every endpoint that returns resource-scoped data verifies ownership before returning it.**
 
 Put this rule in the artifact, in a callout, near the top of the authorization section. It is the single most-commonly-missed check and the one that produces the worst headlines.
+
+## Quality gates — the part that makes rules real
+
+A rule with no merge-blocker behind it is advisory. Name every condition that blocks the merge: a hardcoded secret; unvalidated input reaching the domain; string-built SQL or shell from user input; a protected endpoint missing the ownership check; PII or a token in logs; a runtime dependency with a CVE at or above the blocking severity. The runnable enforcement is the boilerplate's SAST / scan / secret-scanner jobs; this artifact states which conditions block. A security finding blocks the merge — it is never downgraded to "fix next sprint".
 
 ## Update protocol
 
@@ -82,5 +88,6 @@ Authored by whoever owns security on the project (security lead, tech lead, or s
 ## Related
 
 - `standards` — umbrella router.
+- `authoring-standards` — the cross-cutting authoring discipline (single source, rules-only, cite the ADR, review before propagation) this artifact's updates go through.
 - `using-standards` — consumer protocol.
 - `review-security`, `threat-modeling`, `security-requirements` — downstream consumers.

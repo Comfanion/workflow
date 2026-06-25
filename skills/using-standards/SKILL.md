@@ -23,6 +23,8 @@ the task is done.
 
 Read `{DOCS_ROOT}/standards/README.md`. It enumerates the artifacts that exist and the ones intentionally skipped. If the index is missing or stale, stop and invoke the `standards` umbrella skill to repair it before continuing — guessing what exists wastes more time than fixing the index.
 
+**If a needed standard does not exist, ask — never invent.** When the task touches a surface and no matching artifact is present (and it isn't marked "skipped"), do not silently improvise a rule from generic memory. State the gap to the user, and offer to author the artifact via `authoring-standards` (through the matching `standards-<topic>` skill) before continuing. Absent is a stated condition, not a thing to guess; a fabricated rule you then code against is worse than a question.
+
 ## Selective load — match artifact to task surface
 
 | The task touches… | Load |
@@ -39,11 +41,33 @@ Read `{DOCS_ROOT}/standards/README.md`. It enumerates the artifacts that exist a
 
 If two or three artifacts apply, load them all — they are small on purpose. If you think more than four apply to a single story, the story is probably too big; flag it to `decomposition` before loading everything.
 
+## Selective load, level 2 — read the artifact's Reading guide
+
+The table above picks *which* artifacts; the **Reading guide** at the top of each artifact picks *which sections within it*. A well-authored standard opens with a guide mapping each consumer to the sections it needs (see `authoring-standards` rule 7) — read that guide first, then load only the sections for your role and phase rather than the whole document:
+
+| If you are… | Read the sections the guide marks for… |
+|-------------|----------------------------------------|
+| `system-architecture` / `service-architecture` / `decomposition` (design time) | **Designing** — the contract-shape, topology, engine, and decision sections |
+| `dev` (build time) | **Implementing** — the concrete how-to-implement rules, naming, error handling, mechanics |
+| `review-*` (review time) | **Reviewing** — the quality gates plus the rule sections for the surface under review |
+
+If an artifact has no Reading guide yet, fall back to loading the whole file and flag it to `authoring-standards` to add one — an un-addressable standard is a backlog item, not a blocker. When in doubt about whether a section applies, the whole document is the source of truth; the guide is an optimization, not a gate that can hide a rule from you.
+
 ## Apply — the rules drive the work
 
 - For `dev`: the loaded artifacts shape the interface, the test, the error wrapping, the query, the response. The artifact is the answer when a question comes up; you do not re-decide from scratch.
 - For `system-architecture` / `service-architecture`: the artifacts already contain the project's vocabulary and constraints. New decisions must not contradict them, or you are creating two sources of truth.
 - For `review-*`: each review dimension has its source-of-truth artifact (security → `security.md`, performance → `performance.md`, tests → `testing.md`, correctness → `coding.md` + `api.md`/`database.md`). Cite the rule when you raise a finding — "violates `security.md#authorization`" beats "this looks unsafe".
+
+## Orchestrating — pass the refs, don't pre-load
+
+If you are dispatching standards work to a subagent or implementer, do **not** read the artifacts into your own context and inline them into the prompt. Your context is the wrong place for them — it bloats the conductor, and the consumer is who must actually follow the rules. Instead:
+
+1. Identify **which** artifacts the task touches (by topic, using the table above) and **where** they live (`{DOCS_ROOT}/standards/<topic>.md`).
+2. Hand the consumer the **pointers** — the artifact paths and which sections apply — as part of its brief.
+3. Let the consumer load and follow them while doing the task, loading only what its task touches, and cite them in its output.
+
+The orchestrator routes the references; the consumer reads the documents. This keeps the conductor's context lean and puts the rules where the work happens.
 
 ## Write back — the only path that updates standards mid-work
 
@@ -87,5 +111,6 @@ This skill is for every implementing or reviewing role. It does not author stand
 ## Related
 
 - `standards` — umbrella router (which artifacts to author).
+- `authoring-standards` — the authoring counterpart to this consumer skill: how each artifact is written (use it to fill a gap when a needed standard is absent).
 - `standards-coding`, `standards-testing`, `standards-security`, `standards-performance`, `standards-api`, `standards-database`, `standards-git`, `standards-temporary-decisions` — authoring siblings.
 - `dev`, `decomposition`, `review-*`, `system-architecture`, `service-architecture` — the consumer skills that invoke this.

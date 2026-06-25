@@ -5,6 +5,16 @@
 **Project:** {{project_name}}
 **Last reviewed:** {{date}}
 
+## Reading guide
+
+This is a ledger, not a rule doc — read by status, not by altitude. The whole ledger is the source of truth when in doubt.
+
+| If you are… | Read |
+|-------------|------|
+| **Planning** a sprint (decomposition) | Open + In Progress, sorted by deadline — the debt cheapest to clear next |
+| **Implementing** (dev) | Open / In Progress entries touching the file you change, and their `// TD-NN` code refs |
+| **Reviewing** (reviewer) | reconcile Open / In Progress entries against the `// TD-NN` refs in the diff — an orphan either way is a finding |
+
 ## Open
 
 ### TD-01 — <short title>

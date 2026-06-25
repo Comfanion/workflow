@@ -2,9 +2,23 @@
 
 **Project:** {{project_name}}  
 **Version:** 1.0  
-**Last Updated:** {{date}}
+**Last Updated:** {{date}}  
+**Governing ADR(s):** {{ADR-NNN link, or "—"}}
+
+> This doc states the security rules; the auth mechanism, approved crypto, secret store, or blocking-CVE severity that traces to a decision links its ADR above.
+> Where this doc and an ADR disagree, the **ADR wins** — fix the doc.
 
 ---
+
+## Reading guide
+
+Section-addressable — read only the sections your task needs; the whole doc is the source of truth when in doubt.
+
+| If you are… | Read |
+|-------------|------|
+| **Designing** (architect / threat-modeling) | Overview · Authentication & Authorization · API Security · Database Security |
+| **Implementing** (dev) | OWASP Top 10 Mitigations · Input Validation · Secrets Management · File Upload Security |
+| **Reviewing** (review-security) | Security Checklist for Code Review, plus the rule sections for the surface touched |
 
 ## Overview
 

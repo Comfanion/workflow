@@ -2,8 +2,22 @@
 
 **Version:** 1.0
 **Status:** Active
+**Governing ADR(s):** {{ADR-NNN link, or "—"}}
+
+> This doc states the testing rules; any target or gate that traces to a decision links its ADR above.
+> Where this doc and an ADR disagree, the **ADR wins** — fix the doc.
 
 ---
+
+## Reading guide
+
+Section-addressable — read only the sections your task needs; the whole doc is the source of truth when in doubt.
+
+| If you are… | Read |
+|-------------|------|
+| **Planning** the test strategy (test-design / planner) | §1 Philosophy · §2 Coverage targets · §4 Test types |
+| **Implementing** tests (dev) | §3 Framework · §5 File naming · §6 Commands · §7 Best practices · §9 Mocking · §10 Test data |
+| **Reviewing** tests (review-tests) | §2 Coverage targets · §7 Best practices · §8 CI/CD gate |
 
 ## 1. Testing Philosophy
 

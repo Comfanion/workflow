@@ -6,6 +6,16 @@
 
 > This document is the contract every implementer follows and every reviewer enforces. It covers only how production code is written. Tests, security, performance, API contracts, database schema, and git workflow live in sibling artifacts under `docs/standards/`.
 
+## Reading guide
+
+Section-addressable — read only the sections your task needs; the whole doc is the source of truth when in doubt.
+
+| If you are… | Read |
+|-------------|------|
+| **Designing** (architect / planner) | §1 Project structure · §3 Code organization (layering, dependency direction) · §5 Language idioms |
+| **Implementing** (dev) | §2 Naming · §4 Error handling · §6 Dependencies · §7 Formatting · §8 Logging · §9 Critical rules |
+| **Reviewing** (reviewer) | §9 Critical rules, plus the sections for the code under review |
+
 ## 1. Project Structure
 
 ```
@@ -86,7 +96,17 @@ if err != nil {
 
 A bare error tells you what failed but not where; wrapping every cross-layer return is what makes a production stack trace actionable.
 
-## 5. Dependencies
+> Rules that trace to a recorded decision cite it: **Governing ADR:** {{ADR-NNN link}}. The ADR holds the *why*; if a rule here conflicts with its ADR, the ADR wins.
+
+## 5. Language Idioms
+
+The stack-specific conventions this project commits to. One short rule each. Omit this section if the stack adds nothing beyond the defaults above.
+
+- Concurrency: {{rule — e.g. cancellation via context, bounded workers, no unbounded fan-out}}.
+- Immutability / state: {{rule}}.
+- Explicit over clever: {{rule — e.g. explicit mapping over reflection-based copying}}.
+
+## 6. Dependencies
 
 ### Approved
 
@@ -104,7 +124,27 @@ A bare error tells you what failed but not where; wrapping every cross-layer ret
 
 - Semantic versioning, major versions pinned.
 
-## 6. Critical Rules
+## 7. Formatting
+
+| Rule | Value |
+|------|-------|
+| Formatter | {{tool}} |
+| Import order | {{rule / tool}} |
+| Line length | {{soft / hard limit}} |
+
+Manual formatting is not allowed — tools only. The runnable config and the pre-commit hook live in the boilerplate (`{{path/in/boilerplate}}`); this table is the rule they implement.
+
+## 8. Logging
+
+| Aspect | Convention |
+|--------|------------|
+| Style | {{structured (JSON) / builder-style — no printf}} |
+| Levels | {{DEBUG / INFO / WARN / ERROR meanings}} |
+| Forbidden | {{e.g. global logger, unstructured messages}} |
+
+Logger wiring and base config live in the boilerplate (`{{path/in/boilerplate}}`). For how a log line carries trace/correlation IDs and which signals are emitted, see `docs/standards/observability.md` — don't duplicate it here.
+
+## 9. Critical Rules
 
 The short list. Violations fail review on the spot.
 

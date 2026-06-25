@@ -37,6 +37,7 @@ Most tasks map to a phase of the pipeline (see `FLOW.yaml`) and the skill(s) tha
 |--------------------|------------|
 | What to build / real needs | `requirements-gathering`, then `prd-writing` |
 | System or service structure | `system-architecture` / `service-architecture` (mind the altitude ladder) |
+| Infrastructure / how & where it deploys | `platform-infrastructure` (shared substrate) · `service-deployment` (one service's infra) · `release-engineering` (shipping a version + deploy gate) |
 | Breaking scope into work | `decomposition` |
 | Implementing an approved story | `dev` (TDD core); test strategy came from `test-design` at planning time |
 | A bug, failure, or crash | `systematic-debugging` |
@@ -45,7 +46,7 @@ Most tasks map to a phase of the pipeline (see `FLOW.yaml`) and the skill(s) tha
 | Claiming anything is done | `verification-before-completion` |
 | Ideation / problem analysis | `brainstorm` |
 | Running work across roles | `orchestration` (then `-subagent` or `-team`; who to spawn: `planning-squad` / `implementation-squad`) |
-| Setting up / authoring project standards | `standards` (umbrella) → routes to `standards-coding`, `-testing`, `-security`, `-performance`, `-api`, `-database`, `-git`, `-temporary-decisions` |
+| Setting up / authoring project standards | `standards` (umbrella) → routes to `standards-coding`, `-testing`, `-security`, `-performance`, `-api`, `-database`, `-git`, `-temporary-decisions`, `-events`, `-observability`; the cross-cutting authoring discipline is `authoring-standards` |
 | Consuming already-written standards during design / dev / review | `using-standards` |
 
 **Process skills before implementation skills.** "Let's build X" → `brainstorm` / requirements first, then the implementation skills. "Fix this bug" → `systematic-debugging` first, then the domain skill. The process skill decides *how* you approach the task; deciding that after you have started is too late.

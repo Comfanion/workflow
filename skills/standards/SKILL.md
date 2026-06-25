@@ -1,6 +1,6 @@
 ---
 name: standards
-description: The umbrella router for a project's standards artifacts — decide which of the eight standards documents (coding, testing, security, performance, api, database, git, temporary-decisions) a project actually needs and route to the matching authoring skill. Use this whenever the user wants to "set up project standards", "write the standards", "what standards do we need", "scaffold the standards folder", or mentions "standards", "conventions document", or "rules of the project" without naming which one. Routes to `standards-coding`, `standards-testing`, `standards-security`, `standards-performance`, `standards-api`, `standards-database`, `standards-git`, and `standards-temporary-decisions`; pair with `using-standards` when the goal is to consume already-written standards during design or implementation.
+description: The umbrella router for a project's standards artifacts — decide which of the ten standards documents (coding, testing, security, performance, api, database, git, temporary-decisions, events, observability) a project actually needs and route to the matching authoring skill. Use this whenever the user wants to "set up project standards", "write the standards", "what standards do we need", "scaffold the standards folder", or mentions "standards", "conventions document", or "rules of the project" without naming which one. Routes to `standards-coding`, `standards-testing`, `standards-security`, `standards-performance`, `standards-api`, `standards-database`, `standards-git`, `standards-temporary-decisions`, `standards-events`, and `standards-observability`; the cross-cutting authoring discipline they all obey is `authoring-standards`; pair with `using-standards` when the goal is to consume already-written standards during design or implementation.
 ---
 
 # Standards (umbrella)
@@ -11,7 +11,7 @@ This skill is the **router**, not an author. It decides which standards artifact
 
 `{DOCS_ROOT}` below defaults to `docs/` at the project root; honor the project's configured docs location if one is set. All standards artifacts live under `{DOCS_ROOT}/standards/`.
 
-## The eight artifacts and when each is needed
+## The ten artifacts and when each is needed
 
 | Artifact | File | Authoring skill | Needed when |
 |----------|------|-----------------|-------------|
@@ -23,8 +23,12 @@ This skill is the **router**, not an author. It decides which standards artifact
 | Database | `standards/database.md` | `standards-database` | The project owns persistent storage (SQL, NoSQL, search index) |
 | Git | `standards/git.md` | `standards-git` | Always — branch naming, commit format, PR process |
 | Temporary decisions | `standards/temporary-decisions.md` | `standards-temporary-decisions` | Always — a living backlog of conscious shortcuts, kept honest |
+| Events | `standards/events.md` | `standards-events` | The project produces or consumes events/messages on a broker or stream |
+| Observability | `standards/observability.md` | `standards-observability` | Any service deployed to production that must be monitored, traced, and debugged |
 
-A project of any size keeps **coding, testing, git, temporary-decisions** at minimum. The other four are added when their trigger applies. Adding an artifact you do not need wastes context every time it loads; skipping one you do need pushes the missing decisions back into every story.
+A project of any size keeps **coding, testing, git, temporary-decisions** at minimum; any deployed service almost always adds **observability**. The rest are added when their trigger applies. Adding an artifact you do not need wastes context every time it loads; skipping one you do need pushes the missing decisions back into every story.
+
+Each artifact is authored through the cross-cutting discipline in `authoring-standards` (single source, rules-only, cite the governing ADR, review before it propagates); this umbrella decides *which* artifacts exist, `authoring-standards` governs *how* each is written, and each `standards-<topic>` skill carries the section layout for its topic.
 
 ## How to decide for a fresh project
 
@@ -50,6 +54,8 @@ The `{DOCS_ROOT}/standards/README.md` is what `using-standards` reads first to d
 | database.md | active | PostgreSQL; no NoSQL surface |
 | git.md | active | trunk-based with epic branches |
 | temporary-decisions.md | active | review every sprint |
+| events.md | active | Kafka; at-least-once, idempotent consumers |
+| observability.md | active | RED metrics + OTel tracing; one correlation id |
 
 Skipped: none.
 ```
@@ -72,6 +78,7 @@ This skill is for whoever owns code quality on the project (tech lead, architect
 
 ## Related
 
+- `authoring-standards` — the cross-cutting discipline every `standards-<topic>` author obeys (single source, rules-only, cite the ADR, review before propagation).
 - `using-standards` — the consumer skill that loads relevant artifacts during design and implementation.
 - `coding-standards` (deprecated) — the previous single-skill version; superseded by this group.
 - `FLOW.yaml` — the pipeline phase where standards plug in (after architecture, before decomposition).

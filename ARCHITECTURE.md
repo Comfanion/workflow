@@ -109,7 +109,8 @@ does not bind any skill to a role.
 | Skill | Purpose |
 |-------|---------|
 | `standards` | Umbrella router — decide which standards artifacts the project needs; route to the matching authoring skill |
-| `standards-coding` | Authors `docs/standards/coding.md` — naming, layering, error handling, critical rules |
+| `authoring-standards` | Cross-cutting discipline every topic author obeys — single source, rules-only (no runnable artifacts), cite the governing ADR, review before propagation |
+| `standards-coding` | Authors `docs/standards/coding.md` — naming, layering, error handling, idioms, formatting, logging, critical rules |
 | `standards-testing` | Authors `docs/standards/testing.md` — pyramid, coverage targets, types, quality gates |
 | `standards-security` | Authors `docs/standards/security.md` — surface-scoped checklist; source of truth for `review-security` |
 | `standards-performance` | Authors `docs/standards/performance.md` — what to measure, budgets, hot paths, anti-patterns |
@@ -117,6 +118,8 @@ does not bind any skill to a role.
 | `standards-database` | Authors `docs/standards/database.md` — naming, migrations, query patterns, indexes |
 | `standards-git` | Authors `docs/standards/git.md` — branching, commits, PR/MR process |
 | `standards-temporary-decisions` | Authors `docs/standards/temporary-decisions.md` — living backlog of conscious shortcuts with cost / trigger / deadline / owner |
+| `standards-events` | Authors `docs/standards/events.md` — transport-neutral eventing: envelope, schema evolution, delivery semantics + idempotency, ordering, DLQ, shared-schema-package rule |
+| `standards-observability` | Authors `docs/standards/observability.md` — metrics (RED/USE) + tracing + structured logging conventions, cardinality budget, the correlation id, never-log list |
 
 ### Decomposition
 | Skill | Purpose |
@@ -144,7 +147,9 @@ does not bind any skill to a role.
 ### Delivery / Ops
 | Skill | Purpose |
 |-------|---------|
-| `release-engineering` | CI/CD and release: build, deploy, and the deploy gate |
+| `platform-infrastructure` | System-level shared-infra reference — compute, network, clusters, environments, CI/CD conventions, deploy strategy, common rules (the substrate `system-architecture` runs on) |
+| `service-deployment` | Service-level deployment doc — one service's position in the infra: where it runs, infra deps, networking, scaling, rollback, rule deltas |
+| `release-engineering` | CI/CD and release: build, deploy, and the deploy gate (the per-version shipping runbook that uses the conventions above) |
 
 ### Research & Ideation (cross-cutting)
 | Skill | Purpose |
@@ -280,8 +285,12 @@ Examples of `references/` payloads:
 - `standards-database/references/{template.md, checklist.md}`
 - `standards-git/references/{template.md, checklist.md}`
 - `standards-temporary-decisions/references/{template.md, checklist.md}`
+- `standards-events/references/template.md`
+- `standards-observability/references/template.md`
 - `code-review/references/checklist.md`
 - `adr-writing/references/template.md`
+- `platform-infrastructure/references/template.md`
+- `service-deployment/references/template.md`
 
 ---
 

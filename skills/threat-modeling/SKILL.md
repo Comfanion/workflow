@@ -20,11 +20,11 @@ At the `architecture` phase, especially for systems handling auth, PII/money, ex
    - **D**enial of service — can it be exhausted? (rate limits, unbounded work)
    - **E**levation of privilege — can a user gain rights they shouldn't?
 3. **Rate & mitigate:** for each credible threat, note likelihood/impact and a concrete mitigation tied to the design (authn mechanism, authz check, encryption, validation, rate limit, audit log).
-4. **Feed forward:** mitigations become architecture decisions (ADRs) and security acceptance criteria for `review-security` to verify in code.
+4. **Feed forward:** mitigations become architecture decisions (ADRs), security requirements every affected component must inherit (`security-requirements`), and security acceptance criteria for `review-security` to verify in code.
 
 ## Evidence discipline
 - Every threat names the element, the STRIDE category, and a concrete attack scenario — not "could be insecure".
-- Every credible threat has a named mitigation or an explicit accepted-risk decision.
+- Every credible threat has a named mitigation, or an explicit accepted-risk decision with a **named owner** — an unowned accepted risk is an unmanaged one.
 
 ## Output
 `{DOCS_ROOT}/architecture/threat-model.md` — assets, trust boundaries, per-element STRIDE table, and mitigations. Mitigations cross-referenced from the relevant ADRs.

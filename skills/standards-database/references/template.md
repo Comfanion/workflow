@@ -2,11 +2,22 @@
 
 **Project:** {{project_name}}
 **Engine:** {{Postgres 15 | MySQL 8 | ...}}
+**Governing ADR(s):** {{ADR-NNN link, or "—"}}
 **Last updated:** {{date}}
+
+## Reading guide
+
+Section-addressable — read only the sections your task needs; the whole doc is the source of truth when in doubt.
+
+| If you are… | Read |
+|-------------|------|
+| **Designing** (architect / planner) | §1 Engines · §3 IDs · §3b Money / decimals · §9 System of record · §12 Read replicas / partitioning / sharding |
+| **Implementing** (dev) | §2 Naming · §4 Timestamps · §5 Soft delete · §6 Migrations · §7 Queries · §8 Index baseline · §10 Connections and pools |
+| **Reviewing** (reviewer) | §6 Migrations (safety) · §7 Queries · §8 Index baseline |
 
 ## 1. Engines
 
-- Primary: {{engine + version}}.
+- Primary: {{engine + version}} — chosen in {{ADR-NNN link}}; this doc records conventions, not the decision.
 - Cache / supporting: {{Redis | Memcached | ...}}.
 - Search: {{Elasticsearch | OpenSearch | none}}.
 
@@ -27,6 +38,12 @@
 
 - Type: {{UUIDv7 | ULID | bigserial}}.
 - Reason: {{one-line justification}}.
+
+## 3b. Money / Decimals
+
+- Representation: {{integer minor units + currency column | fixed-precision decimal type}}.
+- Rule: monetary and exact-decimal values are **never** stored as float.
+- Reason: exact arithmetic across services. Governing decision: {{ADR-NNN link}}.
 
 ## 4. Timestamps
 
@@ -71,19 +88,26 @@ Renames are forbidden in a single deploy: add-new, dual-write, backfill, switch 
 - Index on every column in WHERE on a hot path.
 - Adding an index is part of the same migration as the query that needs it.
 
-## 9. Connections and Pools
+## 9. System of Record
 
-- Pool size: {{N}} per pod.
-- Statement timeout: {{ms}}.
-- Idle timeout: {{ms}}.
+| Data | Owned here? | Source of truth |
+|------|-------------|-----------------|
+| {{entity}} | {{yes / no}} | {{this service / other service}} |
 
-## 10. Backup / Recovery
+Each datum has exactly one owner. Data owned by another service is read across its contract, never copied as a second source of truth.
+
+## 10. Connections and Pools
+
+- Pool size, statement timeout, idle timeout: set in the boilerplate ({{path/in/boilerplate}}).
+- Rule: {{one line — e.g. "every query runs under a statement timeout"}}. This doc states the rule; the boilerplate holds the values.
+
+## 11. Backup / Recovery
 
 - Backup cadence: {{daily}}.
 - PITR window: {{N days}}.
 - Runbook: {{path/to/runbook.md}}.
 
-## 11. Read Replicas / Partitioning / Sharding
+## 12. Read Replicas / Partitioning / Sharding
 
 - Read replicas: {{when allowed, who decides}}.
 - Partitioning: {{policy or "not used"}}.

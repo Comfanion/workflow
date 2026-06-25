@@ -9,6 +9,10 @@ Every project takes shortcuts. Hardcoded values to unblock a demo. A test skippe
 
 It is also a planning input: when a sprint has slack, the ledger names the cheapest debt to clear; when an incident traces back to a known shortcut, the entry shows why the project chose it.
 
+## The inverse of an ADR
+
+An ADR **ratifies** a chosen long-term direction the team intends to keep. A temporary decision is the explicit opposite: it **records acknowledged debt** — a conscious short-term shortcut the team intends to *repay*. The ledger tracks the second kind. An entry is not a ratified decision; it is a debt with a name, a price, and a payoff trigger. When a `Trigger to revisit` fires and the team decides the shortcut is now the right long-term answer, the entry **graduates to an ADR** via `adr-writing` and leaves this ledger. Until then it stays here as debt with a deadline.
+
 The artifact lives at `{DOCS_ROOT}/standards/temporary-decisions.md`. `{DOCS_ROOT}` defaults to `docs/`. Target size: no fixed budget — the ledger grows; archive resolved entries to keep the live section under ~15 KB.
 
 ## What this artifact is — and is not
@@ -23,7 +27,20 @@ The artifact lives at `{DOCS_ROOT}/standards/temporary-decisions.md`. `{DOCS_ROO
 
 ## Entry format
 
-Every entry has the same six fields. The format is rigid because the ledger is grep-friendly and review-friendly only when it is uniform.
+Every entry has the same six fields plus an id and a status. The format is rigid because the ledger is grep-friendly and review-friendly only when it is uniform. A missing field is the bug.
+
+| Field | What it states |
+|-------|----------------|
+| **id** | a sequential `TD-NN`, assigned once, never reused |
+| **Decision** | the shortcut in place, with `path/file:line` if it lives in code |
+| **Why shortcut** | the constraint that forced it — date pressure, missing API, unclear requirement; not "it was faster" |
+| **Cost if kept** | what breaks or hurts the longer this stays; observable, not vague |
+| **Trigger to revisit** | the concrete event or condition that ends it; not "someday" |
+| **Deadline** | a date (`YYYY-MM-DD`) or a sprint reference |
+| **Owner** | a named person or role |
+| **Status** | `open` \| `in-progress` \| `resolved` \| `accepted-as-permanent` |
+
+The canonical copy-paste shape:
 
 ```markdown
 ### TD-{NN} — <short title>
@@ -37,7 +54,23 @@ Every entry has the same six fields. The format is rigid because the ledger is g
 - **Status:** `open` | `in-progress` | `resolved` | `accepted-as-permanent`
 ```
 
-A `resolved` entry stays in the file for one quarter (so search finds it), then is moved to an archive section at the bottom. An `accepted-as-permanent` entry becomes a candidate for an ADR; once the ADR lands, the entry is removed with a pointer.
+### Status lifecycle
+
+An entry moves **active → resolved → archived**:
+
+- **active** (`open` or `in-progress`) — the shortcut is in place; the entry sits in the live ledger sorted by deadline.
+- **resolved** — the shortcut is gone; the entry records the PR/commit and resolution date and stays in the file for one quarter (so search finds it), then is **archived** to the section at the bottom.
+- **graduated** — an `accepted-as-permanent` entry is debt the team decided to keep. It does not archive: it **graduates to an ADR** via `adr-writing`. Once the ADR lands, the entry is removed with a one-line pointer to the ADR. A TD that becomes permanent stops being debt and becomes a ratified decision.
+
+### Code-reference convention
+
+A shortcut that lives in code carries a back-pointer at the site, using a `// TD-NN` comment (or the language-appropriate comment syntax):
+
+```
+// TD-12: hardcoded region until the config service ships — see docs/standards/temporary-decisions.md
+```
+
+The comment names the id and one line of why; the full record stays in the ledger. A grep for `TD-` across the codebase must reconcile against the ledger — an orphan `// TD-NN` with no entry, or an `active` entry with no code reference where one is expected, is a defect. Stale entries get re-dated at sprint planning (with a reason).
 
 ## How to write the initial artifact
 
@@ -85,6 +118,7 @@ If a `Trigger to revisit` fires and the team decides the shortcut is now the rig
 
 - The ledger is reviewed at every sprint planning. Stale entries get a status update or a re-deadline (with reason).
 - The reviewer who keeps catching the same shortcut in PRs files a meta-entry to prevent it (e.g. linter rule, template fix).
+- File any change to *this standard's rules* through `authoring-standards` (review before it propagates); don't fix it in a reviewer's head. (Updating ledger *entries* is routine work, not a standards change.)
 
 ## Templates and references
 
@@ -106,6 +140,7 @@ Authored by the tech lead or solo developer. Updated by anyone implementing or r
 ## Related
 
 - `standards` — umbrella router.
+- `authoring-standards` — cross-cutting authoring rules; route any change to this standard's rules through it.
 - `using-standards` — consumer protocol.
 - `adr-writing` — when a temporary decision graduates to permanent.
 - `decomposition` — pulls entries into sprint planning.

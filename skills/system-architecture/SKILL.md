@@ -50,6 +50,16 @@ Justify the chosen topology with a system-level ADR (`adr-writing`). "We used mi
 
 Use C4 Context and Container diagrams (`diagram-creation`) for the landscape; the detailed internals are each service's own document.
 
+## Document discipline
+
+Read as authoritative by every team, so how it's written matters as much as what it decides:
+
+- **No code in an architecture doc.** Prose, tables, and diagrams only — no field dumps, signatures, SQL, or transaction mechanics. Depth comes from decomposition, responsibilities, contracts, and flows, not pasted code.
+- **Name the pattern, link its ADR — don't re-decide it here.** Name the chosen topology and patterns and link the `adr-writing` records that justify them; the overview is the map, the ADR is the decision. Defining the rule inline lets the map and the decision drift.
+- **Reference, don't restate.** Each service's internals (`service-architecture`) and the project standards (`standards`) are owned elsewhere — link them, don't copy them in.
+- **Mark realized vs planned.** Label what's built vs what's targeted (per service/edge). A planned thing shown as real is the worst error at this altitude.
+- **Never invent — read the real source first.** A service, edge, contract, event, or stack entry goes in only if the requirements, the existing docs, or the code actually have it. Capture undecided points as open questions with an owner rather than asserting a resolution.
+
 ## How to write it
 
 1. Read the PRD and requirements; confirm validated.

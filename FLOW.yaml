@@ -100,12 +100,14 @@ pipeline:
         - service-architecture     # one service's internals; also covers its validation
         - adr-writing
         - unit-writing
-        - standards                # umbrella router; routes to standards-coding/-testing/-security/-performance/-api/-database/-git/-temporary-decisions
+        - standards                # umbrella router; routes to standards-coding/-testing/-security/-performance/-api/-database/-git/-temporary-decisions/-events/-observability
+        - authoring-standards      # cross-cutting authoring discipline every topic author obeys (single source, rules-only, cite the ADR, review)
         - using-standards          # consumer of already-written standards during design
         - api-design
         # standards group authoring (loaded by `standards` as needed):
         # standards-coding, standards-testing, standards-security, standards-performance,
-        # standards-api, standards-database, standards-git, standards-temporary-decisions
+        # standards-api, standards-database, standards-git, standards-temporary-decisions,
+        # standards-events, standards-observability
         - database-design
         - diagram-creation
         - threat-modeling          # design-time STRIDE / attack surface; feeds review-security
@@ -144,7 +146,9 @@ pipeline:
       optional: true
       role: devops
       skills:
-        - release-engineering
+        - platform-infrastructure  # system-level shared-infra reference doc (the substrate)
+        - service-deployment       # service-level deployment doc (one service's position in the infra)
+        - release-engineering      # the per-release shipping runbook + deploy gate
       artifacts:
         input:
           - "{DOCS_ROOT}/architecture.md"

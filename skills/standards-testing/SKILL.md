@@ -26,8 +26,10 @@ This artifact is the source of truth for `review-tests`. If a test review repeat
 
 1. **Read the architecture and `standards-coding`.** Layer names in the coverage table must match the layering in `coding.md`. If they diverge, the rules will be interpreted inconsistently.
 2. **Anchor targets to the architecture, not to fashion.** A domain-rich service deserves a 90%+ domain target; a thin CRUD shell does not. Pick targets the project can defend in review.
-3. **Draft from `references/template.md`.** Replace every placeholder; do not ship a template with `{{...}}` still in it.
-4. **Validate via `references/checklist.md`.**
+3. **Cite the governing ADR.** Any target or gate that traces to a decision (e.g. "race detector mandatory", "domain floor is 90%") links its ADR per `authoring-standards`; the standard states the rule, the ADR holds the *why* and wins on conflict. See `adr-writing`.
+4. **The runnable gate lives in the boilerplate.** The CI test job, the coverage-gate config, and the `{{test-runner}}` target are maintained in the reference/boilerplate location. State the rule here and *reference* that artifact — don't paste a copy that drifts.
+5. **Draft from `references/template.md`.** Replace every placeholder; do not ship a template with `{{...}}` still in it.
+6. **Validate via `references/checklist.md`.**
 
 ## Coverage targets — sensible baselines
 
@@ -62,7 +64,7 @@ A coverage number that does not block merge is decoration. The gate must include
 - Race detector failure → block merge.
 - A new behaviour without a new test → block merge.
 
-The `review-tests` skill enforces these by reading this artifact.
+The `review-tests` skill enforces these by reading this artifact. The runnable enforcement — the CI test job and coverage-gate config — lives in the reference/boilerplate location; this artifact states which conditions block, the boilerplate makes them block.
 
 ## Update protocol
 
@@ -70,6 +72,8 @@ The `review-tests` skill enforces these by reading this artifact.
 - A class of bug repeatedly slips past tests → add the failure pattern to the "what to test" list for the relevant type.
 - Coverage drifts down for a quarter → either raise the floor again or write down why the lower number is now acceptable.
 - A new test type appears (contract tests, mutation tests) → add a new "Test types" subsection with location and pattern.
+
+File the update through `authoring-standards` (review before it propagates); don't fix it in a reviewer's head.
 
 ## Templates and references
 
@@ -90,6 +94,8 @@ Authored by the tech lead or QA lead; reviewed by the project owner. Updated by 
 ## Related
 
 - `standards` — umbrella router.
+- `authoring-standards` — cross-cutting authoring rules (ADR-cite + rules-only/boilerplate discipline); route updates through it.
+- `adr-writing` — the governing ADR each decision-shaped rule cites.
 - `standards-coding` — production-code conventions sibling.
 - `using-standards` — consumer protocol.
 - `review-tests`, `test-design`, `test-execution`, `test-scenarios` — downstream consumers.

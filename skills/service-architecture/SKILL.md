@@ -63,6 +63,15 @@ Module boundaries inside the service are the highest-leverage decision, because 
 
 Verify the internal dependency graph is a DAG. A cycle (`A → B → C → A`) means the modules can't be built, tested, or deployed independently — break it before the document is done.
 
+## Document discipline
+
+How the document is written matters as much as what it decides:
+
+- **No code in an architecture doc.** Prose, tables, and diagrams only — no struct/field dumps, function signatures, SQL, or locking mechanics. Depth comes from module boundaries, responsibilities, and data ownership, not pasted code; the detail lives in `unit-writing` and the code itself.
+- **Name the pattern, link its ADR — don't re-decide it here.** When the design adopts a style or pattern, name it and link the `adr-writing` record that justifies it; the ADR holds the *why*. Restating the rationale inline lets the two drift.
+- **Reference, don't restate.** The system landscape, inter-service contracts, and the project standards are owned elsewhere (`system-architecture`, `standards`) — link them, don't copy them in, or this document rots the moment they change.
+- **Mark realized vs planned.** Where the design describes a target state not yet built, label it (MVP vs target). A planned thing shown as real is the costliest error at this altitude.
+
 ## How to write it
 
 1. Read the PRD and requirements (and the system architecture, if this is one of several services); confirm they're validated.

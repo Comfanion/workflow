@@ -10,6 +10,7 @@
 - [ ] Auth mechanism, header, token lifetime, refresh rule.
 - [ ] Rate-limit budget + the response headers.
 - [ ] Idempotency rule for state-creating writes.
-- [ ] Source-of-truth spec path named (OpenAPI / proto / SDL).
+- [ ] Source-of-truth spec path referenced in the boilerplate (OpenAPI / proto / SDL), not pasted here.
+- [ ] Governing ADR linked for any envelope/code/versioning rule that traces to a decision.
 - [ ] File size 8-15 KB.
 - [ ] No `{{placeholders}}` left.

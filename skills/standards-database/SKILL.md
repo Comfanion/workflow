@@ -15,24 +15,29 @@ Skip this skill if the project does not own persistent storage. If it talks to a
 
 ## What this artifact must cover
 
-1. **Engines** — primary DB (Postgres / MySQL / etc.), supporting stores (Redis, Elastic). Version pins.
+1. **Engines** — primary DB (Postgres / MySQL / etc.), supporting stores (Redis, Elastic). Version pins. The engine *decision* lives in its ADR; this artifact records the conventions.
 2. **Naming** — tables (plural, snake_case), columns (snake_case), FKs (`{ref_table}_id`), timestamps (`created_at`, `updated_at`, `deleted_at`), booleans (`is_*` / `has_*`). Index naming (`idx_<table>_<cols>`).
 3. **IDs** — UUID v7 / ULID / serial? One choice per project. Justification one line.
-4. **Timestamps** — UTC, `TIMESTAMPTZ`, populated by the DB (`DEFAULT NOW()`), updated by trigger or by ORM convention.
-5. **Soft delete** — yes/no. If yes: column name and the rule that every query must filter it.
-6. **Migrations** — tool, file naming (`YYYYMMDDHHMM_<slug>.up.sql` + `.down.sql`), forward-only vs reversible, the rule that production migrations must be backwards-compatible for one release (add column nullable, backfill, then drop nullable).
-7. **Queries** — parameterized only (forbid string-built SQL), transactions for multi-statement writes, no `SELECT *` on hot paths, every query has an index that covers it.
-8. **Index baseline** — primary key, every FK, every column used in WHERE on a hot path. Adding an index is part of the migration, not a follow-up.
-9. **Backup / recovery / PITR pointer** — one line per topic, links to the runbook (runbook lives elsewhere).
-10. **Read replicas, sharding, partitioning** — when each is allowed, who decides.
+4. **Money / decimals** — a hard rule: monetary and exact-decimal values are never floats. One representation (integer minor units + currency column, or fixed-precision decimal). Governing ADR linked.
+5. **Timestamps** — UTC, `TIMESTAMPTZ`, populated by the DB (`DEFAULT NOW()`), updated by trigger or by ORM convention.
+6. **Soft delete** — yes/no. If yes: column name and the rule that every query must filter it.
+7. **Migrations** — tool, file naming (`YYYYMMDDHHMM_<slug>.up.sql` + `.down.sql`), forward-only vs reversible, the rule that production migrations must be backwards-compatible for one release (add column nullable, backfill, then drop nullable).
+8. **Queries** — parameterized only (forbid string-built SQL), transactions for multi-statement writes, no `SELECT *` on hot paths, every query has an index that covers it.
+9. **Index baseline** — primary key, every FK, every column used in WHERE on a hot path. Adding an index is part of the migration, not a follow-up.
+10. **System of record** — which data this service owns vs reads from elsewhere. Exactly one owner per piece of data; data owned by another service is read across its contract, never copied as a second source of truth.
+11. **Connection / pool pointer** — where the runtime pool config lives. This artifact states the rule (e.g. every query runs under a statement timeout); the runnable values live in the boilerplate.
+12. **Backup / recovery / PITR pointer** — one line per topic, links to the runbook (runbook lives elsewhere).
+13. **Read replicas, sharding, partitioning** — when each is allowed, who decides.
 
 ## How to write it
 
 1. **Read the architecture.** Engine choice and replication shape come from there; this artifact records the conventions, not the decision.
 2. **Pick once.** UUIDv7 vs ULID, soft delete vs hard, naming style — make the call and write the reason on one line. Never two answers for one question.
 3. **Anchor migrations to deploy reality.** If the project deploys to a hot system, the artifact must include the zero-downtime migration rule. If it is a CLI that deploys offline, simplify.
-4. **Draft from `references/template.md`.**
-5. **Validate against `references/checklist.md`.**
+4. **Cite the governing ADR for decision-shaped rules.** Engine choice, money representation, and the delete policy each trace to a decision, not to this artifact; link the ADR that holds the *why* (see `adr-writing`, `authoring-standards`). On conflict, the ADR wins. Never invent an ADR number.
+5. **Rules only — runnable artifacts live in the boilerplate.** The migration tooling config, ORM/codegen config, schema/DDL files, and connection-pool config are maintained in `references/boilerplate`. State the rule here and **reference** the artifact; don't paste a copy that drifts.
+6. **Draft from `references/template.md`.**
+7. **Validate against `references/checklist.md`.**
 
 ## Naming — the project picks one shape
 
@@ -54,6 +59,14 @@ updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 CREATE INDEX idx_orders_user_id ON orders(user_id);
 CREATE UNIQUE INDEX uq_users_email ON users(email);
 ```
+
+## Money — state it as a rule, no exceptions
+
+Monetary and exact-decimal values are never floats. Pick one representation — integer minor units plus a currency column where currency defines scale, or a fixed-precision decimal type — and write it as a rule. The reason is exact arithmetic across services; the governing decision lives in its ADR (`adr-writing`), which the rule cites.
+
+## System of record — one owner per datum
+
+Each piece of data has exactly one owning store. List what this service owns vs what it reads from another service. Data owned elsewhere is read across that service's contract, never copied locally as a second source of truth.
 
 ## Zero-downtime migration rule
 
@@ -80,6 +93,9 @@ Renaming a column is forbidden in a single deploy; it is "add-new, dual-write, b
 - A bug traces to a missing FK or index → add the rule that would have caught it.
 - A migration causes downtime → the zero-downtime rule failed; tighten with the exact failure mode.
 - A new store joins (Redis, Elasticsearch) → add the section for its conventions.
+- Money drifts between two representations → the money rule wasn't enforced; make it a query/review gate.
+
+File the update through `authoring-standards` (reviewed before it propagates); don't fix it in a reviewer's head.
 
 ## Templates and references
 
@@ -100,6 +116,8 @@ Authored by the DB owner (DBA, tech lead, architect). Reviewed by the project ow
 ## Related
 
 - `standards` — umbrella router.
+- `authoring-standards` — cross-cutting authoring rules + ADR/boilerplate discipline; route updates through it.
+- `adr-writing` — the decisions (engine, money, delete policy) this artifact cites; the ADR wins on conflict.
 - `using-standards` — consumer protocol.
 - `database-design` — applies these standards to a specific feature's schema.
 - `standards-performance` — for query budgets and hot-path policy.
