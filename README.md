@@ -70,14 +70,28 @@ Conventions every skill follows:
 
 One `skills/` source serves every harness; each gets a thin manifest pointing at it.
 
-- **Claude Code** — add the repo as a plugin marketplace and install `comfanion`. Skills load from `skills/` and roles become subagents from `agents/` automatically.
+- **Claude Code** —
+  ```
+  claude plugin marketplace add Comfanion/workflow
+  claude plugin install comfanion@comfanion
+  ```
+  (`marketplace add` takes a GitHub `owner/repo`, a git URL, or a local path; the same two steps are available interactively via `/plugin` in-session.) Skills load from `skills/` and roles become subagents from `agents/` automatically.
 - **Codex** —
   ```
-  codex plugin marketplace add <path-or-git-url-of-this-repo>
+  codex plugin marketplace add https://github.com/Comfanion/workflow
   codex plugin add comfanion@comfanion
   ```
-  The plugin lives at `plugins/comfanion/` (a subdirectory plugin, which Codex requires) and points back at the root single-source skills/agents.
-- **opencode** — `.opencode/skills` and `.opencode/agents` symlink to the root source; opencode discovers all roles and skills automatically (`opencode agent list` shows them).
+  (A local path also works.) The plugin lives at `plugins/comfanion/` — a subdirectory plugin, which Codex requires — pointing back at the root single-source skills/agents via relative symlinks (which survive `git clone`).
+- **opencode** — opencode discovers skills and agents from an `.opencode/` directory, not from a plugin command (`opencode plugin` is for npm modules only). The repo ships its own `.opencode/{skills,agents}` symlinks, so the simplest path is to run opencode inside the clone:
+  ```
+  opencode            # inside the cloned repo — discovers all 13 roles + skills
+  ```
+  To use it from your own project, mirror that layout under your project's `.opencode/`:
+  ```
+  ln -s /path/to/workflow/skills  your-project/.opencode/skills
+  ln -s /path/to/workflow/agents  your-project/.opencode/agents
+  ```
+  Confirm with `opencode agent list` — the 13 roles appear.
 - **Hermes** — add the repo as a skill tap, then install per role profile:
   ```
   hermes skills tap add <git-url-of-this-repo>
