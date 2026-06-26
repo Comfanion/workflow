@@ -1,8 +1,17 @@
+---
+type: standard                                # controlled vocab — primary filter for agents
+title: Security Standards
+description: Auth, crypto, secrets, and input-handling rules.
+domain: security                              # dedup axis: one standard per subject
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [security, conventions]                 # free-form filter labels
+version: 1.0
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; sibling standards under docs/standards/
+---
+
 # Security Standards
 
-**Project:** {{project_name}}  
-**Version:** 1.0  
-**Last Updated:** {{date}}  
 **Governing ADR(s):** {{ADR-NNN link, or "—"}}
 
 > This doc states the security rules; the auth mechanism, approved crypto, secret store, or blocking-CVE severity that traces to a decision links its ADR above.

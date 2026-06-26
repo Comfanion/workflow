@@ -1,12 +1,18 @@
-# {{project}} — Requirements
-
-```yaml
+---
+type: requirements                            # controlled vocab — primary filter for agents
+title: {{project}} — Requirements
+description: {{one line — what this requirements doc covers}}
+domain: {{product/domain name}}               # dedup axis: one requirements doc per product scope
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [{{tag}}, {{tag}}]                       # free-form filter labels
 id: REQ-001
 version: 1.0
-status: draft | approved
-date: {{date}}
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 author: {{author}}
-```
+related: [docs/prd.md]                         # cross-links; prevents orphan duplicates
+---
+
+# {{project}} — Requirements
 
 ---
 

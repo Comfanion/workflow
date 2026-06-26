@@ -1,7 +1,16 @@
+---
+type: standard                                # controlled vocab — primary filter for agents
+title: API Standards
+description: API contract rules — URL, envelope, errors, versioning.
+domain: api                                   # dedup axis: one standard per subject
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [api, conventions]                      # free-form filter labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; sibling standards under docs/standards/
+---
+
 # API Standards
 
-**Project:** {{project_name}}
-**Last updated:** {{date}}
 **Governing ADR(s):** {{ADR-NNN link, or "—"}}
 
 > This doc states the API rules; the decision and rationale live in the ADR(s) above.

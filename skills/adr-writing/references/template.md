@@ -1,12 +1,18 @@
-# ADR-{{N}}: {{title}}
-
-```yaml
+---
+type: adr                                     # controlled vocab — primary filter for agents
+title: "ADR-{{N}}: {{title}}"
+description: {{one line — the decision this ADR records}}
+domain: {{domain/module the decision affects}}   # dedup axis: find prior ADRs in this domain
+status: proposed                              # proposed | accepted | deprecated | superseded
+tags: [{{tag}}, {{tag}}]                       # free-form filter labels
 id: ADR-{{N}}
-status: proposed | accepted | deprecated | superseded
-date: {{date}}
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 deciders: [{{names}}]
-supersedes: ADR-{{X}}  # if applicable
-```
+supersedes: ADR-{{X}}                          # if applicable
+related: []                                    # cross-links; prevents orphan duplicates
+---
+
+# ADR-{{N}}: {{title}}
 
 ---
 

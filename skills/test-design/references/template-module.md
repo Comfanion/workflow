@@ -1,8 +1,18 @@
+---
+type: test-design                             # controlled vocab — primary filter for agents
+title: [Module] Test Cases
+description: {{one line — the module these test cases cover}}
+domain: {{module name}}                        # dedup axis: one test-design per module
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [testing, module, test-design]          # free-form filter labels
+version: 1.0
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: [./architecture.md]                   # cross-links; the module architecture
+---
+
 # [Module] Test Cases
 
 **Parent:** [Module Architecture](./architecture.md)
-**Version:** 1.0
-**Status:** Draft | Review | Approved
 **QA Owner:** [Name]
 
 > **Note:** This file is OPTIONAL. Create only when module has complex test scenarios that don't fit in PRD acceptance criteria.

@@ -1,11 +1,17 @@
-# {{system}} — System Architecture
-
-```yaml
+---
+type: system-architecture                     # controlled vocab — primary filter for agents
+title: {{system}} — System Architecture
+description: {{one line — the system landscape this doc maps}}
+domain: {{system/platform name}}              # dedup axis: one system-architecture per system
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [{{tag}}, {{tag}}]                       # free-form filter labels
 id: SYS-ARCH-001
 version: 1.0
-status: draft | approved
-date: {{date}}
-```
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: [docs/prd.md]                        # cross-links; prevents orphan duplicates
+---
+
+# {{system}} — System Architecture
 
 > Landscape only. Each service's internals live in `{DOCS_ROOT}/architecture/<service-name>.md` (service-architecture).
 

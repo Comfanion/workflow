@@ -1,7 +1,17 @@
+---
+type: standard                                # controlled vocab — primary filter for agents
+title: Git Workflow
+description: Branching, commits, and PR/MR process.
+domain: git                                   # dedup axis: one standard per subject
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [git, workflow, conventions]            # free-form filter labels
+version: 1.0
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; sibling standards under docs/standards/
+---
+
 # Git Workflow
 
-**Version:** 1.0
-**Status:** Active
 **Governing ADR(s):** {{ADR-NNN link, or "—"}}
 
 > This doc states the git rules; the branching model, merge strategy, or a protection rule that traces to a decision links its ADR above.

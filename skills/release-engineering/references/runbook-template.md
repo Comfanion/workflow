@@ -1,3 +1,15 @@
+---
+type: runbook                                 # controlled vocab — primary filter for agents
+title: Release Runbook — {{service}} {{version}}
+description: {{one line — what ships in this release and how}}
+domain: {{service/domain}}                     # dedup axis: group runbooks by service
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [release, ops]                          # free-form filter labels
+version: {{version}}
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; e.g. the deployment doc, changelog
+---
+
 # Release Runbook — `{{service}}` `{{version}}`
 
 > Write to `{DOCS_ROOT}/ops/release-<version>.md`. Fill every `{{placeholder}}`. Remove sections that genuinely don't apply rather than leaving them blank.

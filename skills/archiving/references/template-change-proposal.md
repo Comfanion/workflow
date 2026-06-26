@@ -1,10 +1,17 @@
-# Change Proposal: [Name]
+---
+type: change-proposal                         # controlled vocab — primary filter for agents
+title: "Change Proposal: [Name]"
+description: {{one line — the change being proposed}}
+domain: {{domain/module affected}}            # dedup axis: find related proposals in this area
+status: draft                                 # draft | review | approved | rejected | merged
+tags: [{{tag}}, {{tag}}]                       # free-form filter labels
+id: CP-NNN
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+author: {{author}}
+related: []                                    # cross-links; e.g. the doc/ADR it amends
+---
 
-**ID:** CP-NNN
-**Status:** Draft | Review | Approved | Rejected | Merged
-**Author:** [Name]
-**Created:** YYYY-MM-DD
-**Updated:** YYYY-MM-DD
+# Change Proposal: [Name]
 
 ---
 

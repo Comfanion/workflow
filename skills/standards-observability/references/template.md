@@ -1,10 +1,18 @@
+---
+type: standard                                # controlled vocab — primary filter for agents
+title: Observability Standard
+description: Metrics, traces, and logs instrumentation conventions.
+domain: observability                         # dedup axis: one standard per subject
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [observability, conventions]            # free-form filter labels
+version: {{version}}
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: [{{architecture / spec / ticket / related-doc links}}]   # cross-links
+---
+
 # Observability Standard
 
-**Version:** {{version}}
-**Status:** {{Draft | Active}}
-**Last updated:** {{date}}
 **Governing ADR(s):** {{ADR-NNN link, or "—"}}
-**Related:** {{architecture / spec / ticket / related-doc links, or —}}
 
 > Scope: instrumentation **conventions** only — how a service emits metrics, traces, and logs, and how they correlate. The runnable collector/agent config, dashboards, alert rules, retention, and the observability topology are infrastructure — see the project's `{{infrastructure/deployment doc}}` and the boilerplate. This doc states the rule; those own the artifact.
 

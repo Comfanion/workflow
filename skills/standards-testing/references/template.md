@@ -1,7 +1,17 @@
+---
+type: standard                                # controlled vocab — primary filter for agents
+title: Testing Standards
+description: Coverage targets, test types, and gates.
+domain: testing                               # dedup axis: one standard per subject
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [testing, conventions]                  # free-form filter labels
+version: 1.0
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; sibling standards under docs/standards/
+---
+
 # Testing Standards
 
-**Version:** 1.0
-**Status:** Active
 **Governing ADR(s):** {{ADR-NNN link, or "—"}}
 
 > This doc states the testing rules; any target or gate that traces to a decision links its ADR above.

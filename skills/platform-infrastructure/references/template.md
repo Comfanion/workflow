@@ -1,6 +1,17 @@
+---
+type: infrastructure                          # controlled vocab — primary filter for agents
+title: {{Platform Name}} — Infrastructure
+description: {{one line — the shared substrate this doc covers}}
+domain: platform                              # dedup axis: one platform-infrastructure doc per platform
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [{{tag}}, {{tag}}]                       # free-form filter labels
+version: 0.1
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; prevents orphan duplicates
+---
+
 # {{Platform Name}} — Infrastructure
 
-**Version:** {{0.1}}　**Date:** {{YYYY-MM-DD}}　**Status:** {{Draft | Review | Approved}}
 **Governing ADR(s):** {{ADR-NNN link, or "—"}}
 
 <!-- PLATFORM infra — the shared substrate every service runs on. Lives where the

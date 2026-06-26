@@ -1,9 +1,17 @@
+---
+type: standard                                # controlled vocab — primary filter for agents
+title: Temporary Decisions
+description: Living backlog of conscious shortcuts and their payoff triggers.
+domain: temporary-decisions                   # dedup axis: one ledger per project
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [tech-debt, ledger]                     # free-form filter labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; sibling standards under docs/standards/
+---
+
 # Temporary Decisions
 
 > The living backlog of conscious shortcuts. Each entry is a debt with a name, a price, and a payoff trigger. See `skills/standards-temporary-decisions/SKILL.md` for the read/write protocol.
-
-**Project:** {{project_name}}
-**Last reviewed:** {{date}}
 
 ## Reading guide
 

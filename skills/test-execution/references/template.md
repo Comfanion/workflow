@@ -1,6 +1,16 @@
+---
+type: test-report                             # controlled vocab — primary filter for agents
+title: Test Report — [Feature / Build]
+description: {{one line — what this run validated and the verdict}}
+domain: {{feature/domain under test}}         # dedup axis: group reports by feature
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [{{tag}}, {{tag}}]                       # free-form filter labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; e.g. the scenarios doc
+---
+
 # Test Report — [Feature / Build]
 
-**Date:** [YYYY-MM-DD]
 **Build / commit:** [id]
 **Environment:** [OS, config, dependencies]
 **Executed by:** [Name]

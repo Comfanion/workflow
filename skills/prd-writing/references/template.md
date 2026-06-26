@@ -1,12 +1,18 @@
-# {{project}} — PRD
-
-```yaml
+---
+type: prd                                     # controlled vocab — primary filter for agents
+title: {{project}} — PRD
+description: {{one line — the product/feature this PRD specs}}
+domain: {{product/domain name}}               # dedup axis: one PRD per product scope
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [{{tag}}, {{tag}}]                       # free-form filter labels
 id: PRD-001
 version: 1.0
-status: draft | approved
-date: {{date}}
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 author: {{author}}
-```
+related: []                                    # cross-links; prevents orphan duplicates
+---
+
+# {{project}} — PRD
 
 ---
 

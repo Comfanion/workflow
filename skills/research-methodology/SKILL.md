@@ -72,7 +72,22 @@ Report sections: Competitor Overview · Feature Comparison · SWOT Analysis · D
 
 ## Report structure
 
-Produce the report with these sections:
+Open the report with this frontmatter (so agents filter research by domain/type and avoid re-running existing reports):
+
+```yaml
+---
+type: research                                # controlled vocab — primary filter for agents
+title: {{topic}} — Research
+description: {{one line — the question this report answers}}
+domain: {{domain/module}}                      # dedup axis: find existing research in this area
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [{{tag}}, {{tag}}]                       # research type + subject labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; e.g. the PRD/ADR it feeds
+---
+```
+
+Then produce the report with these sections:
 
 - **Executive Summary** — 2–3 paragraphs of the key findings, readable on its own.
 - **Research Questions** — the specific questions this report answers.

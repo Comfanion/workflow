@@ -1,14 +1,17 @@
-# {{project}} — Architecture
-
-```yaml
+---
+type: service-architecture                    # controlled vocab — primary filter for agents
+title: {{project}} — Architecture
+description: {{one line — what this service is and why it exists}}
+domain: {{primary domain/module this service owns}}   # dedup axis: one service-architecture per domain
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [{{tag}}, {{tag}}]                       # free-form filter labels (e.g. catalog, payments)
 id: ARCH-001
 version: 1.0
-status: draft | approved
-date: {{date}}
-author: {{author}}
-```
-
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: [docs/prd.md, docs/architecture.md]  # cross-links; surfaces siblings, prevents orphan duplicates
 ---
+
+# {{project}} — Architecture
 
 ## Executive Summary
 

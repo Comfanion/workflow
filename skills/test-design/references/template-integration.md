@@ -1,9 +1,18 @@
+---
+type: test-design                             # controlled vocab — primary filter for agents
+title: Architecture Integration Tests
+description: {{one line — the integration surface these tests cover}}
+domain: {{system/domain}}                      # dedup axis: one integration test-design per system
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [testing, integration, test-design]     # free-form filter labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+author: {{author}}
+related: [docs/architecture.md]                # cross-links; prevents orphan duplicates
+---
+
 # Architecture Integration Tests
 
 **Architecture Version:** [X.Y]
-**Date:** [YYYY-MM-DD]
-**Author:** [Name]
-**Status:** Draft | Review | Approved
 
 ---
 

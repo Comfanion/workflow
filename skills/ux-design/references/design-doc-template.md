@@ -1,6 +1,17 @@
+---
+type: design                                  # controlled vocab — primary filter for agents
+title: UX Design Doc — {{feature}}
+description: {{one line — the feature these flows/wireframes cover}}
+domain: {{feature/domain}}                     # dedup axis: one design doc per feature
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [ux, design]                            # free-form filter labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; e.g. the design-system, PRD
+---
+
 # UX Design Doc — `{{feature}}`
 
-> Write to `{DOCS_ROOT}/design/<feature>/`, split across `flows.md`, `wireframes.md`, and `handoff.md`. Fill every `{{placeholder}}`. Remove a section only if it genuinely can't apply — and say so.
+> Write to `{DOCS_ROOT}/design/<feature>/`, split across `flows.md`, `wireframes.md`, and `handoff.md`. Each split file repeats this frontmatter (adjust `title`/`description`). Fill every `{{placeholder}}`. Remove a section only if it genuinely can't apply — and say so.
 
 ---
 

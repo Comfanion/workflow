@@ -1,6 +1,16 @@
+---
+type: research-plan                           # controlled vocab — primary filter for agents
+title: Research Plan — [Topic / Decision]
+description: {{one line — the decision these spikes de-risk}}
+domain: {{domain/module}}                      # dedup axis: find existing research in this area
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [research, spike]                       # free-form filter labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; e.g. the architecture/ADR it feeds
+---
+
 # Research Plan — [Topic / Decision]
 
-**Date:** [YYYY-MM-DD]
 **Owner of plan:** [Name / role]
 **Decision this de-risks:** [the downstream choice the spikes feed]
 

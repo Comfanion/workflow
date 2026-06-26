@@ -1,13 +1,20 @@
-# Epic {{N}}: {{title}}
-
-```yaml
+---
+type: epic                                    # controlled vocab — primary filter for agents
+title: "Epic {{N}}: {{title}}"
+description: {{one line — the capability this epic delivers}}
+domain: {{domain/module this epic belongs to}}   # dedup axis: find existing epics in this domain
+status: backlog                               # backlog | in_progress | review | done
+tags: [{{tag}}, {{tag}}]                       # free-form filter labels
 id: {{PREFIX}}-E{{N}}
-status: backlog | in_progress | review | done
-priority: P0 | P1
-size: S | M | L | XL | XXL  # Epic size (T-shirt)
-estimate: {{points}}  # Optional: Only for ENTERPRISE (sum of story points)
+priority: P0                                  # P0 | P1
+size: M                                       # S | M | L | XL | XXL (T-shirt)
+estimate: {{points}}                          # Optional: ENTERPRISE only (sum of story points)
 sprint: {{sprint}}
-```
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: [docs/prd.md]                         # cross-links; prevents orphan duplicates
+---
+
+# Epic {{N}}: {{title}}
 
 <!-- Size guide:
   S (TOY): 3-8 stories

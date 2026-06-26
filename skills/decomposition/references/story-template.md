@@ -1,12 +1,19 @@
-# Story {{E}}.{{N}}: {{title}}
-
-```yaml
+---
+type: story                                   # controlled vocab — primary filter for agents
+title: "Story {{E}}.{{N}}: {{title}}"
+description: {{one line — the user-facing slice this story delivers}}
+domain: {{domain/module this story belongs to}}   # dedup axis: find existing stories in this domain
+status: draft                                 # draft | ready | in_progress | review | done
+tags: [{{tag}}, {{tag}}]                       # free-form filter labels
 id: {{PREFIX}}-S{{E}}-{{N}}
 epic: {{PREFIX}}-E{{E}}
-status: draft | ready | in_progress | review | done
-size: XS | S | M | L | XL  # Story size (prefer M)
-estimate: {{points}}  # Optional: Only for ENTERPRISE (1,3,5,8,13)
-```
+size: M                                       # XS | S | M | L | XL (prefer M)
+estimate: {{points}}                          # Optional: ENTERPRISE only (1,3,5,8,13)
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; e.g. the parent epic, acceptance-criteria
+---
+
+# Story {{E}}.{{N}}: {{title}}
 
 <!-- Size guide:
   XS: 1-2 tasks (trivial)

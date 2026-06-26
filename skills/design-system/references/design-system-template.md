@@ -1,3 +1,14 @@
+---
+type: design-system                           # controlled vocab — primary filter for agents
+title: Design System — {{product}}
+description: {{one line — the visual language and component contract}}
+domain: {{product/design domain}}             # dedup axis: one design-system per product
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [design-system, ui]                     # free-form filter labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; e.g. ux design docs
+---
+
 # Design System — `{{product}}`
 
 > Write to `{DOCS_ROOT}/design/design-system.md` (tokens here, or in a referenced tokens file if kept separate). Fill every `{{placeholder}}`. Remove a section only if it genuinely doesn't apply.

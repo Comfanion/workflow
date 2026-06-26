@@ -1,8 +1,15 @@
 ---
-title: Infrastructure
+type: infrastructure                          # controlled vocab — primary filter for agents
+title: {{Service}} — Infrastructure & Deployment
+description: {{one line — this service's position in the platform infra}}
+domain: {{service/domain name}}               # dedup axis: one deployment doc per service
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [{{tag}}, {{tag}}]                       # free-form filter labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 last_reviewed: {{YYYY-MM-DD}}
 review_due: {{YYYY-MM-DD + 3 months}}
 owner: {{team}}
+related: []                                    # cross-links; prevents orphan duplicates
 ---
 
 # {{Service}} — Infrastructure & Deployment

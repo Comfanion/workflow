@@ -51,6 +51,12 @@ Most tasks map to a phase of the pipeline (see `FLOW.yaml`) and the skill(s) tha
 
 **Process skills before implementation skills.** "Let's build X" → `brainstorm` / requirements first, then the implementation skills. "Fix this bug" → `systematic-debugging` first, then the domain skill. The process skill decides *how* you approach the task; deciding that after you have started is too late.
 
+## Artifact metadata & dedup
+
+Every doc this toolkit produces under `{DOCS_ROOT}` (architecture, standards, ADRs, epics/stories, research, design, runbooks, …) opens with a YAML frontmatter block — the templates carry it. The fields are a shared, filterable index (inspired by the Open Knowledge Format): `type` (controlled vocab — the doc kind), `domain` (the module/domain it belongs to), `tags`, `status`, `description`, `updated`, `related`.
+
+**Before producing a new artifact, search existing docs first — do not blindly create.** Grep the `{DOCS_ROOT}` frontmatter for the same `type` + `domain` (e.g. `rg -l "^type: adr" docs/ | xargs rg -l "^domain: catalog"`). If a matching doc exists, **update it** (bump `updated`, append/supersede) instead of writing a second one. This is how the toolkit keeps agents from proliferating near-duplicate documents. When you do write one, fill the frontmatter honestly — `type`/`domain`/`tags` are what the next agent filters on.
+
 ## Rigid vs. flexible skills
 
 Each skill says which it is. **Rigid** skills (`verification-before-completion`, `systematic-debugging`, `dev`'s TDD core, `review-security`) carry an Iron Law and are followed exactly — you do not adapt away the discipline because it feels like overkill this once. **Flexible** skills are principles to adapt to context. Treat the rigid ones as non-negotiable; that rigidity is the whole value.

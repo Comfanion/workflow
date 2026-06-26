@@ -1,10 +1,18 @@
+---
+type: standard                                # controlled vocab — primary filter for agents
+title: Eventing Standard
+description: Event transport, schema, and delivery rules.
+domain: events                                # dedup axis: one standard per subject
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [events, messaging, conventions]        # free-form filter labels
+version: {{version}}
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: [{{architecture / spec / ticket / related-doc links}}]   # cross-links
+---
+
 # Eventing Standard
 
-**Version:** {{version}}
-**Status:** {{Draft | Active}}
-**Last updated:** {{date}}
 **Governing ADR(s):** {{ADR-NNN link, or "—"}}
-**Related:** {{architecture / spec / ticket / related-doc links, or —}}
 
 > This standard states the rules; the decisions and rationale live in the ADR(s).
 > Where this standard and an ADR disagree, the **ADR wins** — fix the standard.

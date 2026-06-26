@@ -4,6 +4,21 @@ Load this when writing a diagram file. Copy the block for the type you need, the
 
 `{DOCS_ROOT}` defaults to `docs/` at the project root.
 
+**Prepend this frontmatter to every diagram file** (so agents filter diagrams by domain/type and avoid duplicates):
+
+```yaml
+---
+type: diagram                                 # controlled vocab — primary filter for agents
+title: {{diagram title}}
+description: {{one line — what this diagram shows}}
+domain: {{domain/module the diagram covers}}  # dedup axis: find existing diagrams in this domain
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [c4, sequence, erd, ...]                # diagram kind + subject labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; e.g. the architecture doc
+---
+```
+
 ---
 
 ## C4 Context (Mermaid)

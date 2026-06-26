@@ -1,9 +1,18 @@
+---
+type: standard                                # controlled vocab — primary filter for agents
+title: Database Standards
+description: Schema naming, migrations, and query patterns.
+domain: database                              # dedup axis: one standard per subject
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [database, conventions]                 # free-form filter labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; sibling standards under docs/standards/
+---
+
 # Database Standards
 
-**Project:** {{project_name}}
 **Engine:** {{Postgres 15 | MySQL 8 | ...}}
 **Governing ADR(s):** {{ADR-NNN link, or "—"}}
-**Last updated:** {{date}}
 
 ## Reading guide
 

@@ -1,8 +1,17 @@
+---
+type: standard                                # controlled vocab — primary filter for agents
+title: Coding Standards
+description: How production code is written in this project.
+domain: coding                                # dedup axis: one standard per subject
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [coding, conventions]                   # free-form filter labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; sibling standards under docs/standards/
+---
+
 # Coding Standards
 
-**Project:** {{project_name}}
 **Stack:** {{stack}}
-**Last updated:** {{date}}
 
 > This document is the contract every implementer follows and every reviewer enforces. It covers only how production code is written. Tests, security, performance, API contracts, database schema, and git workflow live in sibling artifacts under `docs/standards/`.
 

@@ -1,8 +1,17 @@
+---
+type: standard                                # controlled vocab — primary filter for agents
+title: Performance Standards
+description: Performance budgets, hot paths, and anti-patterns.
+domain: performance                           # dedup axis: one standard per subject
+status: draft                                 # draft | approved | deprecated | superseded
+tags: [performance, conventions]              # free-form filter labels
+updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+related: []                                    # cross-links; sibling standards under docs/standards/
+---
+
 # Performance Standards
 
-**Project:** {{project_name}}
 **Stack:** {{stack}}
-**Last updated:** {{date}}
 **Governing ADR(s):** {{ADR-NNN link, or "—"}}
 
 > Source of truth for `review-performance`. Budgets here mean "below this fails review"; the architecture and NFRs feed the numbers. Runtime dashboards and alerts that watch these metrics live in `standards-observability`.
