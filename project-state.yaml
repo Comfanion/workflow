@@ -27,9 +27,8 @@ open_decisions:
     summary: Build/integration gate (E2) — add validation block to FLOW.yaml testing phase
     options: [start-now, defer-until-codex-hooks-verified]
   - id: codex-plugin-cache-symlinks
-    status: awaiting_human
-    summary: Codex skips symlinks pointing outside plugin dir at install time; verify subdirectory plugin works end-to-end after hooks field fix
-    options: [test-on-codex, switch-to-self-contained-subdirectory]
+    status: resolved
+    summary: Codex resolves symlinks via marketplace path at runtime (cache stores only manifests); subdirectory plugin + symlinks works end-to-end. Verified with codex exec test.
 
 last_updated: 2026-07-09T00:00:00Z
 last_session: HOTL research + enforcement layer plan + Codex plugin hooks field fix + Gemini CLI extension support + cross-harness conventions documentation

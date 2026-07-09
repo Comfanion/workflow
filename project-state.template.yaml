@@ -1,8 +1,11 @@
 # Project State — template
 #
-# Copy this file to {DOCS_ROOT}/project-state.yaml (default: docs/project-state.yaml)
-# in your project. The conducting agent reads it at session start to resume work
-# without re-onboarding. Update it on every phase / status transition.
+# Copy this file to project-state.yaml at the **repository root** (same level as
+# FLOW.yaml) in your project. The conducting agent reads it at session start to
+# resume work without re-onboarding. Update it on every phase / status transition.
+#
+# The state file lives at the root, NOT under {DOCS_ROOT} — it is a workflow
+# control file (like FLOW.yaml), not a pipeline output.
 #
 # Fields:
 #   project         — project name (free text)

@@ -21,15 +21,15 @@ A skill tells you *how* to do a thing well; it never overrides what the user ask
 
 ## Project state — read first
 
-At the start of every session, before responding, check whether `{DOCS_ROOT}/project-state.yaml` exists (default `docs/project-state.yaml`). If it does:
+At the start of every session, before responding, check whether `project-state.yaml` exists at the **repository root** (same level as `FLOW.yaml`). If it does:
 
 1. **Read it.** It is the single source of truth for where the project is.
 2. **Resume from there**, not from scratch. The `current_phase`, `active_work`, and `open_decisions` fields tell you what is in flight and what is blocked.
 3. **Update it on every transition** — when a phase advances, a story's status changes, a decision is made, or a session ends. Stale state defeats the purpose.
 
-If `project-state.yaml` does not exist, copy `skills/using-comfanion/references/project-state.template.yaml` into `{DOCS_ROOT}/project-state.yaml` at the start of the first session and fill in the project name. From then on, it is the resume point.
+If `project-state.yaml` does not exist, copy `project-state.template.yaml` (also at the repo root, next to `FLOW.yaml`) into `project-state.yaml` at the start of the first session and fill in the project name. From then on, it is the resume point.
 
-Template fields and values are documented inline in the template file.
+The state file lives at the **root**, not under `{DOCS_ROOT}` — it is a workflow control file like `FLOW.yaml`, not a pipeline output. Template fields and values are documented inline in the template.
 
 ## The rule
 
