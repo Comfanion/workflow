@@ -7,6 +7,8 @@ description: Write per-module/per-domain documentation — an index, a data mode
 
 A unit document is the detailed contract for a single architectural unit — what it owns, the data it stores, the API it exposes, and the events it emits or consumes. Where the architecture document describes the system as a whole, unit docs zoom in on one module or domain so an implementer can build it without guessing.
 
+**Unit docs are the spec layer of the pipeline.** They sit between `service-architecture` (one service's internals) and `decomposition` (cutting scope into epics and stories). When unit docs exist for the scope being decomposed, `decomposition` reads them as the technical basis — API contracts, data shapes, event schemas — so stories inherit concrete signatures instead of invented ones. Skipping unit docs for MEDIUM+ projects is what produces "stories that don't fit together" — each story was cut against a different mental model of the same module.
+
 The core discipline is **one concern per file, one unit per folder**. The reason is mechanical, not aesthetic: these files are read back by agents and retrieval tools, so a focused file under ~400 lines retrieves cleanly while a sprawling everything-file buries the answer. When a file outgrows its concern, split it — never stretch it.
 
 ## When to write unit docs at all
@@ -104,3 +106,41 @@ Fill every `{{placeholder}}` and delete the sections a given unit genuinely does
 ## Roles
 
 This skill is for whoever holds the architecture role — they author unit docs from the PRD and architecture document. The implementer builds against them, and the project owner reviews; the author does not approve their own units.
+
+## Cross-linking units — describing relationships between domains
+
+Units rarely stand alone. Two or three domains routinely exchange events, share entities, or call each other's APIs. Each unit's `index.md` carries a **Boundaries** table (Owns / Uses / Provides) that names those relationships; cross-linking is what makes the relationships navigable rather than just listed.
+
+### How to link
+
+Use **bundle-relative OKF links** (`/docs/architecture/...`) so links survive files moving within their subtree. Example from `modules/billing/domains/subscription/index.md`:
+
+```markdown
+## Boundaries
+
+| Direction | Counterparty | Contract |
+|-----------|--------------|---------|
+| Uses | [identity](/docs/architecture/modules/identity/) | Resolves the owner of a subscription via `owner_id` |
+| Provides to | [notifications](/docs/architecture/modules/notifications/) | Emits `subscription.created` — see [events](events/) |
+```
+
+The link target is the other unit's `index.md` (or its folder — same navigation). The surrounding prose conveys the kind of relationship: "uses", "provides to", "joins with", "depends on", "emits to". OKF §5 treats every link as a directed edge of an untyped relationship — the prose types it.
+
+### When to introduce a cross-cutting doc
+
+For two cooperating domains, linking their `index.md` files is enough — the relationship lives in each one's Boundaries table.
+
+For **three or more domains** that form a coherent flow (e.g. "order placement" touches catalog, orders, payments, notifications), write a cross-cutting doc that walks the flow end-to-end and links each step to the relevant unit:
+
+```
+docs/architecture/flows/
+└── order-placement.md
+```
+
+Frontmatter: `type: flow`, `domain: order-placement`, `tags: [orders, payments, notifications]`. Body: numbered steps, each linking to the unit that owns it. This is **not** a new architectural altitude — it is a curated tour across existing units. Do not duplicate the unit content; link to it.
+
+### What cross-linking is NOT
+
+- Not a replacement for the Boundaries table — the table is the structured view; links make it navigable.
+- Not a license to invent a unit for every relationship — most relationships live in the two units that share them.
+- Not external documentation — links stay inside the bundle (`/docs/...`); external sources go under `# Citations` per OKF §8.

@@ -73,11 +73,48 @@ Most tasks map to a phase of the pipeline (see `FLOW.yaml`) and the skill(s) tha
 
 **Process skills before implementation skills.** "Let's build X" → `brainstorm` / requirements first, then the implementation skills. "Fix this bug" → `systematic-debugging` first, then the domain skill. The process skill decides *how* you approach the task; deciding that after you have started is too late.
 
-## Artifact metadata & dedup
+## Artifact metadata — OKF v0.1 conformance
 
-Every doc this toolkit produces under `{DOCS_ROOT}` (architecture, standards, ADRs, epics/stories, research, design, runbooks, …) opens with a YAML frontmatter block — the templates carry it. The fields are a shared, filterable index (inspired by the Open Knowledge Format): `type` (controlled vocab — the doc kind), `domain` (the module/domain it belongs to), `tags`, `status`, `description`, `updated`, `related`.
+Every doc this toolkit produces under `{DOCS_ROOT}` (architecture, standards, ADRs, epics/stories, research, design, runbooks, …) opens with a YAML frontmatter block — the templates carry it. **The bundle is conformant with the [Open Knowledge Format v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md).**
 
-**Before producing a new artifact, search existing docs first — do not blindly create.** Grep the `{DOCS_ROOT}` frontmatter for the same `type` + `domain` (e.g. `rg -l "^type: adr" docs/ | xargs rg -l "^domain: catalog"`). If a matching doc exists, **update it** (bump `updated`, append/supersede) instead of writing a second one. This is how the toolkit keeps agents from proliferating near-duplicate documents. When you do write one, fill the frontmatter honestly — `type`/`domain`/`tags` are what the next agent filters on.
+### Required (OKF §4.1)
+
+- **`type`** — short string identifying the kind of concept (e.g. `prd`, `system-architecture`, `adr`, `research`, `epic`, `story`, `unit-index`, `unit-data-model`). Consumers use this for routing, filtering, dedup. Not centrally registered — pick descriptive values, tolerate unknown ones gracefully.
+
+### Recommended (OKF §4.1, comfanion convention)
+
+- **`title`** — human-readable display name; if omitted, consumers derive from filename or first H1.
+- **`description`** — one-line summary; used by index generators and search previews.
+- **`domain`** — the module/domain the doc belongs to; the dedup axis. Use the same value across docs about the same scope so `rg -l "^domain: billing"` finds them all.
+- **`tags`** — YAML list of cross-cutting labels.
+- **`status`** — `draft | approved | deprecated | superseded`.
+- **`timestamp`** — ISO 8601 datetime of last meaningful change. **`updated` is accepted as a legacy alias**; new docs use `timestamp`.
+- **`related`** — list of paths/URIs to sibling docs; surfaces relationships and prevents orphan duplicates.
+
+Extensions (id, version, author, supersedes, deciders, …) are allowed by OKF §4.1 — add whatever the doc kind needs.
+
+### Cross-linking (OKF §5)
+
+Concepts link to concepts via standard markdown links. Two forms:
+
+- **Bundle-relative absolute** (preferred — stable when docs move within their subtree): `see the [customers entity](/docs/architecture/modules/billing/domains/subscription/entities/plan.md)`.
+- **Relative**: `[sibling](./other.md)`.
+
+A link from A to B asserts a relationship; the surrounding prose conveys the kind (parent/child, references, joins-with, depends-on). Build the cross-link graph deliberately when authoring — especially between units that share a contract (two domains that exchange events, a service and the module that owns it). `unit-writing` covers this for module/domain pairs (see that skill).
+
+### Index files (OKF §6)
+
+- `docs/index.md` is the **bundle root** — the ONLY `index.md` allowed to have frontmatter (must declare `okf_version: "0.1"`).
+- Any subdirectory of `docs/` MAY have its own `index.md` — **no frontmatter**, body is a directory listing grouped under headings.
+- Use indexes for progressive disclosure: let a consumer see what's available before opening individual docs.
+
+### Citations (OKF §8)
+
+When a doc's body makes claims sourced from external material, list them under a `# Citations` heading at the bottom, numbered: `[1] [source](url)`.
+
+### Dedup — search before creating
+
+Before producing a new artifact, search existing docs first — do not blindly create. Grep the `{DOCS_ROOT}` frontmatter for the same `type` + `domain` (e.g. `rg -l "^type: adr" docs/ | xargs rg -l "^domain: catalog"`). If a matching doc exists, **update it** (bump `timestamp`, append/supersede) instead of writing a second one. This is how the toolkit keeps agents from proliferating near-duplicate documents. When you do write one, fill the frontmatter honestly — `type`/`domain`/`tags` are what the next agent filters on.
 
 ## Rigid vs. flexible skills
 

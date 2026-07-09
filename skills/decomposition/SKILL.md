@@ -7,6 +7,8 @@ description: Break approved scope into work units at the right granularity — e
 
 Decomposition turns approved scope into work units across three levels of granularity: **epics → stories → sprints**. (The next level down — stories into tasks and code — is the developer's job; see the `dev` skill.)
 
+**Input priority.** Decomposition cuts better when it cuts against concrete specs, not just the architecture document. If `unit-writing` docs exist for the scope being decomposed (per-module / per-domain specs under `{DOCS_ROOT}/architecture/{type}/{name}/`), **read them first** — they carry the API contracts, data shapes, and event schemas that stories must implement against. Each story's Required Reading then points at the specific unit doc rather than re-deriving the contract. If unit docs do not yet exist for a MEDIUM+ project, surface the gap to the architecture role before cutting stories against guesses.
+
 Two things make decomposition good, and both matter equally:
 
 1. **Cut at the right size.** Each unit must deliver a coherent slice of value, not a layer or a fragment.
