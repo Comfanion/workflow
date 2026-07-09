@@ -75,6 +75,8 @@ Give direction, not a solution: pattern references, signatures, the error approa
 
 After each batch, hit a **sync point**: verify the files compile together, the interfaces line up, and all tests pass. If a sync fails, fix it (up to two attempts) before moving on; if it still fails, stop and report rather than building on a broken base. Mark finished tasks done in the story file and your task tracker, and write each task's output to the files named in its instruction.
 
+The sync point is the **integration gate** the orchestrator checks before transitioning a story from `in_progress` to `review` (see `FLOW.yaml#testing.gate`). A non-green sync means the story cannot leave `in_progress` — there is no "almost green" or "should pass after review". The commands you run at the sync point (typically `make build && make test`, or the project's equivalent) and their output are the evidence the orchestrator reads; without that evidence, the transition is blocked. This is the same `verification-before-completion` discipline, applied to the story-as-a-unit rather than to a single claim.
+
 ### 4. Review before done
 
 Status flows `in_progress → review → done`. Never jump straight to done — review is where the security and quality bar is enforced.

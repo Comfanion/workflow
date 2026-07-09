@@ -269,6 +269,23 @@ pipeline:
         output:
           - "{DOCS_ROOT}/test/..."
           - "{DOCS_ROOT}/validation/test-report-*.md"
+      validation:
+        skill: test-execution
+        checklist: skills/test-execution/references/template.md
+        required: true
+        rules:
+          - Build command exits 0 (the codebase compiles/links as a unit)
+          - Full test suite exits 0 (no failures, no skips without stated reason)
+          - Every story acceptance criterion traces to a passing case
+      gate:
+        type: integration
+        hard: true
+        description: >
+          HARD integration gate. No story moves to review with a non-green build
+          or test suite. "Compiles on my machine" and "tests should pass now" are
+          not evidence — run the commands, read the output, attach it to the test
+          report. The dev role's sync point (see skills/dev/SKILL.md) must clear
+          before the orchestrator transitions a story from in_progress to review.
       next: review
 
     - id: review

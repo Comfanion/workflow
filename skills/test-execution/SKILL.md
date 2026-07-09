@@ -58,6 +58,17 @@ PASS means: every in-scope case ran, no open Critical/Major defects, and every a
 
 Write the report to `{DOCS_ROOT}/validation/test-report-<date>.md` (`{DOCS_ROOT}` defaults to `docs/` at the project root; honor the project's configured docs location if one is set). Use the structure in `references/template.md` (load when writing the report): it carries the run summary, the per-case result table, the defect entries, the coverage view, and the verdict block.
 
+## Integration gate — the build-and-suite check before review
+
+Before a story can move to `review`, two checks must produce green output, observed in the current turn:
+
+1. **Build command exits 0** — the codebase compiles and links as a unit (typically `make build`, or the project's equivalent). A build that succeeds for individual files but fails when wired together is a FAIL — "the code is not connected" is the failure mode this gate exists to catch.
+2. **Full test suite exits 0** — no failures, and no skips without a stated reason.
+
+Quote the actual command output in the test report. "It should build now" and "tests probably pass" are not evidence — they are the same rationalizations `verification-before-completion` exists to stop. The orchestrator reads this evidence before transitioning the story; without it, the story stays in `in_progress`.
+
+This gate is **upstream of the QA PASS/FAIL verdict** — it answers "is the code wired and green?" before the QA verdict answers "does it meet the acceptance criteria?". A story can clear the integration gate and still FAIL the QA verdict (a passing suite that does not yet cover a criterion); it cannot clear the QA verdict without first clearing the integration gate.
+
 ## Quality bar
 
 Before issuing the verdict:
