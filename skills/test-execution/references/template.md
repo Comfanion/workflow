@@ -5,7 +5,7 @@ description: {{one line — what this run validated and the verdict}}
 domain: {{feature/domain under test}}         # dedup axis: group reports by feature
 status: draft                                 # draft | approved | deprecated | superseded
 tags: [{{tag}}, {{tag}}]                       # free-form filter labels
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 related: []                                    # cross-links; e.g. the scenarios doc
 ---
 

@@ -6,7 +6,7 @@ domain: platform                              # dedup axis: one platform-infrast
 status: draft                                 # draft | approved | deprecated | superseded
 tags: [{{tag}}, {{tag}}]                       # free-form filter labels
 version: 0.1
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 related: []                                    # cross-links; prevents orphan duplicates
 ---
 

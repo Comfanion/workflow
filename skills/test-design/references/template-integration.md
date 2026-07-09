@@ -5,7 +5,7 @@ description: {{one line — the integration surface these tests cover}}
 domain: {{system/domain}}                      # dedup axis: one integration test-design per system
 status: draft                                 # draft | approved | deprecated | superseded
 tags: [testing, integration, test-design]     # free-form filter labels
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 author: {{author}}
 related: [docs/architecture.md]                # cross-links; prevents orphan duplicates
 ---

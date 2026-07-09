@@ -5,7 +5,7 @@ description: {{one line — the PRD whose FRs this doc makes testable}}
 domain: {{product/domain name}}               # dedup axis: one acceptance-criteria doc per PRD
 status: draft                                 # draft | approved | deprecated | superseded
 tags: [{{tag}}, {{tag}}]                       # free-form filter labels
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 author: {{author}}
 related: [docs/prd.md]                         # cross-links; prevents orphan duplicates
 ---

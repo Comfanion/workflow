@@ -6,7 +6,7 @@ domain: testing                               # dedup axis: one standard per sub
 status: draft                                 # draft | approved | deprecated | superseded
 tags: [testing, conventions]                  # free-form filter labels
 version: 1.0
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 related: []                                    # cross-links; sibling standards under docs/standards/
 ---
 

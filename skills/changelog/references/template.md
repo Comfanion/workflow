@@ -5,7 +5,7 @@ description: Notable changes to this project, Keep a Changelog format.
 domain: {{project/domain name}}               # dedup axis: one changelog per project
 status: approved                              # draft | approved | deprecated | superseded
 tags: [changelog]                             # free-form filter labels
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 related: []                                    # cross-links; prevents orphan duplicates
 ---
 

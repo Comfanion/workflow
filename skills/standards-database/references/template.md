@@ -5,7 +5,7 @@ description: Schema naming, migrations, and query patterns.
 domain: database                              # dedup axis: one standard per subject
 status: draft                                 # draft | approved | deprecated | superseded
 tags: [database, conventions]                 # free-form filter labels
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 related: []                                    # cross-links; sibling standards under docs/standards/
 ---
 

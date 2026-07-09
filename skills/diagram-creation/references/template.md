@@ -14,7 +14,7 @@ description: {{one line — what this diagram shows}}
 domain: {{domain/module the diagram covers}}  # dedup axis: find existing diagrams in this domain
 status: draft                                 # draft | approved | deprecated | superseded
 tags: [c4, sequence, erd, ...]                # diagram kind + subject labels
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 related: []                                    # cross-links; e.g. the architecture doc
 ---
 ```

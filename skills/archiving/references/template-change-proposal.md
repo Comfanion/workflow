@@ -6,7 +6,7 @@ domain: {{domain/module affected}}            # dedup axis: find related proposa
 status: draft                                 # draft | review | approved | rejected | merged
 tags: [{{tag}}, {{tag}}]                       # free-form filter labels
 id: CP-NNN
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 author: {{author}}
 related: []                                    # cross-links; e.g. the doc/ADR it amends
 ---

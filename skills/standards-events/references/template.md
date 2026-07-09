@@ -6,7 +6,7 @@ domain: events                                # dedup axis: one standard per sub
 status: draft                                 # draft | approved | deprecated | superseded
 tags: [events, messaging, conventions]        # free-form filter labels
 version: {{version}}
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 related: [{{architecture / spec / ticket / related-doc links}}]   # cross-links
 ---
 

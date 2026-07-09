@@ -7,7 +7,7 @@ status: draft                                 # draft | approved | deprecated | 
 tags: [{{tag}}, {{tag}}]                       # free-form filter labels (e.g. catalog, payments)
 id: ARCH-001
 version: 1.0
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 related: [docs/prd.md, docs/architecture.md]  # cross-links; surfaces siblings, prevents orphan duplicates
 ---
 

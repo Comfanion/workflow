@@ -6,7 +6,7 @@ domain: {{domain/module the decision affects}}   # dedup axis: find prior ADRs i
 status: proposed                              # proposed | accepted | deprecated | superseded
 tags: [{{tag}}, {{tag}}]                       # free-form filter labels
 id: ADR-{{N}}
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 deciders: [{{names}}]
 supersedes: ADR-{{X}}                          # if applicable
 related: []                                    # cross-links; prevents orphan duplicates

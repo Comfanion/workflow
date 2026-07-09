@@ -5,7 +5,7 @@ description: Performance budgets, hot paths, and anti-patterns.
 domain: performance                           # dedup axis: one standard per subject
 status: draft                                 # draft | approved | deprecated | superseded
 tags: [performance, conventions]              # free-form filter labels
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 related: []                                    # cross-links; sibling standards under docs/standards/
 ---
 

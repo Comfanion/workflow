@@ -5,7 +5,7 @@ description: {{one line — this service's position in the platform infra}}
 domain: {{service/domain name}}               # dedup axis: one deployment doc per service
 status: draft                                 # draft | approved | deprecated | superseded
 tags: [{{tag}}, {{tag}}]                       # free-form filter labels
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 last_reviewed: {{YYYY-MM-DD}}
 review_due: {{YYYY-MM-DD + 3 months}}
 owner: {{team}}

@@ -5,7 +5,7 @@ description: Living backlog of conscious shortcuts and their payoff triggers.
 domain: temporary-decisions                   # dedup axis: one ledger per project
 status: draft                                 # draft | approved | deprecated | superseded
 tags: [tech-debt, ledger]                     # free-form filter labels
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 related: []                                    # cross-links; sibling standards under docs/standards/
 ---
 

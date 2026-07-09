@@ -7,7 +7,7 @@ status: draft                                 # draft | approved | deprecated | 
 tags: [{{tag}}, {{tag}}]                       # free-form filter labels
 id: SYS-ARCH-001
 version: 1.0
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 related: [docs/prd.md]                        # cross-links; prevents orphan duplicates
 ---
 

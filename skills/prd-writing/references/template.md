@@ -7,7 +7,7 @@ status: draft                                 # draft | approved | deprecated | 
 tags: [{{tag}}, {{tag}}]                       # free-form filter labels
 id: PRD-001
 version: 1.0
-updated: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
+timestamp: {{YYYY-MM-DDThh:mmZ}}                 # OKF timestamp — last meaningful change
 author: {{author}}
 related: []                                    # cross-links; prevents orphan duplicates
 ---
