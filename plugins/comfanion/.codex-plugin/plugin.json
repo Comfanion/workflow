@@ -8,13 +8,5 @@
   "homepage": "https://github.com/Comfanion/workflow",
   "repository": "https://github.com/Comfanion/workflow",
   "license": "MIT",
-  "keywords": [
-    "skills",
-    "agents",
-    "workflow",
-    "architecture",
-    "orchestration",
-    "agentic-development"
-  ],
   "hooks": "./hooks/hooks.json"
 }
