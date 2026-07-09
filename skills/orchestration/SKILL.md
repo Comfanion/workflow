@@ -13,6 +13,7 @@ This skill is the entry point. It establishes the principles that apply no matte
 
 These come from a hard-won observation: orchestration succeeds or fails on how well you construct each agent's task, not on the agent's cleverness.
 
+- **Read `project-state.yaml` before dispatching.** The state file at `{DOCS_ROOT}/project-state.yaml` is the single source of truth for where the project is and what is in flight. Read it first; dispatch from there. Update it on every phase transition and every story status change.
 - **Agents do not inherit your context — construct exactly what each one needs.** A dispatched agent starts fresh. Give it the precise scope, the relevant facts, the files/sections to read, and the expected output. Don't make it read your whole plan or reconstruct your reasoning. This keeps it focused *and* preserves your own context for coordination.
 - **Work is not done until it is reviewed.** Build a review gate into the flow (spec compliance, then quality). An agent reporting "done" is a claim, not a verdict.
 - **Use the least powerful model that can do the task.** Mechanical, well-specified work → a fast cheap model. Integration/judgment → standard. Architecture/design/review → the most capable. This conserves cost and time without lowering the ceiling where it matters.

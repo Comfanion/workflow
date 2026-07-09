@@ -1,0 +1,35 @@
+project: comfanion
+current_phase: research  # active research/planning phase on the toolkit itself
+phase_started: 2026-07-09
+size: MEDIUM
+
+prd_ref: null  # toolkit has no PRD; ARCHITECTURE.md + README serve as the contract
+arch_ref: ARCHITECTURE.md
+standards_index: null  # toolkit authors standards; does not consume them
+
+active_work:
+  - id: enforcement-layer-phase-1
+    status: in_progress
+    blocked_on: null
+    summary: Persistent project-state primitive (this file) + skill updates — Variant A Phase 1 of the enforcement layer plan
+  - id: gemini-cli-support
+    status: in_progress
+    blocked_on: null
+    summary: gemini-extension.json + GEMINI.md created; README updated; pending end-to-end install test
+  - id: plugin-architecture-doc
+    status: done
+    blocked_on: null
+    summary: docs/plugin-architecture.md — cross-harness conventions reference
+
+open_decisions:
+  - id: enforcement-layer-phase-2
+    status: awaiting_human
+    summary: Build/integration gate (E2) — add validation block to FLOW.yaml testing phase
+    options: [start-now, defer-until-codex-hooks-verified]
+  - id: codex-plugin-cache-symlinks
+    status: awaiting_human
+    summary: Codex skips symlinks pointing outside plugin dir at install time; verify subdirectory plugin works end-to-end after hooks field fix
+    options: [test-on-codex, switch-to-self-contained-subdirectory]
+
+last_updated: 2026-07-09T00:00:00Z
+last_session: HOTL research + enforcement layer plan + Codex plugin hooks field fix + Gemini CLI extension support + cross-harness conventions documentation

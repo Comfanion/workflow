@@ -19,6 +19,18 @@ This ordering is absolute:
 
 A skill tells you *how* to do a thing well; it never overrides what the user asked for. "Add X" means add X — it does not license skipping the workflow that makes adding X correct, but it also does not let a skill countermand an explicit user choice.
 
+## Project state — read first
+
+At the start of every session, before responding, check whether `{DOCS_ROOT}/project-state.yaml` exists (default `docs/project-state.yaml`). If it does:
+
+1. **Read it.** It is the single source of truth for where the project is.
+2. **Resume from there**, not from scratch. The `current_phase`, `active_work`, and `open_decisions` fields tell you what is in flight and what is blocked.
+3. **Update it on every transition** — when a phase advances, a story's status changes, a decision is made, or a session ends. Stale state defeats the purpose.
+
+If `project-state.yaml` does not exist, copy `skills/using-comfanion/references/project-state.template.yaml` into `{DOCS_ROOT}/project-state.yaml` at the start of the first session and fill in the project name. From then on, it is the resume point.
+
+Template fields and values are documented inline in the template file.
+
 ## The rule
 
 ```
