@@ -8,27 +8,32 @@ arch_ref: ARCHITECTURE.md
 standards_index: null  # toolkit authors standards; does not consume them
 
 active_work:
-  - id: enforcement-layer-phase-1
-    status: in_progress
+  - id: enforcement-layer-phase-3
+    status: done
     blocked_on: null
-    summary: Persistent project-state primitive (this file) + skill updates — Variant A Phase 1 of the enforcement layer plan
+    summary: External enforcement — .githooks/pre-commit (YAML/JSON + plugin structure) + .github/workflows/enforce.yml + scripts/verify-plugin-structure.sh + docs/enforcement.md
+  - id: enforcement-layer-phase-4
+    status: done
+    blocked_on: null
+    summary: Protected-path policy — protected.yaml (7 protected ids) + protected-unlocks.md (override log) + using-comfanion/orchestration skill updates
   - id: gemini-cli-support
-    status: in_progress
+    status: done
     blocked_on: null
-    summary: gemini-extension.json + GEMINI.md created; README updated; pending end-to-end install test
+    summary: gemini-extension.json + GEMINI.md + README install section; verified end-to-end on Codex (COMFANION_LOADED)
   - id: plugin-architecture-doc
     status: done
     blocked_on: null
     summary: docs/plugin-architecture.md — cross-harness conventions reference
 
 open_decisions:
-  - id: enforcement-layer-phase-2
+  - id: enforcement-layer-phase-5
     status: awaiting_human
-    summary: Build/integration gate (E2) — add validation block to FLOW.yaml testing phase
-    options: [start-now, defer-until-codex-hooks-verified]
-  - id: codex-plugin-cache-symlinks
-    status: resolved
-    summary: Codex resolves symlinks via marketplace path at runtime (cache stores only manifests); subdirectory plugin + symlinks works end-to-end. Verified with codex exec test.
+    summary: Multi-model routing policy — docs/factory/model-routing.yaml for Claude/Codex/GLM/MiniMax slot assignment
+    options: [start-now, defer]
+  - id: push-accumulated-commits
+    status: awaiting_human
+    summary: 13 local commits ahead of old-private/main; awaiting user decision to push
+    options: [push-now, hold]
 
 last_updated: 2026-07-09T00:00:00Z
-last_session: HOTL research + enforcement layer plan + Codex plugin hooks field fix + Gemini CLI extension support + cross-harness conventions documentation
+last_session: HOTL research → enforcement layer P1-P4 (state file, integration gate, CI/hooks, protected paths) + Gemini CLI extension support + cross-harness conventions doc + Codex end-to-end test (passed)

@@ -31,6 +31,16 @@ If `project-state.yaml` does not exist, copy `project-state.template.yaml` (also
 
 The state file lives at the **root**, not under `{DOCS_ROOT}` — it is a workflow control file like `FLOW.yaml`, not a pipeline output. Template fields and values are documented inline in the template.
 
+## Protected paths — do not verbally override
+
+`protected.yaml` at the repo root declares decisions and paths that cannot be skipped by a verbal user instruction. When the user asks to bypass, skip, or ignore something that matches a `protected.yaml` entry:
+
+1. **Refuse** silently proceeding.
+2. **State the protection** — *"That is protected under `<id>`: `<reason>`. To override, add an entry to `protected-unlocks.md` with date, protected id, reason, author, and expiry."*
+3. **Read `protected-unlocks.md`.** If a matching entry exists, proceed. If not, do not proceed — wait for the user to add one.
+
+This is the policy-as-code layer above the skills: even when a skill's discipline could be skipped by user instruction (priority rule 1 — user instructions outrank skills), the protected-path policy outranks the user's verbal request. The user can still override — but only by writing the unlock entry, not by saying "skip it". See `docs/enforcement.md` for the full mechanism.
+
 ## The rule
 
 ```

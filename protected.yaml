@@ -1,0 +1,79 @@
+# Protected Paths Policy
+#
+# Declares paths and decisions that cannot be overridden verbally. The agent
+# must refuse a verbal "skip X" if X matches an entry below, and require an
+# explicit unlock entry in protected-unlocks.md (date + protected id + reason +
+# author + expiry). See docs/enforcement.md for the full mechanism.
+#
+# Each entry:
+#   id       — stable identifier used by protected-unlocks.md
+#   path     — what is protected (file path, optionally with #section)
+#   reason   — the cost of an unauthorized override
+#   override — how to legitimately unlock; what evidence the unlock entry must carry
+#
+# Long-text fields use YAML block scalars (>- ) to avoid quote-escaping issues.
+
+protected:
+  - id: deploy-gate
+    path: FLOW.yaml#deploy
+    reason: >-
+      Production deploy is irreversible. Explicit human confirmation AND green
+      checks (tests, review, QA) are required before ship.
+    override: >-
+      Requires entry in protected-unlocks.md with reason, author, and explicit
+      deploy-approved wording. No verbal override accepted.
+
+  - id: integration-gate
+    path: FLOW.yaml#testing.gate
+    reason: >-
+      Build and full test suite must be green before a story transitions
+      in_progress to review. Skipping this is the root cause of code-not-wired
+      and didn-t-finish-testing failures.
+    override: >-
+      Requires entry in protected-unlocks.md with reason; only for documented
+      temporary exceptions (e.g. infra down). Expiry mandatory.
+
+  - id: security-review
+    path: skills/review-security
+    reason: >-
+      Security findings block merge by default. review-security is a rigid
+      skill with an Iron Law.
+    override: >-
+      Requires an ADR under docs/architecture/adr/ documenting the accepted
+      risk, referenced from protected-unlocks.md.
+
+  - id: skip-architecture
+    path: FLOW.yaml#architecture
+    reason: >-
+      Skipping architecture produces uncoordinated downstream code;
+      multi-month lock-in decisions get made ad-hoc during implementation.
+    override: >-
+      Requires explicit /skip-architecture command from the user AND a
+      protected-unlocks.md entry with reason. Architectural decisions still
+      need an ADR.
+
+  - id: verification-before-completion
+    path: skills/verification-before-completion
+    reason: >-
+      The no-completion-claim-without-fresh-evidence rule is the toolkit-s
+      Iron Law. Skipping it lets false done-claims propagate downstream.
+    override: >-
+      None for code claims. For genuine environment limitations (no test
+      runner available), state the gap honestly and downgrade the claim — do
+      not silently skip.
+
+  - id: protected-paths-file
+    path: protected.yaml
+    reason: >-
+      This policy itself. Silently weakening it defeats P4.
+    override: >-
+      Requires PR review with explicit approval from a human maintainer.
+
+  - id: project-state-freshness
+    path: project-state.yaml
+    reason: >-
+      Stale project state defeats the cross-session memory primitive (P1).
+      Each transition must update it.
+    override: >-
+      Tolerated up to 7 days stale; older requires a protected-unlocks.md
+      entry explaining the gap.

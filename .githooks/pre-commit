@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# Comfanion pre-commit hook.
+# Install once per clone:   git config core.hooksPath .githooks
+# Or globally for all comfanion-using repos:
+#   git config --global core.hooksPath '~/.githooks'  (then symlink this file in)
+#
+# What it checks:
+#   - YAML syntax for staged *.yaml / *.yml
+#   - JSON syntax for staged *.json
+#   - Plugin structure integrity (when plugin-related files are staged)
+#
+# Failures block the commit. Fix the file, re-stage, retry.
+# NOTE: no `set -u` — bash 3.2 (macOS default) treats empty arrays as unbound
+# under -u, which would crash the hook before it can report real errors.
+set -eo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+# Collect staged files (added/copied/modified only — not deleted)
+# Portable across bash 3.2 (macOS default) and bash 4+ — no mapfile.
+staged=()
+while IFS= read -r line; do
+  [[ -n "$line" ]] && staged+=("$line")
+done < <(git diff --cached --name-only --diff-filter=ACM)
+
+if [ ${#staged[@]} -eq 0 ]; then
+  echo "Pre-commit: nothing to check."
+  exit 0
+fi
+
+yaml_files=()
+json_files=()
+plugin_touched=false
+for f in "${staged[@]}"; do
+  case "$f" in
+    *.yaml|*.yml) yaml_files+=("$f") ;;
+    *.json)       json_files+=("$f") ;;
+  esac
+  if [[ "$f" =~ ^(\.claude-plugin|\.codex-plugin|gemini-extension\.json|GEMINI\.md|hooks/|plugins/comfanion|project-state|FLOW\.yaml|protected) ]]; then
+    plugin_touched=true
+  fi
+done
+
+errors=0
+
+# --- YAML syntax ---
+for f in "${yaml_files[@]}"; do
+  [[ -z "$f" ]] && continue
+  if python3 -c "import yaml,sys; yaml.safe_load(open(sys.argv[1]))" "$f" 2>/dev/null; then
+    echo "  ✓ $f (yaml)"
+  else
+    echo "  ✗ $f — invalid YAML" >&2
+    python3 -c "import yaml,sys; yaml.safe_load(open(sys.argv[1]))" "$f" >&2 || true
+    errors=$((errors + 1))
+  fi
+done
+
+# --- JSON syntax ---
+for f in "${json_files[@]}"; do
+  [[ -z "$f" ]] && continue
+  if python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f" 2>/dev/null; then
+    echo "  ✓ $f (json)"
+  else
+    echo "  ✗ $f — invalid JSON" >&2
+    python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f" >&2 || true
+    errors=$((errors + 1))
+  fi
+done
+
+# --- Plugin structure integrity ---
+if $plugin_touched && [[ -f scripts/verify-plugin-structure.sh ]]; then
+  echo "Plugin-related files changed — running structure verification..."
+  if bash scripts/verify-plugin-structure.sh >&2; then
+    echo "  ✓ plugin structure"
+  else
+    errors=$((errors + 1))
+  fi
+fi
+
+if (( errors > 0 )); then
+  echo "" >&2
+  echo "Pre-commit FAILED: $errors problem(s). Fix and re-stage." >&2
+  exit 1
+fi
+
+echo "Pre-commit OK."

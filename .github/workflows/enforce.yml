@@ -1,0 +1,72 @@
+name: enforce
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: YAML syntax
+        run: |
+          set -e
+          fail=0
+          while IFS= read -r f; do
+            if ! python3 -c "import yaml,sys; yaml.safe_load(open(sys.argv[1]))" "$f" 2>/dev/null; then
+              echo "::error file=$f::invalid YAML"
+              python3 -c "import yaml,sys; yaml.safe_load(open(sys.argv[1]))" "$f" || true
+              fail=1
+            else
+              echo "OK: $f"
+            fi
+          done < <(find . -name '*.yaml' -o -name '*.yml' | grep -v './.git/')
+          exit $fail
+
+      - name: JSON syntax
+        run: |
+          set -e
+          fail=0
+          while IFS= read -r f; do
+            if ! python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f" 2>/dev/null; then
+              echo "::error file=$f::invalid JSON"
+              python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f" || true
+              fail=1
+            else
+              echo "OK: $f"
+            fi
+          done < <(find . -name '*.json' | grep -v './.git/')
+          exit $fail
+
+      - name: Plugin structure integrity
+        run: |
+          chmod +x scripts/verify-plugin-structure.sh
+          bash scripts/verify-plugin-structure.sh
+
+      - name: Protected-path policy sanity
+        run: |
+          # Ensure every protected entry has a non-empty reason and override field
+          python3 - <<'PY'
+          import yaml, sys
+          with open('protected.yaml') as f:
+              data = yaml.safe_load(f)
+          entries = data.get('protected', [])
+          if not entries:
+              print("::warning::protected.yaml has no entries")
+              sys.exit(0)
+          errors = 0
+          for e in entries:
+              for field in ('id', 'path', 'reason', 'override'):
+                  if not e.get(field):
+                      print(f"::error file=protected.yaml::entry missing '{field}': {e}")
+                      errors += 1
+          print(f"checked {len(entries)} protected entries, {errors} error(s)")
+          sys.exit(1 if errors else 0)
+          PY
