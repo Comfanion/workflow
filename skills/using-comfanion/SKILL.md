@@ -19,12 +19,6 @@ This ordering is absolute:
 
 A skill tells you *how* to do a thing well; it never overrides what the user asked for. "Add X" means add X — it does not license skipping the workflow that makes adding X correct, but it also does not let a skill countermand an explicit user choice.
 
-## Language — English only
-
-**All artifacts this toolkit produces — skill descriptions, docs, specs, ADRs, code comments, commit messages, project-state files — are English only. No Russian, no bilingual fields, no translations.** This applies regardless of the language the user converses in. The user may speak Russian in chat; the artifacts stay English. If asked to write a doc in Russian, refuse and produce English.
-
-This rule exists so the artifact corpus is grep-able, retrievable, and consistent across harnesses and downstream consumers.
-
 ## Project state — read first
 
 At the start of every session, before responding, check whether `project-state.yaml` exists at the **repository root** (same level as `FLOW.yaml`). If it does:
