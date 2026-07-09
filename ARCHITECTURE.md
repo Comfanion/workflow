@@ -1,10 +1,10 @@
 # Workflow Architecture
 
-A harness-neutral toolkit for AI-assisted software delivery, from research through
+A multi-harness toolkit for AI-assisted software delivery, from research through
 implementation and review. It packages two kinds of building blocks — **Agents** and
 **Skills** — that together produce a chain of documentation and code artifacts.
 
-The toolkit is harness-neutral: the same agents and skills are designed to run across
+The toolkit is multi-harness: the same agents and skills are designed to run across
 Claude Code, opencode, Codex, and Hermes. Packaging and invocation (how an agent or skill
 is surfaced to the user) are handled per-harness elsewhere; this document describes only
 the portable model.
@@ -217,7 +217,7 @@ coordination layer decides *who* runs *when* and whether the output is good enou
 The conducting agent enters through **`using-comfanion`** — the router that, at the start of
 a task, checks whether a skill applies and invokes it before improvising. On Claude Code an
 optional `SessionStart` hook (the toolkit's one harness-specific addition, under `hooks/`)
-surfaces that skill automatically; remove `hooks/` to run purely harness-neutral. Two craft
+surfaces that skill automatically; remove `hooks/` to run purely multi-harness. Two craft
 gates apply across every phase regardless of role: **`verification-before-completion`** (no
 completion claim without fresh evidence) and **`systematic-debugging`** (root cause before
 any fix). **`receiving-code-review`** governs the author's side of the review gate.
@@ -263,7 +263,7 @@ is no harness-specific prefix — packaging for a given harness is layered on el
     └── session-start            # Delete this dir to stay fully neutral.
 ```
 
-The skill/role library is harness-neutral Markdown. The only harness-specific piece is the
+The skill/role library is multi-harness Markdown. The only harness-specific piece is the
 optional `hooks/` directory: on Claude Code it injects the `using-comfanion` router at
 session start so the library is actually used rather than skipped. It is opt-in by presence —
 removing `hooks/` changes nothing about the skills themselves.

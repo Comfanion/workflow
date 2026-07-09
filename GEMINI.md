@@ -1,6 +1,6 @@
 # Comfanion Toolkit
 
-This project uses the **comfanion** toolkit — a harness-neutral skills library for
+This project uses the **comfanion** toolkit — a multi-harness skills library for
 running software projects with AI. The skills take a project from a rough idea
 through requirements, architecture, standards, decomposition, implementation,
 and review.

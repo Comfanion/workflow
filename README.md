@@ -1,6 +1,6 @@
 # Comfanion — Agentic Development Toolkit
 
-A harness-neutral **skills library** for running software projects with AI — reusable procedures that take a project from a rough idea through requirements, architecture, standards, decomposition, implementation, and review. The skills are the substance; agent roles are an optional layer on top that dispatches them.
+A multi-harness **skills library** for running software projects with AI — reusable procedures that take a project from a rough idea through requirements, architecture, standards, decomposition, implementation, and review. The skills are the substance; agent roles are an optional layer on top that dispatches them.
 
 It is deliberately lean: no MCP servers, just skills (and roles) in clean Markdown. The same content runs anywhere an agent can read skills — Claude Code, opencode, Codex, Hermes. The one harness-specific piece is optional: a Claude Code SessionStart hook (`hooks/`) that surfaces the `using-comfanion` router at session start; delete it to stay fully neutral.
 
