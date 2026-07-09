@@ -77,3 +77,12 @@ protected:
     override: >-
       Tolerated up to 7 days stale; older requires a protected-unlocks.md
       entry explaining the gap.
+
+  - id: english-only-artifacts
+    path: skills/using-comfanion/SKILL.md#language-english-only
+    reason: >-
+      All artifacts (skill descriptions, docs, specs, ADRs, code comments,
+      commit messages, project-state files) are English only. Bilingual
+      fields break grep, retrieval, and cross-harness consistency.
+    override: >-
+      None. The user may converse in Russian; artifacts stay English.
