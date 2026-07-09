@@ -98,6 +98,14 @@ One `skills/` source serves every harness; each gets a thin manifest pointing at
   hermes -p <role> skills install <tap>/<skill>
   ```
   Create the role profiles first with `templates/hermes/setup-team.sh`.
+- **Gemini CLI** — install the repo as an extension (manifest is `gemini-extension.json` at the root; `GEMINI.md` provides the entry-point context, equivalent to the SessionStart hook on Claude Code / Codex):
+  ```
+  gemini extensions install /path/to/comfanion
+  ```
+  Or from GitHub:
+  ```
+  gemini extensions install https://github.com/Comfanion/workflow
+  ```
 
 Skills describe **capabilities** ("search the codebase", "spawn a subagent") rather than naming a harness's tools — `docs/capability-map.md` maps each capability to the concrete tool per harness.
 
