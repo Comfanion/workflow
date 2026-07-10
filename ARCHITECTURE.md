@@ -173,7 +173,6 @@ does not bind any skill to a role.
 | `changelog` | Maintain a changelog |
 | `archiving` | Archive completed artifacts |
 | `doc-todo` | Track documentation TODOs |
-| `translation` | Translate documents |
 
 The orchestration skills are loaded by the **conducting / main agent** (the one you talk to),
 not by any role — see [Coordination Layer](#coordination-layer).

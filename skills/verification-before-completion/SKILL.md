@@ -52,7 +52,7 @@ The last row is the one most easily missed in this toolkit: a dispatched agent r
 If you catch any of these in your draft, you are about to claim without proof:
 
 - The words "should", "probably", "seems to", "looks like it works"
-- Satisfaction ahead of evidence — "Great!", "Perfect!", "Done!", "готово", "работает" — with no command output above it
+- Satisfaction ahead of evidence — "Great!", "Perfect!", "Done!", "Works!" — with no command output above it
 - About to commit / push / open a PR without a verification run in this turn
 - Trusting a subagent's success report instead of checking the diff
 - Leaning on a partial check ("the linter passed, so…")

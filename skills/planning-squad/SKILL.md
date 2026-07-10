@@ -1,6 +1,6 @@
 ---
 name: planning-squad
-description: Produce a decomposition (epic → stories → dev sub-tasks) by fanning out a parallel squad of specialist sub-agents — PO, architect, analyst, plus devops when deploys are in scope — and synthesizing their outputs into the decomposition templates, all inside your current session. Use whenever a scope needs planning with multiple perspectives, even if nobody says "squad" — decomposing a kanban task, breaking an epic into stories, planning a feature, or when the user says "decompose this", "plan this", "спланируй", "разбей на задачи". Dispatch mechanics live in orchestration-subagent; this skill defines WHO to spawn, WHAT each returns, and how to merge the results.
+description: Produce a decomposition (epic → stories → dev sub-tasks) by fanning out a parallel squad of specialist sub-agents — PO, architect, analyst, plus devops when deploys are in scope — and synthesizing their outputs into the decomposition templates, all inside your current session. Use whenever a scope needs planning with multiple perspectives, even if nobody says "squad" — decomposing a kanban task, breaking an epic into stories, planning a feature, or when the user says "decompose this", "plan this", "break this into tasks", "split this into work". Dispatch mechanics live in orchestration-subagent; this skill defines WHO to spawn, WHAT each returns, and how to merge the results.
 ---
 
 # Planning Squad

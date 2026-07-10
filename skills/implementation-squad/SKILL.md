@@ -1,6 +1,6 @@
 ---
 name: implementation-squad
-description: Decide who to dispatch and what can safely run in parallel when executing decomposed stories or tasks — the composition layer over orchestration-subagent's dispatch mechanics. Use whenever you pick up a story batch, an epic, or a set of failures and must choose between one implementer at a time and parallel lanes, or when the user says "parallelize this", "fan out the work", "run these stories together", "почему так медленно, запусти параллельно". This skill decides WHO runs and WHAT may overlap; the dispatch loop, review gates, and prompt templates live in orchestration-subagent.
+description: Decide who to dispatch and what can safely run in parallel when executing decomposed stories or tasks — the composition layer over orchestration-subagent's dispatch mechanics. Use whenever you pick up a story batch, an epic, or a set of failures and must choose between one implementer at a time and parallel lanes, or when the user says "parallelize this", "fan out the work", "run these stories together", "why is this so slow, run them in parallel". This skill decides WHO runs and WHAT may overlap; the dispatch loop, review gates, and prompt templates live in orchestration-subagent.
 ---
 
 # Implementation Squad

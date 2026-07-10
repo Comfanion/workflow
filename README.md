@@ -18,7 +18,7 @@ Skills are a single shared library under `skills/`. Each surfaces by task match 
 | **Review & verification** | The last gate before merge | `code-review` → `review-security/-correctness/-tests/-performance/-complexity`, `receiving-code-review`, `verification-before-completion` |
 | **Delivery & ops** | Where it runs and how it ships | `platform-infrastructure` (shared substrate), `service-deployment` (one service), `release-engineering` (release runbook + deploy gate) |
 | **Orchestration** | Run the work across roles | `orchestration` → `orchestration-subagent` / `orchestration-team`; `planning-squad`, `implementation-squad` |
-| **Cross-cutting** | Entry point and utilities | `using-comfanion` (the router), `changelog`, `doc-todo`, `archiving`, `translation` |
+| **Cross-cutting** | Entry point and utilities | `using-comfanion` (the router), `changelog`, `doc-todo`, `archiving` |
 
 Two rules cut through everything: the **architecture altitude ladder** (`system → service → unit` — keep landscape decisions out of a service's internals and vice-versa), and the **rigid craft skills** that each carry an Iron Law — `verification-before-completion` (no "done" without fresh evidence), `systematic-debugging` (root cause before any fix), `receiving-code-review` (act on feedback with rigor, not reflexive agreement).
 
@@ -111,4 +111,4 @@ Skills describe **capabilities** ("search the codebase", "spawn a subagent") rat
 
 ## Status
 
-57 skills, 13 agent roles. Harness-neutral and consistent. Verified loading on Claude Code and opencode; Codex installs as a subdirectory plugin (`installed, enabled`). Hermes packaging present (tap + profile setup).
+56 skills, 13 agent roles. Multi-harness and consistent. Verified loading on Claude Code and opencode; Codex installs as a subdirectory plugin (`installed, enabled`). Hermes packaging present (tap + profile setup).

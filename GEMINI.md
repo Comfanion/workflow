@@ -9,7 +9,7 @@ and review.
 
 Before responding to any task, **read `skills/using-comfanion/SKILL.md`** and
 follow it. That skill is the router for the entire library: it tells you when
-each of the 57 skills applies and how to invoke them.
+each of the 56 skills applies and how to invoke them.
 
 The rule, verbatim from `using-comfanion`:
 
