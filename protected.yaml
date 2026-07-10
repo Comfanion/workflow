@@ -3,7 +3,7 @@
 # Declares paths and decisions that cannot be overridden verbally. The agent
 # must refuse a verbal "skip X" if X matches an entry below, and require an
 # explicit unlock entry in protected-unlocks.md (date + protected id + reason +
-# author + expiry). See docs/enforcement.md for the full mechanism.
+# author + expiry). The full mechanism is defined inline in this file.
 #
 # Each entry:
 #   id       — stable identifier used by protected-unlocks.md

@@ -52,7 +52,6 @@ Treat both as non-negotiable.
 | Roles (viewpoints) | `agents/<role>.md` |
 | Per-skill procedure | `skills/<name>/SKILL.md` |
 | Per-skill templates | `skills/<name>/references/` |
-| Plugin conventions reference | `docs/plugin-architecture.md` |
 
 ## Cross-harness
 

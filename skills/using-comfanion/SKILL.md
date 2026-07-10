@@ -39,7 +39,7 @@ The state file lives at the **root**, not under `{DOCS_ROOT}` — it is a workfl
 2. **State the protection** — *"That is protected under `<id>`: `<reason>`. To override, add an entry to `protected-unlocks.md` with date, protected id, reason, author, and expiry."*
 3. **Read `protected-unlocks.md`.** If a matching entry exists, proceed. If not, do not proceed — wait for the user to add one.
 
-This is the policy-as-code layer above the skills: even when a skill's discipline could be skipped by user instruction (priority rule 1 — user instructions outrank skills), the protected-path policy outranks the user's verbal request. The user can still override — but only by writing the unlock entry, not by saying "skip it". See `docs/enforcement.md` for the full mechanism.
+This is the policy-as-code layer above the skills: even when a skill's discipline could be skipped by user instruction (priority rule 1 — user instructions outrank skills), the protected-path policy outranks the user's verbal request. The user can still override — but only by writing the unlock entry, not by saying "skip it". The full mechanism is defined inline in `protected.yaml`.
 
 ## The rule
 
@@ -104,8 +104,8 @@ A link from A to B asserts a relationship; the surrounding prose conveys the kin
 
 ### Index files (OKF §6)
 
-- `docs/index.md` is the **bundle root** — the ONLY `index.md` allowed to have frontmatter (must declare `okf_version: "0.1"`).
-- Any subdirectory of `docs/` MAY have its own `index.md` — **no frontmatter**, body is a directory listing grouped under headings.
+- When `{DOCS_ROOT}/index.md` exists at a project, it is the **bundle root** — the ONLY `index.md` allowed to have frontmatter (must declare `okf_version: "0.1"`).
+- Any subdirectory of `{DOCS_ROOT}/` MAY have its own `index.md` — **no frontmatter**, body is a directory listing grouped under headings.
 - Use indexes for progressive disclosure: let a consumer see what's available before opening individual docs.
 
 ### Citations (OKF §8)

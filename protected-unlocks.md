@@ -10,7 +10,7 @@ Every entry must include:
 - **Author** (who approved — must be a human; not the agent)
 - **Expiry** (`permanent`, or an ISO date for temporary overrides)
 
-The agent reads this file before proceeding with an override. If no matching entry exists, the agent refuses and asks for the entry to be added. See `docs/enforcement.md` for the full mechanism.
+The agent reads this file before proceeding with an override. If no matching entry exists, the agent refuses and asks for the entry to be added. The full mechanism is defined inline in `protected.yaml`.
 
 ## Entries
 

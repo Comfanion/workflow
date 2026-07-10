@@ -11,7 +11,7 @@ active_work:
   - id: enforcement-layer-phase-3
     status: done
     blocked_on: null
-    summary: External enforcement — .githooks/pre-commit (YAML/JSON + plugin structure) + .github/workflows/enforce.yml + scripts/verify-plugin-structure.sh + docs/enforcement.md
+    summary: External enforcement — .githooks/pre-commit (YAML/JSON + plugin structure) + .github/workflows/enforce.yml + scripts/verify-plugin-structure.sh
   - id: enforcement-layer-phase-4
     status: done
     blocked_on: null
@@ -23,7 +23,7 @@ active_work:
   - id: plugin-architecture-doc
     status: done
     blocked_on: null
-    summary: docs/plugin-architecture.md — cross-harness conventions reference
+    summary: Cross-harness conventions (Claude Code, Codex, Gemini CLI) — single-source plugin layout
 
 open_decisions:
   - id: enforcement-layer-phase-5
