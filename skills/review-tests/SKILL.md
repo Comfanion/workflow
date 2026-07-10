@@ -1,6 +1,6 @@
 ---
 name: review-tests
-description: Review the tests of a code change only — coverage of happy and error/edge paths, test quality, missing cases, fake or tautological assertions, shared-state ordering bugs, and whether the suite actually runs green. Use when running the test dimension of a code review, when the user says "review the tests", "is this tested", "check coverage", or when code-review dispatches the test pass. One focused lens — it does not judge production logic, security, or style; it returns test findings with a dimension verdict.
+description: Review the test side of a code change only — and distinguish this from running tests, planning a strategy, or writing cases. Use when the user says "review the tests", "review the test suite", "are the tests any good", "is this actually tested", "check test coverage", "are the edge/error paths tested", "are these assertions real", or when code-review dispatches its test dimension. It judges: happy vs error/edge coverage, missing cases for new behavior, fake/tautological assertions, shared-state and ordering bugs, and whether the suite actually runs green (it runs the suite as evidence, not as the deliverable). Do NOT use for running tests as a QA gate (that is `test-execution`); planning test strategy/levels (that is `test-design`); authoring concrete test cases (that is `test-scenarios`); or judging production logic, security, or style. One focused lens within a multi-dimension review — returns test findings with a TESTS verdict.
 ---
 
 # Review — Tests

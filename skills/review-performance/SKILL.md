@@ -1,6 +1,6 @@
 ---
 name: review-performance
-description: Review a code change for performance defects only — N+1 queries, hot-path allocations, inefficient queries/algorithms, blocking calls, unbounded work, and leaked resources. Use when running the performance dimension of a code review, when the user says "performance review", "is this slow", "check for N+1", or when code-review dispatches the performance pass. One focused lens — it does not judge security, style, or correctness; it returns performance findings with a dimension verdict.
+description: Review a code change for performance defects only — the performance dimension of a code review. Use when the user says "performance review", "perf pass", "is this slow", "will this scale", "too many queries", "check for N+1", "any allocation/blocking issues", or when code-review dispatches the performance pass. Finds: N+1 queries, hot-path allocations, inefficient queries/algorithms, blocking IO on latency paths, unbounded work, leaked resources — each cited at `file:line` with the cost and fix, severity pinned to whether the path is hot (per-request / core data path / user-visible latency). One focused lens: does NOT judge security, style, or correctness and does NOT author performance standards or budgets — for "what's our latency budget", "what counts as a hot path", or "add an anti-pattern to the standard", use `standards-performance` instead; this skill consumes that artifact. Returns performance findings with a PERFORMANCE: PASS | FINDINGS verdict.
 ---
 
 # Review — Performance
