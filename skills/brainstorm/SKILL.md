@@ -1,11 +1,6 @@
 ---
 name: brainstorm
-description: >
-  This skill should be used when the user asks to "brainstorm", "generate ideas",
-  "analyze problem", "find root cause", "run Five Whys", "empathy map", "journey map",
-  "HMW", "SCAMPER", "ideation session", or "problem analysis". Interactive facilitator
-  that conducts structured brainstorming sessions with idea generation, anti-bias pivoting,
-  organization, and prioritization. Produces a document with top ideas and action items.
+description: Use when the user wants to **actively ideate or facilitate a thinking session** — brainstorm ideas, generate options, run a structured technique (Five Whys, Fishbone, HMW, POV, JTBD, SCAMPER, Crazy 8s, Empathy Map, Journey Map, Problem Framing, Decision Matrix, Provotypes), analyze a fuzzy problem, find root causes collaboratively, or workshop an empty page. Also fires on softer intent phrasings: "help me think through", "let's explore options", "I'm stuck, need ideas", "let's generate some approaches". Acts as an interactive facilitator: sets up the session, picks a technique, generates ideas *with* the user, applies anti-bias pivoting, then organizes, clusters, and prioritizes into a document with top ideas and action items. Do NOT fire for: writing formal requirements/PRD/specs (use `requirements-gathering` — that consumes brainstorm output downstream); designing rigorous research studies, interview protocols, or methodology (use `research-methodology`); pure explanation/reference like "what is SCAMPER" with no intent to run a session; debugging a concrete code bug or incident (use debugging) — root-cause here means exploring a fuzzy *product/process* problem, not a stack trace.
 ---
 
 # Brainstorm — Interactive Ideation Facilitator

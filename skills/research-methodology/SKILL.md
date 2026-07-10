@@ -1,6 +1,6 @@
 ---
 name: research-methodology
-description: Conduct structured technical, market, domain, or competitive research and turn it into a cited, actionable report. Use whenever the user wants to investigate a technology choice, size a market, understand a business domain, map competitors, or asks to "research", "do a deep dive", "compare options", "evaluate", or "gather background" before requirements or design work begins. Produces a research report, not a decision — it feeds the people who decide.
+description: Run when the user wants to actually perform the research and produce a cited report — triggers like "research X", "do a deep dive", "compare options / technologies", "evaluate X against Y", "size the market", "map competitors", "understand the domain", or "gather background". Turns a question into a structured, cited report (technical, market, domain, or competitive) with findings and recommendations. Do NOT use this to scope or plan the investigation — that is `research-planning` ("plan the research", "run a spike", "what do we need to find out", "de-risk", "list open questions / unknowns", "prioritize spikes"). Do NOT use this to write requirements (PRD, user stories, acceptance criteria) or to make the final choice / write an ADR — this skill produces a report that feeds the people who decide, it does not decide. If the user has not yet decided what to investigate, or needs timeboxed spikes with exit criteria, route to `research-planning` instead.
 ---
 
 # Research Methodology

@@ -1,6 +1,6 @@
 ---
 name: acceptance-criteria
-description: Write testable acceptance criteria in Given/When/Then (Gherkin) format for stories, epics, and features, and produce the project-wide acceptance-criteria QA artifact that traces every functional requirement to its scenarios. Use whenever the user wants to define acceptance criteria, write test scenarios, build a coverage matrix, or mentions "acceptance criteria", "Given/When/Then", "Gherkin", "test scenarios", or "AC". Referenced by the PRD-writing and decomposition skills as the source of QA coverage.
+description: Author testable acceptance criteria in Given/When/Then (Gherkin) format and produce the project-wide acceptance-criteria QA artifact with its requirements-to-scenarios coverage matrix. Use when the user asks to *define* acceptance criteria, write Given/When/Then or Gherkin scenarios, enumerate ACs (AC1, AC2…) for a story/epic/feature, or build a requirements coverage matrix. Trigger phrases: "acceptance criteria", "Given/When/Then", "Gherkin", "AC1/AC2/AC3", "coverage matrix", "define done for this story", "QA coverage artifact". Do NOT use to author executable test cases, test code, or automated scenarios that *verify* the ACs — that is the `test-scenarios` skill. Do NOT use to attach ACs during epic/story decomposition, or to write the PRD itself — those are the `decomposition` and `prd-writing` skills; this skill is the QA-coverage source they reference, not the author of those artifacts.
 ---
 
 # Acceptance Criteria
