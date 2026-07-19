@@ -50,12 +50,13 @@ Before attempting any fix:
 1. **Write a failing test that reproduces the bug first** (red), in the codebase's test style. This is the same test-first discipline as `dev` — a fix with no test does not stick and invites the bug straight back.
 2. **Fix the root cause, one change.** No bundled refactor, no "while I'm here" extras.
 3. **Prove it** through the `verification-before-completion` gate: the new test passes (green), the original symptom is gone, and no other test broke. Run the commands; read the output.
+4. **Declare the doc impact** (`doc-impact`): the root cause you just named almost always says some document lied — architecture assumption, unrecorded shortcut, missing invariant. The fix is not complete until the verdict file exists; an explicit `none` is fine, silence is not.
 
 ## The 3-fix rule — when to stop and question the architecture
 
 Count your fix attempts. If three have failed, **stop** — do not attempt a fourth.
 
-Three failures, each revealing a new problem in a different place, or each requiring "massive refactoring", is not a run of bad luck. It is the signal that the architecture is wrong: the pattern is fundamentally unsound and you are sticking with it through inertia. This is not a failed hypothesis to retry — it is a design to reconsider. Raise it with the user before any further fix. (This mirrors the conventions' "a fix that returns was not a fix" — re-map the sources of truth from scratch, do not patch the symptom in a new place.)
+Three failures, each revealing a new problem in a different place, or each requiring "massive refactoring", is not a run of bad luck. It is the signal that the architecture is wrong: the pattern is fundamentally unsound and you are sticking with it through inertia. This is not a failed hypothesis to retry — it is a design to reconsider. Raise it with the user before any further fix; the architectural fix that follows is a `refactoring` job (planned, batched, behavior-preserving), not a fourth patch. (This mirrors the conventions' "a fix that returns was not a fix" — re-map the sources of truth from scratch, do not patch the symptom in a new place.)
 
 ## Red flags — stop and return to Phase 1
 
@@ -93,7 +94,9 @@ Cross-cutting — any role hits bugs and runs this when it does, most often the 
 
 ## Related
 
+- `incident-triage` — decides mitigate-vs-queue and hotfix-vs-story *before* this skill runs; in a live incident, triage first.
 - `verification-before-completion` — Phase 4's proof step is that gate applied to a fix.
+- `doc-impact` — Phase 4's closing step: declare which docs the root cause invalidated.
 - `dev` — shares the test-first discipline; debugging is what you do when the loop hits an unexpected failure.
 - `test-execution` — surfaces the failures this skill diagnoses.
 - `review-correctness` — a reviewer judging whether a fix addresses the cause or just the symptom.

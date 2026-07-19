@@ -9,7 +9,7 @@ and review.
 
 Before responding to any task, **read `skills/using-comfanion/SKILL.md`** and
 follow it. That skill is the router for the entire library: it tells you when
-each of the 56 skills applies and how to invoke them.
+each of the 63 skills applies and how to invoke them.
 
 The rule, verbatim from `using-comfanion`:
 
@@ -17,13 +17,18 @@ The rule, verbatim from `using-comfanion`:
 CHECK FOR AN APPLICABLE SKILL BEFORE RESPONDING — EVEN A 1% CHANCE MEANS CHECK
 ```
 
-## Pipeline
+## Flows
 
-Skills compose into a recommended flow (full map in `FLOW.yaml`):
+Skills compose into five flows (full map in `FLOW.yaml`; selection rules in
+`using-comfanion` §Choose the flow):
 
 ```
-research → requirements → prd → architecture → delivery-design → design
-       → decomposition → implementation → testing → review → deploy
+greenfield:   research → requirements → prd → architecture → delivery-design
+              → design → decomposition → implementation → testing → review → deploy
+bugfix:       intake → triage → diagnose → fix → verify → review → doc-impact → ship
+small-change: intake → impact → amend → implement → verify → review → doc-impact → ship
+onboarding:   adopt → archaeology → document → extract-standards → review → seed
+refactor:     scope → characterize → execute → verify → review → doc-impact → ship
 ```
 
 Each phase names the role that owns it and the skills it draws on. Phases are
@@ -48,7 +53,7 @@ Treat both as non-negotiable.
 |------|------|
 | Entry point / router | `skills/using-comfanion/SKILL.md` |
 | Full skill catalog | `ARCHITECTURE.md` |
-| Pipeline definition | `FLOW.yaml` |
+| Flow definitions | `FLOW.yaml` |
 | Roles (viewpoints) | `agents/<role>.md` |
 | Per-skill procedure | `skills/<name>/SKILL.md` |
 | Per-skill templates | `skills/<name>/references/` |

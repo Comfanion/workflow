@@ -37,6 +37,8 @@ Each artifact is authored through the cross-cutting discipline in `authoring-sta
 3. Write the decisions into `{DOCS_ROOT}/standards/README.md` as an index — what exists, what was intentionally skipped, and the trigger that would reopen the question.
 4. For each "needed" artifact, invoke the matching `standards-<topic>` authoring skill. Do not author content here; this skill only routes.
 
+**Brownfield:** for an existing codebase, run `standards-extraction` first — the repo already voted on its conventions. Author each topic from the ratified candidates in `{DOCS_ROOT}/standards/candidates.md`, not from scratch; extraction proposes, the topic author (via `authoring-standards`) decides.
+
 ## Index file format
 
 The `{DOCS_ROOT}/standards/README.md` is what `using-standards` reads first to discover which artifacts exist. Keep it short:
@@ -79,6 +81,7 @@ This skill is for whoever owns code quality on the project (tech lead, architect
 ## Related
 
 - `authoring-standards` — the cross-cutting discipline every `standards-<topic>` author obeys (single source, rules-only, cite the ADR, review before propagation).
+- `standards-extraction` — brownfield inlet: infers candidate conventions from existing code for ratification here.
 - `using-standards` — the consumer skill that loads relevant artifacts during design and implementation.
 - `coding-standards` (deprecated) — the previous single-skill version; superseded by this group.
 - `FLOW.yaml` — the pipeline phase where standards plug in (after architecture, before decomposition).

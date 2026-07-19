@@ -15,20 +15,22 @@
 
 protected:
   - id: deploy-gate
-    path: FLOW.yaml#deploy
+    path: FLOW.yaml#gates.deploy
     reason: >-
       Production deploy is irreversible. Explicit human confirmation AND green
-      checks (tests, review, QA) are required before ship.
+      checks (tests, review, QA) are required before ship. Covers the ship/deploy
+      phase of every flow (greenfield, bugfix, small-change, refactor).
     override: >-
       Requires entry in protected-unlocks.md with reason, author, and explicit
       deploy-approved wording. No verbal override accepted.
 
   - id: integration-gate
-    path: FLOW.yaml#testing.gate
+    path: FLOW.yaml#gates.integration
     reason: >-
       Build and full test suite must be green before a story transitions
       in_progress to review. Skipping this is the root cause of code-not-wired
-      and didn-t-finish-testing failures.
+      and didn-t-finish-testing failures. Covers the verify/testing phase of
+      every flow.
     override: >-
       Requires entry in protected-unlocks.md with reason; only for documented
       temporary exceptions (e.g. infra down). Expiry mandatory.
@@ -43,7 +45,7 @@ protected:
       risk, referenced from protected-unlocks.md.
 
   - id: skip-architecture
-    path: FLOW.yaml#architecture
+    path: FLOW.yaml#flows.greenfield.architecture
     reason: >-
       Skipping architecture produces uncoordinated downstream code;
       multi-month lock-in decisions get made ad-hoc during implementation.
@@ -77,3 +79,26 @@ protected:
     override: >-
       Tolerated up to 7 days stale; older requires a protected-unlocks.md
       entry explaining the gap.
+
+  - id: doc-impact
+    path: skills/doc-impact
+    reason: >-
+      Silent documentation rot is the failure mode the maintenance flows exist
+      to prevent. Every bugfix / small-change / refactor ends with a recorded
+      doc-impact verdict; an explicit `none` verdict in the artifact is the
+      sanctioned way to say nothing changed — skipping the phase is not.
+    override: >-
+      No unlock needed for a recorded `verdict: none`. Skipping the doc-impact
+      phase itself requires a protected-unlocks.md entry with reason and
+      expiry.
+
+  - id: small-change-escalation
+    path: FLOW.yaml#flows.small-change.impact
+    reason: >-
+      The escalation rule is what keeps architecture-level decisions from
+      being made silently inside a "small" change. Bypassing it recreates the
+      skip-architecture failure with less visibility.
+    override: >-
+      Requires a protected-unlocks.md entry AND an ADR under
+      docs/architecture/adr/ documenting the architectural decision taken
+      without entering the pipeline.

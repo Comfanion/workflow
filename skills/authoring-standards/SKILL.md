@@ -35,7 +35,7 @@ When a rule lives in more than one place: bring the unique content **into the ca
 
 ## Never invent
 
-Don't assert a rule the team hasn't agreed — a standard is a commitment every implementer inherits. A proposed-but-undecided rule ships as `Draft` and is raised for ratification, never as `Active`.
+Don't assert a rule the team hasn't agreed — a standard is a commitment every implementer inherits. A proposed-but-undecided rule ships as `Draft` and is raised for ratification, never as `Active`. Inferred candidates arrive the same way: `standards-extraction` delivers them as `Draft` proposals in `candidates.md`, and ratification here is what promotes a candidate into the standard.
 
 ## Related
 

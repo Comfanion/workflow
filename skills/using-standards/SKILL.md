@@ -111,6 +111,7 @@ This skill is for every implementing or reviewing role. It does not author stand
 ## Related
 
 - `standards` — umbrella router (which artifacts to author).
+- `standards-extraction` — its `candidates.md` is a proposal ledger, **not** consumable as rules here (provenance gate); only ratified `standards/<topic>.md` artifacts are.
 - `authoring-standards` — the authoring counterpart to this consumer skill: how each artifact is written (use it to fill a gap when a needed standard is absent).
 - `standards-coding`, `standards-testing`, `standards-security`, `standards-performance`, `standards-api`, `standards-database`, `standards-git`, `standards-temporary-decisions` — authoring siblings.
 - `dev`, `decomposition`, `review-*`, `system-architecture`, `service-architecture` — the consumer skills that invoke this.

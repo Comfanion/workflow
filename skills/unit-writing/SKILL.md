@@ -94,6 +94,8 @@ Reference other units by relative link with a short pointer, e.g. `[identity](..
 4. Write `index.md` first — overview, boundaries, diagram, navigation. It frames everything else.
 5. Add the supporting files the unit actually has — `data-model.md`, `api/`, `events/`. Don't create empty stubs for files the unit doesn't need.
 
+**Brownfield:** when onboarding an existing repo, start from the proposed unit list in the codebase survey (`codebase-archaeology`) rather than deriving units from a PRD; keep `provenance: inferred` on every unit doc until the onboarding review flips it.
+
 Load `references/templates/` when you start filling files — it carries the full section structure for each file type:
 
 - `references/templates/index.md` — unit overview and boundaries
