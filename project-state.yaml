@@ -8,6 +8,10 @@ arch_ref: ARCHITECTURE.md
 standards_index: null  # toolkit authors standards; does not consume them
 
 active_work:
+  - id: flows-v5
+    status: review  # built + structurally verified; pet-project end-to-end runs pending
+    blocked_on: user picks pet projects for bugfix/small-change, onboarding, refactor verification runs
+    summary: FLOW.yaml v5 (5 flows, shared gates) + 6 maintenance/adoption skills (incident-triage, doc-impact, amending-artifacts, codebase-archaeology, standards-extraction, refactoring)
   - id: enforcement-layer-phase-3
     status: done
     blocked_on: null
@@ -35,5 +39,5 @@ open_decisions:
     summary: 13 local commits ahead of old-private/main; awaiting user decision to push
     options: [push-now, hold]
 
-last_updated: 2026-07-09T00:00:00Z
-last_session: HOTL research → enforcement layer P1-P4 (state file, integration gate, CI/hooks, protected paths) + Gemini CLI extension support + cross-harness conventions doc + Codex end-to-end test (passed)
+last_updated: 2026-07-19T00:00:00Z
+last_session: FLOW v5 build — 5 flows + 6 skills authored, structure/YAML/semantic checks green, committed c03d066; business-architecture built then removed on user veto; pet-project verification runs pending
