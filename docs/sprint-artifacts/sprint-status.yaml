@@ -1,0 +1,44 @@
+# Sprint 01 — OSS Public Readiness
+#
+# Goal: take comfanion/workflow from "technically mature private repo" to
+# "legally publishable, contributor-ready public OSS repo" in one sprint.
+#
+# Per decomposition skill: a sprint completes one or more epics demo-ready.
+# Here, one epic (OSS-E1) — its acceptance criteria ARE the demo.
+
+sprint: sprint-01-oss-readiness
+goal: "Repo is legally publishable under MIT and structured for external contribution."
+demonstrable_increment: |
+  A visitor lands on the GitHub repo and sees: a detected MIT license, a LICENSE
+  file, README badges signaling CI green + license + version, a CONTRIBUTING.md
+  that teaches how to add a skill, a Code of Conduct and SECURITY policy,
+  structured issue/PR intake, a CHANGELOG showing release history. They can fork,
+  add a skill per CONTRIBUTING, and open a PR that passes CI without a maintainer
+  re-explaining the rules.
+capacity:
+  size: MEDIUM
+  epic_slots: 1
+definition_of_done:
+  - All epic OSS-E1 acceptance criteria met
+  - CI enforce.yml green on main
+  - No protected-path violations
+epics:
+  - id: OSS-E1
+    path: docs/sprint-artifacts/backlog/epic-01-oss-readiness.md
+    status: done
+    stories:
+      - { id: OSS-S01, file: docs/sprint-artifacts/sprint-01-oss-readiness/stories/story-01-license.md,                       size: XS, status: done,  flow: small-change }
+      - { id: OSS-S02, file: docs/sprint-artifacts/sprint-01-oss-readiness/stories/story-02-contributing.md,                   size: M,  status: done,  flow: small-change }
+      - { id: OSS-S03, file: docs/sprint-artifacts/sprint-01-oss-readiness/stories/story-03-conduct-security-attributes.md,     size: S,  status: done,  flow: small-change }
+      - { id: OSS-S04, file: docs/sprint-artifacts/sprint-01-oss-readiness/stories/story-04-contributor-templates.md,           size: S,  status: done,  flow: small-change }
+      - { id: OSS-S05, file: docs/sprint-artifacts/sprint-01-oss-readiness/stories/story-05-changelog-badges.md,               size: M,  status: done,  flow: small-change }
+
+# Execution plan (conductor's view):
+#   - S01 direct (LICENSE) — trivial canonical text
+#   - S02 subagent (CONTRIBUTING) — analytic; isolated context, grounded in samples
+#   - S03 direct (CoC/SECURITY/.gitattributes) — canonical texts
+#   - S04 direct (issue/PR templates, CODEOWNERS, SUPPORT) — standard GitHub forms
+#   - S05 mixed: subagent for CHANGELOG (git-log retrospective) + direct for badges
+#
+# Parallelism: S02 (subagent) and S05-T1 (subagent) run concurrently with the
+# conductor's direct authoring of S01/S03/S04. They touch disjoint files.

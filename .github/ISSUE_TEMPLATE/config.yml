@@ -1,0 +1,11 @@
+# Default issue-template config.
+# Lets blank issues still be opened (for quick questions / housekeeping), and
+# surfaces contact links so reporters land in the right place.
+blank_issues_enabled: true
+contact_links:
+  - name: CONTRIBUTING.md
+    url: https://github.com/Comfanion/workflow/blob/main/CONTRIBUTING.md
+    about: Read this before opening a contribution — skill/role conventions, PR requirements.
+  - name: SECURITY.md
+    url: https://github.com/Comfanion/workflow/security/advisories/new
+    about: Found a security issue? Use a private advisory, NOT a public issue.

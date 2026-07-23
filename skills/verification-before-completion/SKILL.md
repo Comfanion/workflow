@@ -85,6 +85,7 @@ Cross-cutting — every authoring and executing role passes through this gate be
 ## Related
 
 - `systematic-debugging` — its final phase (verify the fix) is this gate applied to a bug.
+- `doc-impact` — a fix's completion claim includes its declared doc-impact verdict; a closed fix with no verdict file is not done.
 - `orchestration-subagent` — the dispatcher verifies a subagent's diff here rather than trusting its report.
 - `test-execution` — produces the test output that this gate reads for the "tests pass" claim.
 - `code-review` — a review verdict is a claim; it too rests on evidence (`path:line` findings), not impression.

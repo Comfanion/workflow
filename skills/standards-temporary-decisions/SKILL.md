@@ -99,6 +99,10 @@ This is what other skills do when they touch the ledger.
 **`verification-before-completion`:**
 - Before declaring a feature complete, check that no shortcut taken to reach completion was left without an entry.
 
+**`refactoring` — when planning and closing a refactor:**
+- Read the ledger for drivers: an `open` entry whose trigger has fired is the strongest motivation a refactor can name.
+- On completion, mark the paid-down entries `resolved` with the PR/commit reference.
+
 ## When a shortcut graduates to permanent
 
 If a `Trigger to revisit` fires and the team decides the shortcut is now the right answer:
@@ -131,6 +135,8 @@ If a `Trigger to revisit` fires and the team decides the shortcut is now the rig
 - `decomposition` — at every sprint planning (read).
 - `code-review` — at every change touching a shortcut (read + enforce).
 - `verification-before-completion` — at every completion claim (read).
+- `doc-impact` — routes `td-entry` actions here when a fix reveals an unrecorded shortcut (write).
+- `refactoring` — reads the ledger for drivers; marks paid-down entries resolved (read + write).
 - `archiving` — when entries are old enough to leave the live section.
 
 ## Roles

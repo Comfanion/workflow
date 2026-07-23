@@ -67,7 +67,7 @@ Default methodology is **TDD red-green-refactor**, in this spirit:
 
 - **RED — write one failing test first.** It states what the code *should* do, in the codebase's existing test style. Then run it and watch it fail. Why: a test you never saw fail proves nothing — it might test the wrong thing, test a mock instead of behavior, or pass by accident. Watching it fail for the *expected reason* (feature missing, not a typo) is what pins the behavior and proves the test has teeth. A test written after the code passes immediately and certifies nothing.
 - **GREEN — minimal code to pass.** Write the simplest thing that makes the test pass. No extra options, no speculative flags, no "while I'm here" features. Run the test; confirm it passes and nothing else broke, output clean.
-- **REFACTOR — clean up under green.** Remove duplication, improve names, extract helpers — without changing behavior and without adding any. Tests stay green throughout.
+- **REFACTOR — clean up under green.** Remove duplication, improve names, extract helpers — without changing behavior and without adding any. Tests stay green throughout. A refactor that outgrows the current story's tests and scope is not this step — stop and use `refactoring` (its own motivation, scope map, and batch plan).
 
 Use **STUB** instead only when a concrete interface must exist before the tests can compile (e.g. an implementation behind an interface other code already references): create the stub, write the tests against it, then fill it in. The test-first principle is unchanged; only the ordering of the type declaration moves.
 
@@ -75,7 +75,7 @@ Give direction, not a solution: pattern references, signatures, the error approa
 
 After each batch, hit a **sync point**: verify the files compile together, the interfaces line up, and all tests pass. If a sync fails, fix it (up to two attempts) before moving on; if it still fails, stop and report rather than building on a broken base. Mark finished tasks done in the story file and your task tracker, and write each task's output to the files named in its instruction.
 
-The sync point is the **integration gate** the orchestrator checks before transitioning a story from `in_progress` to `review` (see `FLOW.yaml#testing.gate`). A non-green sync means the story cannot leave `in_progress` — there is no "almost green" or "should pass after review". The commands you run at the sync point (typically `make build && make test`, or the project's equivalent) and their output are the evidence the orchestrator reads; without that evidence, the transition is blocked. This is the same `verification-before-completion` discipline, applied to the story-as-a-unit rather than to a single claim.
+The sync point is the **integration gate** the orchestrator checks before transitioning a story from `in_progress` to `review` (see `FLOW.yaml#gates.integration`). A non-green sync means the story cannot leave `in_progress` — there is no "almost green" or "should pass after review". The commands you run at the sync point (typically `make build && make test`, or the project's equivalent) and their output are the evidence the orchestrator reads; without that evidence, the transition is blocked. This is the same `verification-before-completion` discipline, applied to the story-as-a-unit rather than to a single claim.
 
 ### 4. Review before done
 

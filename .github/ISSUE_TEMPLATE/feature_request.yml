@@ -1,0 +1,61 @@
+name: 💡 Feature request
+description: Propose a new skill, role, flow change, or improvement.
+title: "[feat] "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. Before filing, skim [ARCHITECTURE.md](../../ARCHITECTURE.md)
+        and `skills/` to check whether something close already exists.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: What kind of contribution is this?
+      options:
+        - New skill
+        - New agent role
+        - Improvement to an existing skill/role
+        - Flow / FLOW.yaml change
+        - Multi-harness packaging
+        - Documentation
+        - Tooling / CI
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is currently hard, missing, or painful? Who hits it and when?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What you would expect to exist. Sketch a skill description or role mission if relevant.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches you weighed and why this one is better.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: I have read ARCHITECTURE.md and this fits the two-layer model (skills library + optional roles).
+          required: true
+        - label: This does not duplicate an existing skill or role.
+          required: true

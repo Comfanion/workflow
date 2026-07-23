@@ -9,19 +9,28 @@
 #
 # Fields:
 #   project         — project name (free text)
-#   current_phase   — one of FLOW.yaml phase ids (see values below)
+#   flow            — the primary thread's flow (a FLOW.yaml `flows:` key).
+#                     Absent = greenfield (backward compatible).
+#   current_phase   — a phase id of the flow above; valid values are
+#                     FLOW.yaml flows.<flow>.phases[].id — FLOW.yaml is the
+#                     single source, do not enumerate them here
 #   phase_started   — ISO date when the current phase began
 #   size            — project size from the PRD (TOY | SMALL | MEDIUM | LARGE)
 #   prd_ref         — path to PRD (relative to repo root)
 #   arch_ref        — path to architecture doc
 #   standards_index — path to standards index (or null if not yet authored)
-#   active_work     — list of epics/stories currently in flight
+#   active_work     — list of work items currently in flight. `flow` and
+#                     `current_phase` above describe the PRIMARY thread; a
+#                     concurrent item running a different flow carries its own
+#                     flow:/phase: inside its entry, and the project-level pair
+#                     is NOT updated for it.
 #   open_decisions  — list of decisions awaiting human input
 #   last_updated    — ISO timestamp of last meaningful change
 #   last_session    — short summary of what the last session accomplished
 
 project: <project-name>
-current_phase: research  # research | requirements | prd | architecture | delivery-design | design | decomposition | implementation | testing | review | deploy
+flow: greenfield  # greenfield | bugfix | small-change | onboarding | refactor
+current_phase: research
 phase_started: 2026-01-01
 size: SMALL  # TOY | SMALL | MEDIUM | LARGE
 
@@ -30,7 +39,9 @@ arch_ref: docs/architecture.md
 standards_index: docs/standards/INDEX.md  # null until authored
 
 active_work: []
-  # - id: <epic-or-story-id>
+  # - id: <epic/story/bug/change/refactor id>
+  #   flow: bugfix         # OPTIONAL — only when this item runs a different flow than the project-level `flow`
+  #   phase: verify        # OPTIONAL — this item's own position in its flow
   #   status: in_progress  # in_progress | review | done | blocked
   #   blocked_on: null     # text or null
 

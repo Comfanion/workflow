@@ -7,9 +7,15 @@
 # and Hermes; packaging/invocation is per-harness.
 
 name: workflow-pipeline
-version: "4.0"
+version: "5.0"
 description: |
-  Recommended end-to-end pipeline from research to implementation and review.
+  Five entry flows over one shared skill library. `flows:` maps a request class
+  to a phase sequence: `greenfield` is the full pipeline; `bugfix`,
+  `small-change`, `onboarding`, and `refactor` are the maintenance/adoption
+  flows. Phase ids are unique within a flow; a qualified reference is
+  <flow>.<phase> (e.g. bugfix.verify). Hard gates are defined once under
+  `gates:` and referenced by name from any flow. Flow selection rules live in
+  skills/using-comfanion ("Choose the flow").
 
   Model: Phases → Role that typically drives → Skills typically involved → Artifacts.
   - Role:       the viewpoint that typically drives the phase (a perspective, not a skill bundle).
@@ -23,313 +29,656 @@ description: |
   PRD to gauge size, which sets the depth of every downstream artifact
   (PRD, architecture, epics, stories).
 
+default_flow: greenfield
+
 # =============================================================================
-# PIPELINE
+# SHARED HARD GATES — referenced by name from phases (`gate: <id>`)
 # =============================================================================
-# research (opt) → requirements → prd → architecture → delivery-design (opt)
-#   → design → decomposition (epics/stories/sprints) → implementation → testing
-#   → review → deploy
-#
-# Delivery (devops) lens spans two points, like any role designs early and
-# executes late: delivery-design plans how it ships (CI/CD, environments,
-# rollback) right after architecture; deploy executes the ship at the end.
-# release-engineering is also cross-cutting — callable from architecture,
-# decomposition, and implementation wherever delivery concerns surface.
-#
-pipeline:
-  phases:
+gates:
+  integration:
+    type: integration
+    hard: true
+    description: >
+      HARD integration gate. No story moves to review with a non-green build
+      or test suite. "Compiles on my machine" and "tests should pass now" are
+      not evidence — run the commands, read the output, attach it to the test
+      report. The dev role's sync point (see skills/dev/SKILL.md) must clear
+      before the orchestrator transitions a story from in_progress to review.
+  deploy:
+    type: deploy
+    hard: true
+    description: >
+      HARD deploy gate. Ship only on explicit human confirmation AND green checks
+      (tests pass, review approved, QA gate cleared). Never deploy unprompted.
+  provenance:
+    type: provenance
+    hard: true
+    description: >
+      No phase may build on an input artifact whose frontmatter carries
+      provenance: inferred. Require provenance: inferred-reviewed or authored
+      (absent = authored); to clear, complete the onboarding review for that
+      artifact. The bugfix flow is exempt at diagnose/fix (stop the bleeding
+      first) but not at doc-impact.
 
-    # OPTIONAL: investigation before requirements
-    - id: research
-      name: Research (Optional)
-      description: Technical, market, or domain research before requirements
-      optional: true
-      role: researcher
-      skills:
-        - research-methodology
-      artifacts:
-        output:
-          - "{DOCS_ROOT}/research/[type]/[topic]-research.md"
-      next: requirements
+# =============================================================================
+# FLOWS
+# =============================================================================
+flows:
 
-    - id: requirements
-      name: Requirements Gathering & Validation
-      description: Elicit FR/NFR through stakeholder interviews, then validate
-      role: analyst
-      skills:
-        - requirements-gathering   # also covers requirements validation
-        - acceptance-criteria
-        - security-requirements    # abuse cases + security NFRs — security at requirements time
-      artifacts:
-        output:
-          - "{DOCS_ROOT}/requirements/requirements.md"
-      validation:
-        skill: requirements-gathering
-        checklist: skills/requirements-gathering/references/checklist.md
-        required: true
-      next: prd
+  # ===========================================================================
+  # GREENFIELD — the full pipeline (new system, no existing docs chain)
+  # research (opt) → requirements → prd → architecture → delivery-design (opt)
+  #   → design → decomposition (epics/stories/sprints) → implementation → testing
+  #   → review → deploy
+  #
+  # Delivery (devops) lens spans two points, like any role designs early and
+  # executes late: delivery-design plans how it ships (CI/CD, environments,
+  # rollback) right after architecture; deploy executes the ship at the end.
+  # release-engineering is also cross-cutting — callable from architecture,
+  # decomposition, and implementation wherever delivery concerns surface.
+  # ===========================================================================
+  greenfield:
+    description: New system or major new capability with no existing docs chain
+    phases:
 
-    - id: prd
-      name: Product Requirements Document
-      description: Create and validate the PRD from validated requirements
-      role: pm
-      skills:
-        - prd-writing              # also covers PRD validation
-      artifacts:
-        input:
-          - "{DOCS_ROOT}/requirements/requirements.md"
-        output:
-          - "{DOCS_ROOT}/prds/<slug>/PRD.md"
-      validation:
-        skill: prd-writing
-        checklist: skills/prd-writing/references/checklist.md
-        required: true
-      qa:
-        artifact: "{DOCS_ROOT}/prd-acceptance-criteria.md"
-        description: Acceptance criteria for all FRs
-        template: skills/acceptance-criteria/references/template.md
-        mandatory: true
-      next: architecture
+        # OPTIONAL: investigation before requirements
+        - id: research
+          name: Research (Optional)
+          description: Technical, market, or domain research before requirements
+          optional: true
+          role: researcher
+          skills:
+            - research-methodology
+          artifacts:
+            output:
+              - "{DOCS_ROOT}/research/[type]/[topic]-research.md"
+          next: requirements
 
-    - id: architecture
-      name: Architecture Design & Validation
-      description: Design and validate system architecture from the PRD
-      role: architect
-      skills:
-        - system-architecture      # multi-service landscape; also covers its validation
-        - service-architecture     # one service's internals; also covers its validation
-        - adr-writing
-        - unit-writing
-        - standards                # umbrella router; routes to standards-coding/-testing/-security/-performance/-api/-database/-git/-temporary-decisions/-events/-observability
-        - authoring-standards      # cross-cutting authoring discipline every topic author obeys (single source, rules-only, cite the ADR, review)
-        - using-standards          # consumer of already-written standards during design
-        - api-design
-        # standards group authoring (loaded by `standards` as needed):
-        # standards-coding, standards-testing, standards-security, standards-performance,
-        # standards-api, standards-database, standards-git, standards-temporary-decisions,
-        # standards-events, standards-observability
-        - database-design
-        - diagram-creation
-        - threat-modeling          # design-time STRIDE / attack surface; feeds review-security
-        # release-engineering is cross-cutting: callable here so deployment
-        # topology, environments, and infra NFRs are shaped with the design,
-        # not bolted on at ship time.
-        - release-engineering
-      artifacts:
-        input:
-          - "{DOCS_ROOT}/prds/<slug>/PRD.md"
-        output:
-          - "{DOCS_ROOT}/architecture/system.md   # multi-service only"
-          - "{DOCS_ROOT}/architecture.md           # single service, or architecture/<service>.md per service"
-          - "{DOCS_ROOT}/architecture/adr/*.md"
-      validation:
-        skills: [system-architecture, service-architecture]
-        checklists:
-          - skills/system-architecture/references/checklist.md
-          - skills/service-architecture/references/checklist.md
-        required: true
-      qa:
-        artifact: "{DOCS_ROOT}/architecture-integration-tests.md"
-        description: Integration test specifications
-        template: skills/test-design/references/template-integration.md
-        mandatory: true
-      next: delivery-design
+        - id: requirements
+          name: Requirements Gathering & Validation
+          description: Elicit FR/NFR through stakeholder interviews, then validate
+          role: analyst
+          skills:
+            - requirements-gathering   # also covers requirements validation
+            - acceptance-criteria
+            - security-requirements    # abuse cases + security NFRs — security at requirements time
+          artifacts:
+            output:
+              - "{DOCS_ROOT}/requirements/requirements.md"
+          validation:
+            skill: requirements-gathering
+            checklist: skills/requirements-gathering/references/checklist.md
+            required: true
+          next: prd
 
-    # OPTIONAL: plan how the system ships, right after architecture
-    - id: delivery-design
-      name: Delivery Design (Optional)
-      description: >
-        Plan how the system ships before stories are cut: CI/CD pipeline,
-        environment topology, deploy strategy, and rollback runbooks. The
-        early half of the devops lens (deploy executes the late half). Skip
-        for TOY/library scope; include where infra is real.
-      optional: true
-      role: devops
-      skills:
-        - platform-infrastructure  # system-level shared-infra reference doc (the substrate)
-        - service-deployment       # service-level deployment doc (one service's position in the infra)
-        - release-engineering      # the per-release shipping runbook + deploy gate
-      artifacts:
-        input:
-          - "{DOCS_ROOT}/architecture.md"
-          - "{DOCS_ROOT}/prds/<slug>/PRD.md"
-        output:
-          - "{DOCS_ROOT}/ops/ci-cd/*.md"
-          - "{DOCS_ROOT}/ops/environments/*.md"
-          - "{DOCS_ROOT}/ops/runbooks/*.md"
-      next: design
+        - id: prd
+          name: Product Requirements Document
+          description: Create and validate the PRD from validated requirements
+          role: pm
+          skills:
+            - prd-writing              # also covers PRD validation
+          artifacts:
+            input:
+              - "{DOCS_ROOT}/requirements/requirements.md"
+            output:
+              - "{DOCS_ROOT}/prds/<slug>/PRD.md"
+          validation:
+            skill: prd-writing
+            checklist: skills/prd-writing/references/checklist.md
+            required: true
+          qa:
+            artifact: "{DOCS_ROOT}/prd-acceptance-criteria.md"
+            description: Acceptance criteria for all FRs
+            template: skills/acceptance-criteria/references/template.md
+            mandatory: true
+          next: architecture
 
-    - id: design
-      name: Design (UX & Design System)
-      description: Shape UX flows, interface design, and the design system from the architecture
-      role: designer
-      skills:
-        - ux-design
-        - design-system
-      artifacts:
-        input:
-          - "{DOCS_ROOT}/prds/<slug>/PRD.md"
-          - "{DOCS_ROOT}/architecture.md"
-        output:
-          - "{DOCS_ROOT}/design/ux-flows.md"
-          - "{DOCS_ROOT}/design/design-system.md"
-      next: decomposition
+        - id: architecture
+          name: Architecture Design & Validation
+          description: Design and validate system architecture from the PRD
+          role: architect
+          skills:
+            - system-architecture      # multi-service landscape; also covers its validation
+            - service-architecture     # one service's internals; also covers its validation
+            - adr-writing
+            - unit-writing
+            - standards                # umbrella router; routes to standards-coding/-testing/-security/-performance/-api/-database/-git/-temporary-decisions/-events/-observability
+            - authoring-standards      # cross-cutting authoring discipline every topic author obeys (single source, rules-only, cite the ADR, review)
+            - using-standards          # consumer of already-written standards during design
+            - api-design
+            # standards group authoring (loaded by `standards` as needed):
+            # standards-coding, standards-testing, standards-security, standards-performance,
+            # standards-api, standards-database, standards-git, standards-temporary-decisions,
+            # standards-events, standards-observability
+            - database-design
+            - diagram-creation
+            - threat-modeling          # design-time STRIDE / attack surface; feeds review-security
+            # release-engineering is cross-cutting: callable here so deployment
+            # topology, environments, and infra NFRs are shaped with the design,
+            # not bolted on at ship time.
+            - release-engineering
+          artifacts:
+            input:
+              - "{DOCS_ROOT}/prds/<slug>/PRD.md"
+            output:
+              - "{DOCS_ROOT}/architecture/system.md   # multi-service only"
+              - "{DOCS_ROOT}/architecture.md           # single service, or architecture/<service>.md per service"
+              - "{DOCS_ROOT}/architecture/adr/*.md"
+          validation:
+            skills: [system-architecture, service-architecture]
+            checklists:
+              - skills/system-architecture/references/checklist.md
+              - skills/service-architecture/references/checklist.md
+            required: true
+          qa:
+            artifact: "{DOCS_ROOT}/architecture-integration-tests.md"
+            description: Integration test specifications
+            template: skills/test-design/references/template-integration.md
+            mandatory: true
+          next: delivery-design
 
-    - id: decomposition
-      name: Decomposition (Epics / Stories / Sprints)
-      description: Break the PRD and architecture into epics, then stories, then sprints
-      role: pm
-      skills:
-        - decomposition            # merges epic / story / sprint-planning
-        - using-standards          # so each story's Required Reading points at the right standards artifacts
-        # cross-cutting: carve infra / ops / deploy stories alongside feature work
-        - release-engineering
-      artifacts:
-        input:
-          - "{DOCS_ROOT}/prds/<slug>/PRD.md"
-          - "{DOCS_ROOT}/architecture.md"
-        output:
-          - "{DOCS_ROOT}/backlog/epic-*.md"
-          - "{DOCS_ROOT}/backlog/stories/story-*.md"
-          - "{DOCS_ROOT}/backlog/sprint-status.yaml"
-      # Coordination: produce the decomposition as a planning squad — specialist
-      # perspectives fanned out in the conductor's current session, synthesized
-      # into the templates (no sessions or board items per planning role).
-      coordination:
-        - orchestration            # router: pick delegation mode + sequencing
-        - orchestration-subagent   # ephemeral subagent calls (dispatch mechanics)
-        - planning-squad           # squad composition: who to spawn, what each returns
-      validation:
-        skill: decomposition
-        checklist: skills/decomposition/references/story-checklist.md
-        required: true
-        rules:
-          - All epics have acceptance criteria
-          - All stories have Given/When/Then AC
-          - All stories have tasks/subtasks
-      next: implementation
+        # OPTIONAL: plan how the system ships, right after architecture
+        - id: delivery-design
+          name: Delivery Design (Optional)
+          description: >
+            Plan how the system ships before stories are cut: CI/CD pipeline,
+            environment topology, deploy strategy, and rollback runbooks. The
+            early half of the devops lens (deploy executes the late half). Skip
+            for TOY/library scope; include where infra is real.
+          optional: true
+          role: devops
+          skills:
+            - platform-infrastructure  # system-level shared-infra reference doc (the substrate)
+            - service-deployment       # service-level deployment doc (one service's position in the infra)
+            - release-engineering      # the per-release shipping runbook + deploy gate
+          artifacts:
+            input:
+              - "{DOCS_ROOT}/architecture.md"
+              - "{DOCS_ROOT}/prds/<slug>/PRD.md"
+            output:
+              - "{DOCS_ROOT}/ops/ci-cd/*.md"
+              - "{DOCS_ROOT}/ops/environments/*.md"
+              - "{DOCS_ROOT}/ops/runbooks/*.md"
+          next: design
 
-    - id: implementation
-      name: Implementation
-      description: Implement stories with TDD; supports single-story plus epic/sprint batch modes
-      roles:
-        - fullstack-developer      # general / cross-cutting
-        - backend-developer        # server / data / API
-        - frontend-developer       # UI / UX-fidelity
-      skills:
-        - dev                      # story loop + epic/sprint batch modes + TDD (shared by all three dev roles)
-        - using-standards          # load the right standards artifacts per story
-        - code-review
-        - test-design
-        - test-scenarios           # author concrete test cases alongside implementation
-        - systematic-debugging     # cross-cutting: root-cause discipline when a test won't pass
-        - verification-before-completion  # cross-cutting gate: no "done" without fresh evidence
-        - receiving-code-review    # act on the reviewer's findings with rigor (author side of the gate)
-        # research-planning is cross-cutting: callable wherever unknowns surface,
-        # the same way research-methodology is.
-        # release-engineering is cross-cutting too: callable when a story carries
-        # CI/CD, environment, or deploy work.
-        - release-engineering
-      # Coordination: the conducting/main agent uses the orchestration trio to
-      # dispatch story/epic/sprint batches to the dev role and gate each result.
-      coordination:
-        - orchestration            # router: pick delegation mode + sequencing
-        - orchestration-subagent   # ephemeral subagent calls (sequential/parallel)
-        - implementation-squad     # squad composition: lanes + independence test for parallelism
-        - orchestration-team       # standing role-team via a shared board
-      artifacts:
-        input:
-          - "{DOCS_ROOT}/backlog/sprint-status.yaml"
-          - "{DOCS_ROOT}/backlog/epic-*.md"
-          - "{DOCS_ROOT}/backlog/stories/story-*.md"
-        output:
-          - Implementation code
-          - Unit tests
-          - Integration tests
-          - Updated sprint-status.yaml
-      modes:
-        story: Implement a single story (red-green-refactor)
-        epic: Implement all stories in an epic sequentially
-        sprint: Implement all epics in a sprint sequentially
-      next: testing
+        - id: design
+          name: Design (UX & Design System)
+          description: Shape UX flows, interface design, and the design system from the architecture
+          role: designer
+          skills:
+            - ux-design
+            - design-system
+          artifacts:
+            input:
+              - "{DOCS_ROOT}/prds/<slug>/PRD.md"
+              - "{DOCS_ROOT}/architecture.md"
+            output:
+              - "{DOCS_ROOT}/design/ux-flows.md"
+              - "{DOCS_ROOT}/design/design-system.md"
+          next: decomposition
 
-    - id: testing
-      name: Testing & QA Gate
-      description: Author test scenarios, run them, and apply the QA gate before review
-      role: tester
-      skills:
-        - test-scenarios           # primary: author concrete cases/scenarios (also done during implementation)
-        - test-execution           # run tests + QA gate
-        - systematic-debugging     # cross-cutting: diagnose a failing case at its root
-        - verification-before-completion  # cross-cutting gate: the QA "green" claim rests on read output
-      artifacts:
-        input:
-          - "{DOCS_ROOT}/backlog/stories/story-*.md"
-          - Implementation code
-        output:
-          - "{DOCS_ROOT}/test/..."
-          - "{DOCS_ROOT}/validation/test-report-*.md"
-      validation:
-        skill: test-execution
-        checklist: skills/test-execution/references/template.md
-        required: true
-        rules:
-          - Build command exits 0 (the codebase compiles/links as a unit)
-          - Full test suite exits 0 (no failures, no skips without stated reason)
-          - Every story acceptance criterion traces to a passing case
-      gate:
-        type: integration
-        hard: true
+        - id: decomposition
+          name: Decomposition (Epics / Stories / Sprints)
+          description: Break the PRD and architecture into epics, then stories, then sprints
+          role: pm
+          skills:
+            - decomposition            # merges epic / story / sprint-planning
+            - using-standards          # so each story's Required Reading points at the right standards artifacts
+            # cross-cutting: carve infra / ops / deploy stories alongside feature work
+            - release-engineering
+          artifacts:
+            input:
+              - "{DOCS_ROOT}/prds/<slug>/PRD.md"
+              - "{DOCS_ROOT}/architecture.md"
+            output:
+              - "{DOCS_ROOT}/backlog/epic-*.md"
+              - "{DOCS_ROOT}/backlog/stories/story-*.md"
+              - "{DOCS_ROOT}/backlog/sprint-status.yaml"
+          # Coordination: produce the decomposition as a planning squad — specialist
+          # perspectives fanned out in the conductor's current session, synthesized
+          # into the templates (no sessions or board items per planning role).
+          coordination:
+            - orchestration            # router: pick delegation mode + sequencing
+            - orchestration-subagent   # ephemeral subagent calls (dispatch mechanics)
+            - planning-squad           # squad composition: who to spawn, what each returns
+          validation:
+            skill: decomposition
+            checklist: skills/decomposition/references/story-checklist.md
+            required: true
+            rules:
+              - All epics have acceptance criteria
+              - All stories have Given/When/Then AC
+              - All stories have tasks/subtasks
+          next: implementation
+
+        - id: implementation
+          name: Implementation
+          description: Implement stories with TDD; supports single-story plus epic/sprint batch modes
+          roles:
+            - fullstack-developer      # general / cross-cutting
+            - backend-developer        # server / data / API
+            - frontend-developer       # UI / UX-fidelity
+          skills:
+            - dev                      # story loop + epic/sprint batch modes + TDD (shared by all three dev roles)
+            - using-standards          # load the right standards artifacts per story
+            - code-review
+            - test-design
+            - test-scenarios           # author concrete test cases alongside implementation
+            - systematic-debugging     # cross-cutting: root-cause discipline when a test won't pass
+            - verification-before-completion  # cross-cutting gate: no "done" without fresh evidence
+            - receiving-code-review    # act on the reviewer's findings with rigor (author side of the gate)
+            # research-planning is cross-cutting: callable wherever unknowns surface,
+            # the same way research-methodology is.
+            # release-engineering is cross-cutting too: callable when a story carries
+            # CI/CD, environment, or deploy work.
+            - release-engineering
+          # Coordination: the conducting/main agent uses the orchestration trio to
+          # dispatch story/epic/sprint batches to the dev role and gate each result.
+          coordination:
+            - orchestration            # router: pick delegation mode + sequencing
+            - orchestration-subagent   # ephemeral subagent calls (sequential/parallel)
+            - implementation-squad     # squad composition: lanes + independence test for parallelism
+            - orchestration-team       # standing role-team via a shared board
+          artifacts:
+            input:
+              - "{DOCS_ROOT}/backlog/sprint-status.yaml"
+              - "{DOCS_ROOT}/backlog/epic-*.md"
+              - "{DOCS_ROOT}/backlog/stories/story-*.md"
+            output:
+              - Implementation code
+              - Unit tests
+              - Integration tests
+              - Updated sprint-status.yaml
+          modes:
+            story: Implement a single story (red-green-refactor)
+            epic: Implement all stories in an epic sequentially
+            sprint: Implement all epics in a sprint sequentially
+          next: testing
+
+        - id: testing
+          name: Testing & QA Gate
+          description: Author test scenarios, run them, and apply the QA gate before review
+          role: tester
+          skills:
+            - test-scenarios           # primary: author concrete cases/scenarios (also done during implementation)
+            - test-execution           # run tests + QA gate
+            - systematic-debugging     # cross-cutting: diagnose a failing case at its root
+            - verification-before-completion  # cross-cutting gate: the QA "green" claim rests on read output
+          artifacts:
+            input:
+              - "{DOCS_ROOT}/backlog/stories/story-*.md"
+              - Implementation code
+            output:
+              - "{DOCS_ROOT}/test/..."
+              - "{DOCS_ROOT}/validation/test-report-*.md"
+          validation:
+            skill: test-execution
+            checklist: skills/test-execution/references/template.md
+            required: true
+            rules:
+              - Build command exits 0 (the codebase compiles/links as a unit)
+              - Full test suite exits 0 (no failures, no skips without stated reason)
+              - Every story acceptance criterion traces to a passing case
+          gate: integration   # → gates.integration
+          next: review
+
+        - id: review
+          name: Code Review
+          description: Review implemented code for quality and correctness
+          role: reviewer
+          skills:
+            - code-review              # umbrella: routes the dimensions below + aggregates the verdict
+            - using-standards          # each review-* dimension reads its source-of-truth artifact via this consumer
+            - review-security          # reads docs/standards/security.md
+            - review-correctness       # reads docs/standards/coding.md (+ api.md / database.md if surface applies)
+            - review-tests             # reads docs/standards/testing.md
+            - review-performance       # reads docs/standards/performance.md
+            - review-complexity
+            # receiving-code-review is the author's counterpart to this gate: the developer
+            # verifies each finding before implementing it or pushing back with evidence.
+          artifacts:
+            input:
+              - "{DOCS_ROOT}/backlog/stories/story-*.md"
+              - Implementation code
+            output:
+              - Review notes
+              - Review follow-up tasks
+          next: deploy                 # loops back to implementation if changes requested
+
+        - id: deploy
+          name: Deploy (Ship)
+          description: Build and ship the release; final step in the pipeline
+          role: devops
+          skills:
+            - release-engineering      # CI/CD, build, deploy
+          artifacts:
+            input:
+              - Implementation code
+              - "{DOCS_ROOT}/validation/test-report-*.md"
+            output:
+              - "{DOCS_ROOT}/ops/release-*.md"
+          gate: deploy        # → gates.deploy
+          next: null                   # end of pipeline
+
+
+  # ===========================================================================
+  # BUGFIX — observed behavior deviates from documented/expected behavior
+  # intake → triage → diagnose → fix → verify → review → doc-impact → ship
+  # ===========================================================================
+  bugfix:
+    description: Restore correct behavior on an existing system; regression-test-first
+    phases:
+      - id: intake
+        name: Bug Intake
+        description: Record the symptom — observed vs expected, reproduction, environment
+        role: secretary
+        skills: [incident-triage]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/bugs/<id>/report.md"
+        next: triage
+
+      - id: triage
+        name: Triage & Fork
+        description: Severity, blast radius, rollback-first, incident-vs-bug, hotfix-vs-story
+        role: analyst
+        skills: [incident-triage]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/bugs/<id>/report.md   # triage section filled"
+        fork:
+          rollback-first: >
+            S1 AND all three rollback preconditions hold → roll back via
+            release-engineering FIRST, confirm the symptom is gone, then
+            continue at diagnose at normal pace.
+          hotfix: >
+            ALL hotfix criteria true (incident-triage; recorded in the report)
+            → jump to fix with a minimal patch; verify, review, and doc-impact
+            are backfilled within 48h — never skipped.
+        next: diagnose
+
+      - id: diagnose
+        name: Root Cause
+        description: Reproduce, trace, name the cause — no fix without it
+        role: fullstack-developer
+        skills: [systematic-debugging]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/bugs/<id>/report.md   # root-cause section filled"
+        note: >
+          If the 3-fix rule fires, the cause is structural — reclassify to the
+          refactor flow or escalate to greenfield.architecture. If code and
+          docs agree and the user wants different behavior, this was never a
+          bug — reclassify to small-change.
+        next: fix
+
+      - id: fix
+        name: Fix (TDD)
+        description: Failing regression test first, then fix at the source
+        role: fullstack-developer
+        skills: [dev, using-standards]
+        next: verify
+
+      - id: verify
+        name: Integration Gate
+        role: tester
+        skills: [test-execution, verification-before-completion]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/validation/test-report-*.md"
+        gate: integration
+        next: review
+
+      - id: review
+        name: Scoped Review
+        description: Scoped to the diff + regression test; full dimension fan-out only when the diff touches a security or performance surface
+        role: reviewer
+        skills: [code-review]
+        next: doc-impact             # loops back to fix if changes requested
+
+      - id: doc-impact
+        name: Documentation Impact
+        description: Declare which docs the root cause invalidated; explicit `none` allowed, silence is not
+        role: analyst
+        skills: [doc-impact, amending-artifacts]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/bugs/<id>/doc-impact.md"
+        next: ship
+
+      - id: ship
+        name: Ship
+        role: devops
+        skills: [release-engineering, changelog]
+        gate: deploy
+        next: null
+
+  # ===========================================================================
+  # SMALL-CHANGE — bounded change request on a documented existing system
+  # intake → impact → amend → implement → verify → review → doc-impact → ship
+  # ===========================================================================
+  small-change:
+    description: Amend, don't regenerate; escalate to the full pipeline when the rule fires
+    phases:
+      - id: intake
+        name: Change Intake
+        description: Record the request and locate ONLY the artifacts it touches
+        role: secretary
+        skills: [requirements-gathering]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/changes/<id>/change.md"
+        note: >
+          Find touched artifacts via the docs index and frontmatter domain grep
+          (using-comfanion §Dedup) — never by reading all of {DOCS_ROOT}.
+        next: impact
+
+      - id: impact
+        name: Impact Classification
+        description: Evaluate the escalation checklist line by line; record the verdict either way
+        role: architect
+        skills: [using-standards]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/changes/<id>/change.md   # impact section: every criterion evaluated"
+        escalate:
+          to: greenfield.architecture
+          when_any:
+            - Adds, removes, or replaces a deployable service, datastore, queue, or external integration
+            - Changes a cross-module contract (API schema, event schema, shared DB schema) or moves a module boundary
+            - Touches 3+ modules, or more than 10 production files (tests and docs excluded)
+            - Requires a new ADR-level decision, or contradicts an existing ADR or standard
+            - Does not fit within 2 stories
+          rule: >
+            ANY single criterion true → stop this flow, record the verdict in
+            change.md, amend requirements/PRD as deltas, and enter greenfield
+            at architecture. The verdict is recorded even when no criterion
+            fires. Protected: protected.yaml#small-change-escalation.
+        next: amend
+
+      - id: amend
+        name: Amend Docs & Cut Story
+        description: Surgical section edits to the touched artifacts; one story (or two) against the existing backlog
+        role: pm
+        skills: [amending-artifacts, decomposition, acceptance-criteria]
+        artifacts:
+          output:
+            - "Amended sections of requirements / PRD / architecture (regeneration is forbidden)"
+            - "{DOCS_ROOT}/backlog/stories/story-*.md"
+        id_continuity: >
+          Scan {DOCS_ROOT}/backlog for the max existing {MODULE}-E{NN} and
+          {MODULE}-S{EPIC}-{NN}; the new story attaches to an OPEN epic or a
+          new epic at the next E number. Closed epics are never reopened; ids
+          are never reused.
+        next: implement
+
+      - id: implement
+        name: Implement (TDD)
+        role: fullstack-developer
+        skills: [dev, using-standards]
+        next: verify
+
+      - id: verify
+        name: Integration Gate
+        role: tester
+        skills: [test-execution, verification-before-completion]
+        gate: integration
+        next: review
+
+      - id: review
+        name: Scoped Review
+        role: reviewer
+        skills: [code-review]
+        next: doc-impact             # loops back to implement if changes requested
+
+      - id: doc-impact
+        name: Documentation Impact
+        role: analyst
+        skills: [doc-impact, amending-artifacts]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/changes/<id>/doc-impact.md"
+        next: ship
+
+      - id: ship
+        name: Ship
+        role: devops
+        skills: [release-engineering, changelog]
+        gate: deploy
+        next: null
+
+  # ===========================================================================
+  # ONBOARDING — adopt an existing repo with missing/untrusted docs
+  # adopt → archaeology → document → extract-standards → review → seed
+  # ===========================================================================
+  onboarding:
+    description: Infer the AS-IS picture of an existing codebase, get it human-reviewed, seed state
+    phases:
+      - id: adopt
+        name: Adopt Repo
+        description: Seed the state file; onboarding becomes the primary thread
+        role: secretary
+        skills: [using-comfanion]
+        artifacts:
+          output:
+            - "project-state.yaml   # flow: onboarding, current_phase: adopt"
+        next: archaeology
+
+      - id: archaeology
+        name: Codebase Archaeology
+        description: Infer languages, entry points, module map, dependency direction, test layout, proposed units — every claim cited
+        role: researcher
+        skills: [codebase-archaeology]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/architecture/survey.md   # provenance: inferred"
+        next: document
+
+      - id: document
+        name: AS-IS Architecture & Unit Docs
+        description: Describe what exists — same canonical paths as authored docs; provenance frontmatter is the only differentiator
+        role: architect
+        skills: [service-architecture, unit-writing, diagram-creation]
+        artifacts:
+          input:
+            - "{DOCS_ROOT}/architecture/survey.md"
+          output:
+            - "{DOCS_ROOT}/architecture.md          # AS-IS; provenance: inferred"
+            - "{DOCS_ROOT}/units/**                 # unit docs; provenance: inferred"
+        next: extract-standards
+
+      - id: extract-standards
+        name: De-Facto Standards
+        description: Candidate conventions from real code — proposed, never asserted
+        role: architect
+        skills: [standards-extraction, authoring-standards]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/standards/candidates.md  # provenance: inferred"
+        next: review
+
+      - id: review
+        name: Human Review of the Inferred Picture
         description: >
-          HARD integration gate. No story moves to review with a non-green build
-          or test suite. "Compiles on my machine" and "tests should pass now" are
-          not evidence — run the commands, read the output, attach it to the test
-          report. The dev role's sync point (see skills/dev/SKILL.md) must clear
-          before the orchestrator transitions a story from in_progress to review.
-      next: review
+          The human confirms or corrects each inferred artifact; approval flips
+          provenance inferred → inferred-reviewed (via amending-artifacts).
+          Downstream flows refuse unreviewed inferred inputs.
+        role: secretary
+        skills: [amending-artifacts]
+        gate: provenance
+        next: seed
 
-    - id: review
-      name: Code Review
-      description: Review implemented code for quality and correctness
-      role: reviewer
-      skills:
-        - code-review              # umbrella: routes the dimensions below + aggregates the verdict
-        - using-standards          # each review-* dimension reads its source-of-truth artifact via this consumer
-        - review-security          # reads docs/standards/security.md
-        - review-correctness       # reads docs/standards/coding.md (+ api.md / database.md if surface applies)
-        - review-tests             # reads docs/standards/testing.md
-        - review-performance       # reads docs/standards/performance.md
-        - review-complexity
-        # receiving-code-review is the author's counterpart to this gate: the developer
-        # verifies each finding before implementing it or pushing back with evidence.
-      artifacts:
-        input:
-          - "{DOCS_ROOT}/backlog/stories/story-*.md"
-          - Implementation code
-        output:
-          - Review notes
-          - Review follow-up tasks
-      next: deploy                 # loops back to implementation if changes requested
+      - id: seed
+        name: Seed State & Index
+        description: Bundle-root docs index; project-state reset to the project's real flow
+        role: secretary
+        skills: [doc-todo]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/index.md    # bundle root index (OKF §6)"
+            - "project-state.yaml      # onboarding recorded in last_session"
+        next: null
 
-    - id: deploy
-      name: Deploy (Ship)
-      description: Build and ship the release; final step in the pipeline
-      role: devops
-      skills:
-        - release-engineering      # CI/CD, build, deploy
-      artifacts:
-        input:
-          - Implementation code
-          - "{DOCS_ROOT}/validation/test-report-*.md"
-        output:
-          - "{DOCS_ROOT}/ops/release-*.md"
-      gate:
-        type: deploy
-        hard: true
-        description: >
-          HARD deploy gate. Ship only on explicit human confirmation AND green checks
-          (tests pass, review approved, QA gate cleared). Never deploy unprompted.
-      next: null                   # end of pipeline
+  # ===========================================================================
+  # REFACTOR — behavior-preserving structural improvement
+  # scope → characterize → execute → verify → review → doc-impact → ship
+  # ===========================================================================
+  refactor:
+    description: Green before and after every batch; no behavior change mixed in
+    phases:
+      - id: scope
+        name: Motivation & Scope Map
+        description: Named driver, boundary of what moves, explicit out-of-scope, batch plan
+        role: architect
+        skills: [refactoring, standards-temporary-decisions]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/refactors/<id>/scope.md   # MEDIUM+/multi-batch; smaller plans live in the TD entry"
+        next: characterize
+
+      - id: characterize
+        name: Characterization Tests
+        description: Pin current behavior (bugs included — logged separately) wherever touched paths lack coverage
+        role: tester
+        skills: [refactoring, test-scenarios]
+        next: execute
+
+      - id: execute
+        name: Behavior-Preserving Batches
+        description: One batch at a time; full suite green before AND after each; a red batch is reverted, not debugged forward
+        role: fullstack-developer
+        skills: [refactoring, using-standards]
+        next: verify
+
+      - id: verify
+        name: Integration Gate
+        role: tester
+        skills: [test-execution, verification-before-completion]
+        gate: integration
+        next: review
+
+      - id: review
+        name: Review (Complexity + Correctness)
+        role: reviewer
+        skills: [code-review, review-complexity, review-correctness]
+        next: doc-impact             # loops back to execute if changes requested
+
+      - id: doc-impact
+        name: Documentation Impact
+        description: Moved structure invalidates docs — update unit docs/architecture; close paid-down TD entries
+        role: analyst
+        skills: [doc-impact, amending-artifacts, standards-temporary-decisions]
+        artifacts:
+          output:
+            - "{DOCS_ROOT}/refactors/<id>/doc-impact.md"
+        next: ship
+
+      - id: ship
+        name: Ship
+        role: devops
+        skills: [release-engineering, changelog]
+        gate: deploy
+        next: null
 
 # =============================================================================
 # ARTIFACT TEMPLATES
@@ -399,3 +748,31 @@ artifacts:
   release:
     path: "{DOCS_ROOT}/ops/release-*.md"
     template: skills/release-engineering/references/template.md
+
+  bug-report:
+    path: "{DOCS_ROOT}/bugs/<id>/report.md"
+    template: skills/incident-triage/references/template.md
+
+  change-request:
+    path: "{DOCS_ROOT}/changes/<id>/change.md"
+    template: skills/requirements-gathering/references/template.md
+    note: delta form — request, motivation, touched artifacts, impact verdict
+
+  doc-impact:
+    path: "{DOCS_ROOT}/{bugs|changes|refactors}/<id>/doc-impact.md"
+    template: skills/doc-impact/references/template.md
+    mandatory: true   # explicit `none` verdict allowed; absence is not
+
+  codebase-survey:
+    path: "{DOCS_ROOT}/architecture/survey.md"
+    template: skills/codebase-archaeology/references/template.md
+    note: "provenance: inferred until the onboarding review"
+
+  standards-candidates:
+    path: "{DOCS_ROOT}/standards/candidates.md"
+    template: skills/standards-extraction/references/template.md
+    note: "proposal ledger — never consumable as standards"
+
+  refactor-scope:
+    path: "{DOCS_ROOT}/refactors/<id>/scope.md"
+    template: skills/refactoring/references/template.md

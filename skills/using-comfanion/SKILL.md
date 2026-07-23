@@ -41,6 +41,23 @@ The state file lives at the **root**, not under `{DOCS_ROOT}` — it is a workfl
 
 This is the policy-as-code layer above the skills: even when a skill's discipline could be skipped by user instruction (priority rule 1 — user instructions outrank skills), the protected-path policy outranks the user's verbal request. The user can still override — but only by writing the unlock entry, not by saying "skip it". The full mechanism is defined inline in `protected.yaml`.
 
+## Choose the flow — classify the request first
+
+`FLOW.yaml` defines five flows. Before picking a skill, classify the request; the flow decides which phase sequence and hard gates govern the work. Apply the FIRST rule that matches, in this order:
+
+| # | The request looks like… | Flow |
+|---|--------------------------|------|
+| 1 | `project-state.yaml` exists with non-empty `active_work` or a mid-flow `current_phase`, and the request continues that work | **Resume** that flow at that phase — never reclassify in-flight work |
+| 2 | Observed behavior deviates from documented or reasonably expected behavior — "broken", "crash", "regression", "incident", "wrong result" | `bugfix` — never blocked on onboarding; fix the bleeding first |
+| 3 | Existing codebase, but no `project-state.yaml` and no `{DOCS_ROOT}` docs chain, and the request is not a bugfix | `onboarding` first, then reclassify the original request |
+| 4 | Structure changes with no intended behavior change — "clean up", "restructure", "extract", "reduce debt" | `refactor` |
+| 5 | Bounded add/change/remove of behavior on a documented existing system | `small-change` — the escalation rule in `FLOW.yaml#flows.small-change.impact` may promote it to the full pipeline |
+| 6 | A new system, no existing code, or the small-change escalation rule fired | `greenfield` |
+
+Tie-breaker for bugfix vs small-change: if code and docs agree and the user wants *different* behavior, it is a change, not a bug. If code deviates from docs, it is a bug.
+
+Record the chosen flow in `project-state.yaml` — project-level `flow:` for the primary thread; per-item `flow:` inside `active_work` for a concurrent thread (a bugfix arriving mid-greenfield does not reset the project-level pair).
+
 ## The rule
 
 ```
@@ -53,16 +70,20 @@ When you invoke a skill: announce it briefly ("Using `<skill>` to <purpose>"), a
 
 ## How to route
 
-Most tasks map to a phase of the pipeline (see `FLOW.yaml`) and the skill(s) that drive it:
+Most tasks map to a phase of the chosen flow (see `FLOW.yaml`) and the skill(s) that drive it:
 
 | The task is about… | Start with |
 |--------------------|------------|
 | What to build / real needs | `requirements-gathering`, then `prd-writing` |
 | System or service structure | `system-architecture` / `service-architecture` (mind the altitude ladder) |
+| Restructuring without behavior change | `refactoring` (macro, batched; `dev` owns the micro step inside a story) |
 | Infrastructure / how & where it deploys | `platform-infrastructure` (shared substrate) · `service-deployment` (one service's infra) · `release-engineering` (shipping a version + deploy gate) |
 | Breaking scope into work | `decomposition` |
 | Implementing an approved story | `dev` (TDD core); test strategy came from `test-design` at planning time |
-| A bug, failure, or crash | `systematic-debugging` |
+| Something broken in a running system, next action undecided | `incident-triage` (severity, rollback-first, hotfix-vs-story), then `systematic-debugging` |
+| A bug, failure, or crash mid-development | `systematic-debugging` |
+| Closing out a fix or refactor | `doc-impact` (mandatory verdict; `none` is written, never silent) |
+| Amending an existing doc under `{DOCS_ROOT}` | `amending-artifacts` (surgical section edit, never regenerate) |
 | Judging finished code | `code-review` (routes the `review-*` dimensions) |
 | Acting on review feedback | `receiving-code-review` |
 | Claiming anything is done | `verification-before-completion` |
@@ -88,6 +109,7 @@ Every doc this toolkit produces under `{DOCS_ROOT}` (architecture, standards, AD
 - **`domain`** — the module/domain the doc belongs to; the dedup axis. Use the same value across docs about the same scope so `rg -l "^domain: billing"` finds them all.
 - **`tags`** — YAML list of cross-cutting labels.
 - **`status`** — `draft | approved | deprecated | superseded`.
+- **`provenance`** — `authored | inferred | inferred-reviewed`. Optional; absent means `authored`. `inferred` marks content derived from code or evidence by an agent (`codebase-archaeology`, `standards-extraction`, AS-IS architecture) that no human has verified; a human review promotes it to `inferred-reviewed` (via `amending-artifacts`). **Gate rule: do not build downstream artifacts (designs, epics, stories, standards) on a `provenance: inferred` doc — review it first** (`FLOW.yaml#gates.provenance`). Treat an unreviewed inferred doc like an unvalidated PRD: input for review, not a foundation.
 - **`timestamp`** — ISO 8601 datetime of last meaningful change. **`updated` is accepted as a legacy alias**; new docs use `timestamp`.
 - **`related`** — list of paths/URIs to sibling docs; surfaces relationships and prevents orphan duplicates.
 
@@ -118,7 +140,7 @@ Before producing a new artifact, search existing docs first — do not blindly c
 
 ## Rigid vs. flexible skills
 
-Each skill says which it is. **Rigid** skills (`verification-before-completion`, `systematic-debugging`, `dev`'s TDD core, `review-security`) carry an Iron Law and are followed exactly — you do not adapt away the discipline because it feels like overkill this once. **Flexible** skills are principles to adapt to context. Treat the rigid ones as non-negotiable; that rigidity is the whole value.
+Each skill says which it is. **Rigid** skills (`verification-before-completion`, `systematic-debugging`, `dev`'s TDD core, `review-security`, `doc-impact`, `refactoring`) carry an Iron Law and are followed exactly — you do not adapt away the discipline because it feels like overkill this once. **Flexible** skills are principles to adapt to context. Treat the rigid ones as non-negotiable; that rigidity is the whole value.
 
 ## Red flags — you are rationalizing past the rule
 

@@ -48,6 +48,26 @@ Each skill:
 
 ---
 
+## Flows (5)
+
+`FLOW.yaml` maps a request class to a phase sequence; selection rules live in
+`using-comfanion` §Choose the flow. Hard gates (`integration`, `deploy`,
+`provenance`) are defined once and shared by every flow.
+
+| Flow | Request class | Shape |
+|------|---------------|-------|
+| `greenfield` | New system, no existing docs chain | research → … → deploy (the full pipeline) |
+| `bugfix` | Observed behavior deviates from documented/expected | intake → triage → diagnose → fix → verify → review → doc-impact → ship |
+| `small-change` | Bounded behavior change on a documented system | intake → impact (escalation rule) → amend → implement → verify → review → doc-impact → ship |
+| `onboarding` | Existing repo, missing/untrusted docs | adopt → archaeology → document → extract-standards → review → seed (all `provenance: inferred` until reviewed) |
+| `refactor` | Structure change, no behavior change | scope → characterize → execute → verify → review → doc-impact → ship |
+
+Every maintenance flow ends with a mandatory `doc-impact` verdict — the
+anti-rot mechanism that keeps months of fixes from silently invalidating the
+docs the greenfield flow wrote.
+
+---
+
 ## Roles (13)
 
 Roles are viewpoints, not skill bundles. Any role selects whatever skills the task needs;
@@ -72,7 +92,7 @@ roles — they run the work rather than author an artifact (see [Coordination La
 
 ---
 
-## Skills (50)
+## Skills (62)
 
 A single shared library. Any role draws from it; skills surface by task match (each skill's
 own description), **not** by role assignment. The grouping below is by purpose only — it
@@ -144,6 +164,16 @@ does not bind any skill to a role.
 | `systematic-debugging` | Find root cause before fixing — read/reproduce/trace, one hypothesis, fix the source; rigid (Iron Law, 3-fix architecture rule) |
 | `verification-before-completion` | The completion gate — no "done/fixed/passing" claim without fresh command output proving it; cross-cutting, rigid |
 
+### Maintenance & Adoption
+| Skill | Purpose |
+|-------|---------|
+| `incident-triage` | Entry of the bugfix flow — severity/blast-radius classification, rollback-first rule, incident-vs-bug and hotfix-vs-story forks; never diagnoses |
+| `doc-impact` | Rigid close-out of every fix/refactor: declare which docs the root cause invalidated (typed verdict; explicit `none` allowed, silence is not) |
+| `amending-artifacts` | Amend an existing doc surgically — locate the section, minimal diff, changelog row, never silently contradict an ADR; owns provenance promotion |
+| `refactoring` | Rigid macro-refactoring: motivation + scope map, characterization tests, green-to-green batches, no behavior change mixed in |
+| `codebase-archaeology` | Brownfield evidence-gathering: infer structure, boundaries, dependency direction from source; every claim cited; `provenance: inferred` |
+| `standards-extraction` | Infer de-facto conventions with a frequency threshold; emits candidate rules for ratification, never asserted standards |
+
 ### Delivery / Ops
 | Skill | Purpose |
 |-------|---------|
@@ -208,9 +238,10 @@ This layer is driven by the orchestration skills:
   execution phase-domains respectively, so the conductor never derives a squad from
   scratch.
 
-The conducting agent maps each pipeline phase (see `FLOW.yaml`) to the role that typically
-drives it, dispatches the work via one of the two mechanics, and gates each result before
-advancing. Each role is a viewpoint that selects whatever skills the task needs; the
+The conducting agent first classifies the request into a flow (via `using-comfanion`
+§Choose the flow), then maps each phase of that flow (see `FLOW.yaml`) to the role that
+typically drives it, dispatches the work via one of the two mechanics, and gates each
+result before advancing. Each role is a viewpoint that selects whatever skills the task needs; the
 coordination layer decides *who* runs *when* and whether the output is good enough.
 
 The conducting agent enters through **`using-comfanion`** — the router that, at the start of
@@ -230,7 +261,7 @@ is no harness-specific prefix — packaging for a given harness is layered on el
 
 ```
 .
-├── FLOW.yaml                    # Workflow pipeline definition
+├── FLOW.yaml                    # Flow definitions (5 flows + shared hard gates)
 ├── ARCHITECTURE.md              # This file
 │
 ├── agents/                      # Roles (WHO)
@@ -312,6 +343,11 @@ implementation    → source code + tests             (fullstack/backend/fronten
 testing           → {DOCS_ROOT}/test/... + {DOCS_ROOT}/validation/test-report-*.md (tester + test-scenarios/test-execution)
 review            → review notes / follow-ups        (reviewer + code-review)
 deploy            → {DOCS_ROOT}/ops/release-*.md      (devops + release-engineering, deploy gate)
+
+bugfix            → {DOCS_ROOT}/bugs/<id>/{report.md, doc-impact.md}       (incident-triage → systematic-debugging → doc-impact)
+small change      → {DOCS_ROOT}/changes/<id>/{change.md, doc-impact.md}    (amend via amending-artifacts; escalation rule)
+refactor          → {DOCS_ROOT}/refactors/<id>/{scope.md, doc-impact.md}   (refactoring, green-to-green batches)
+onboarding        → {DOCS_ROOT}/architecture/survey.md + AS-IS docs + standards/candidates.md  (codebase-archaeology + standards-extraction; provenance: inferred)
 ```
 
 See `FLOW.yaml` for the full pipeline: each phase maps to the agent(s), skill(s), and

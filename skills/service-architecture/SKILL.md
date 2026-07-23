@@ -21,6 +21,8 @@ Architecture satisfies requirements, so confirm a validated PRD (default `{DOCS_
 
 `{DOCS_ROOT}` defaults to `docs/`. Write a single service's design to `{DOCS_ROOT}/architecture.md`; in a multi-service system, write one per service at `{DOCS_ROOT}/architecture/<service-name>.md`.
 
+**Brownfield (describe AS-IS):** when the service already exists and no validated PRD does, the prerequisite becomes a codebase survey (`codebase-archaeology`). Document what *is* — the observed style, modules, and data ownership — mark the artifact `provenance: inferred`, and record divergences from good practice as findings, not fixes. The onboarding review is what promotes it to `inferred-reviewed`.
+
 ## Depth scales with project size
 
 | Size | Document depth | Diagrams | ADRs | Internal modules |

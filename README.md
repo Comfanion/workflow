@@ -1,5 +1,9 @@
 # Comfanion — Agentic Development Toolkit
 
+![CI](https://github.com/Comfanion/workflow/actions/workflows/enforce.yml/badge.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Version](https://img.shields.io/badge/version-6.0.0-blue)
+
 A multi-harness **skills library** for running software projects with AI — reusable procedures that take a project from a rough idea through requirements, architecture, standards, decomposition, implementation, and review. The skills are the substance; agent roles are an optional layer on top that dispatches them.
 
 It is deliberately lean: no MCP servers, just skills (and roles) in clean Markdown. The same content runs anywhere an agent can read skills — Claude Code, opencode, Codex, Hermes. The one harness-specific piece is optional: a Claude Code SessionStart hook (`hooks/`) that surfaces the `using-comfanion` router at session start; delete it to stay fully neutral.
@@ -12,6 +16,7 @@ Skills are a single shared library under `skills/`. Each surfaces by task match 
 |------|----------------|-----------------|
 | **Intake & product** | Turn an idea into validated requirements and a product contract | `requirements-gathering`, `prd-writing`, `acceptance-criteria`, `security-requirements`, `brainstorm`, `research-methodology`, `research-planning` |
 | **Architecture** | The altitude ladder **system → service → unit**, never mixed | `system-architecture`, `service-architecture`, `unit-writing`, `adr-writing`, `api-design`, `database-design`, `diagram-creation`, `threat-modeling` |
+| **Maintenance & adoption** | The hot paths of a live system: bugs, small changes, refactors, brownfield onboarding | `incident-triage`, `doc-impact`, `amending-artifacts`, `refactoring`, `codebase-archaeology`, `standards-extraction` |
 | **Standards** | The project's agreed rules — one canonical, **section-addressable** source per topic | `standards` (umbrella) → `authoring-standards` + `standards-coding/-testing/-security/-performance/-api/-database/-git/-temporary-decisions/-events/-observability`; `using-standards` (consumer) |
 | **Design (UX)** | User flows, states, and the visual system | `ux-design`, `design-system` |
 | **Implementation** | The study-first, test-driven build loop | `dev` (TDD; single-story + epic/sprint batch modes), `test-design`, `test-scenarios`, `test-execution`, `systematic-debugging` |
@@ -20,21 +25,25 @@ Skills are a single shared library under `skills/`. Each surfaces by task match 
 | **Orchestration** | Run the work across roles | `orchestration` → `orchestration-subagent` / `orchestration-team`; `planning-squad`, `implementation-squad` |
 | **Cross-cutting** | Entry point and utilities | `using-comfanion` (the router), `changelog`, `doc-todo`, `archiving` |
 
-Two rules cut through everything: the **architecture altitude ladder** (`system → service → unit` — keep landscape decisions out of a service's internals and vice-versa), and the **rigid craft skills** that each carry an Iron Law — `verification-before-completion` (no "done" without fresh evidence), `systematic-debugging` (root cause before any fix), `receiving-code-review` (act on feedback with rigor, not reflexive agreement).
+Three rules cut through everything: the **architecture altitude ladder** (`system → service → unit` — keep landscape decisions out of a service's internals and vice-versa), the **rigid craft skills** that each carry an Iron Law — `verification-before-completion` (no "done" without fresh evidence), `systematic-debugging` (root cause before any fix), `receiving-code-review` (act on feedback with rigor, not reflexive agreement), `doc-impact` (no fix is complete without a declared verdict), `refactoring` (green before and after every batch) — and the **doc-impact close-out**: every maintenance flow ends by declaring which docs the change invalidated.
 
 ### Section-addressable standards
 
 Each standards document opens with a **Reading guide** that maps a consumer to the sections it needs — so an architect at design time, a developer at build time, and a reviewer load only the relevant part, not the whole file. `using-standards` reads the guide and loads selectively. Authoring discipline (single source, rules-only, cite the governing ADR, review before propagation) lives in `authoring-standards`.
 
-## The pipeline
+## The flows
 
-The skills compose into a recommended flow (full map in `FLOW.yaml`):
+The skills compose into five flows (full map in `FLOW.yaml`; selection rules in `using-comfanion` §Choose the flow):
 
 ```
-research → requirements → prd → architecture → delivery-design → design → decomposition → implementation → testing → review → deploy
+greenfield:    research → requirements → prd → architecture → delivery-design → design → decomposition → implementation → testing → review → deploy
+bugfix:        intake → triage → diagnose → fix → verify → review → doc-impact → ship
+small-change:  intake → impact → amend → implement → verify → review → doc-impact → ship   (escalates to greenfield when the impact rule fires)
+onboarding:    adopt → archaeology → document → extract-standards → review → seed          (brownfield; everything provenance: inferred until reviewed)
+refactor:      scope → characterize → execute → verify → review → doc-impact → ship
 ```
 
-Each phase names the role that owns it and the skills it draws on. Phases are guidance, not a rail — skills surface by task match, so any of them can be used on its own.
+Each phase names the role that owns it and the skills it draws on. Phases are guidance, not a rail — skills surface by task match, so any of them can be used on its own. Hard gates (`integration`, `deploy`, `provenance`) are defined once and shared by every flow.
 
 ## Agent roles (optional execution layer)
 
@@ -111,4 +120,8 @@ Skills describe **capabilities** ("search the codebase", "spawn a subagent") rat
 
 ## Status
 
-56 skills, 13 agent roles. Multi-harness and consistent. Verified loading on Claude Code and opencode; Codex installs as a subdirectory plugin (`installed, enabled`). Hermes packaging present (tap + profile setup).
+62 skills, 13 agent roles. Multi-harness and consistent. Verified loading on Claude Code and opencode; Codex installs as a subdirectory plugin (`installed, enabled`). Hermes packaging present (tap + profile setup).
+
+## License
+
+Licensed under the **MIT License** — see [LICENSE](./LICENSE). Contributions are accepted under the same license; see [CONTRIBUTING.md](./CONTRIBUTING.md).
