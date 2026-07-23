@@ -1,0 +1,14 @@
+# CODEOWNERS — review routing.
+#
+# Each line: <pattern> <@owner>/<@team>.
+# Expand this file as maintainers join. For now a single owner covers the
+# whole repo so every PR gets a mandatory review request.
+
+# Default — everything routes to the maintainer.
+*                       @StepanchukYI
+
+# As the project grows, narrow ownership per area, e.g.:
+# /skills/                @skill-maintainers
+# /agents/                @role-maintainers
+# /.github/               @release-engineers
+# /docs/                  @docs-maintainers

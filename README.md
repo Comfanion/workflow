@@ -1,5 +1,9 @@
 # Comfanion — Agentic Development Toolkit
 
+![CI](https://github.com/Comfanion/workflow/actions/workflows/enforce.yml/badge.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Version](https://img.shields.io/badge/version-6.0.0-blue)
+
 A multi-harness **skills library** for running software projects with AI — reusable procedures that take a project from a rough idea through requirements, architecture, standards, decomposition, implementation, and review. The skills are the substance; agent roles are an optional layer on top that dispatches them.
 
 It is deliberately lean: no MCP servers, just skills (and roles) in clean Markdown. The same content runs anywhere an agent can read skills — Claude Code, opencode, Codex, Hermes. The one harness-specific piece is optional: a Claude Code SessionStart hook (`hooks/`) that surfaces the `using-comfanion` router at session start; delete it to stay fully neutral.
@@ -117,3 +121,7 @@ Skills describe **capabilities** ("search the codebase", "spawn a subagent") rat
 ## Status
 
 62 skills, 13 agent roles. Multi-harness and consistent. Verified loading on Claude Code and opencode; Codex installs as a subdirectory plugin (`installed, enabled`). Hermes packaging present (tap + profile setup).
+
+## License
+
+Licensed under the **MIT License** — see [LICENSE](./LICENSE). Contributions are accepted under the same license; see [CONTRIBUTING.md](./CONTRIBUTING.md).

@@ -8,6 +8,16 @@ arch_ref: ARCHITECTURE.md
 standards_index: null  # toolkit authors standards; does not consume them
 
 active_work:
+  - id: oss-public-readiness
+    status: done
+    blocked_on: user confirms push (local commits ahead of origin); manual follow-ups — GitHub repo settings (description, topics, branch protection, Discussions enable), SECURITY.md email, CODEOWNERS handle
+    summary: >-
+      Epic OSS-E1 — bring repo to public OSS standard. MIT LICENSE,
+      CONTRIBUTING, CoC, SECURITY, .gitattributes, issue/PR templates,
+      CODEOWNERS, SUPPORT, CHANGELOG, README badges. Decomposition under
+      docs/sprint-artifacts/. Mixed execution: direct for boilerplate,
+      subagents for CONTRIBUTING + CHANGELOG.
+    sprint_ref: docs/sprint-artifacts/sprint-status.yaml
   - id: flows-v5
     status: review  # built + structurally verified; pet-project end-to-end runs pending
     blocked_on: user picks pet projects for bugfix/small-change, onboarding, refactor verification runs
@@ -39,5 +49,5 @@ open_decisions:
     summary: 13 local commits ahead of old-private/main; awaiting user decision to push
     options: [push-now, hold]
 
-last_updated: 2026-07-19T00:00:00Z
-last_session: FLOW v5 build — 5 flows + 6 skills authored, structure/YAML/semantic checks green, committed c03d066; business-architecture built then removed on user veto; pet-project verification runs pending
+last_updated: 2026-07-23T00:00:00Z
+last_session: OSS-readiness Epic OSS-E1 DONE — LICENSE/CONTRIBUTING/CoC/SECURITY/.gitattributes/issue+PR templates/CODEOWNERS/SUPPORT/CHANGELOG/README badges all authored; CI checks green (YAML/JSON/plugin-structure/protected-sanity); 3 pre-existing dead refs flagged (docs/capability-map.md, .opencode/, docs/plugin-architecture.md); awaiting user push decision + manual GitHub repo settings

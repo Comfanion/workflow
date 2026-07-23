@@ -1,0 +1,96 @@
+name: 🐛 Bug report
+description: Report something in the toolkit that is broken or behaves worse than documented.
+title: "[bug] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug. A few pointers:
+        - For *how the skills work* questions, consider Discussions or the relevant `SKILL.md` first.
+        - For security issues, do **not** use this form — see [SECURITY.md](../../SECURITY.md).
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the toolkit is affected?
+      options:
+        - A specific skill (skills/*)
+        - An agent role (agents/*)
+        - A flow / FLOW.yaml
+        - Multi-harness packaging (plugins, manifests, extensions)
+        - Documentation (README, ARCHITECTURE, docs/)
+        - CI / repo tooling (.github/, scripts/, hooks/)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: skill
+    attributes:
+      label: Skill / file affected
+      description: Path or name, e.g. `skills/decomposition` or `FLOW.yaml#flows.bugfix`.
+      placeholder: skills/<name>
+    validations:
+      required: true
+
+  - type: dropdown
+    id: harness
+    attributes:
+      label: Harness
+      description: Where did you observe the behavior?
+      options:
+        - Claude Code
+        - Codex
+        - opencode
+        - Hermes
+        - Gemini CLI
+        - N/A / harness-neutral
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / git ref
+      description: Commit hash or tag you are running on.
+      placeholder: e.g. v6.0.0 or a short SHA
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A concise description of the observed (wrong) behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      description: What the documented or reasonably expected behavior is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Minimal sequence. Quote the exact request/prompt that triggered it.
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Logs, transcript excerpts, related skills involved. Trim to what matters.
+    validations:
+      required: false
