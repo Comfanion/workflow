@@ -3,7 +3,7 @@ type: story
 title: "Story 1.5: CHANGELOG + README badges"
 description: Establish a Keep a Changelog CHANGELOG.md with a retrospective of the existing git history, and add status badges (CI, license, version) to README so the project surface signals maturity.
 domain: oss-readiness
-status: draft
+status: done
 tags: [changelog, badges, readme, p3]
 id: OSS-S05
 epic: OSS-E1
@@ -29,13 +29,13 @@ The repo has a forward-maintained `CHANGELOG.md` seeded with a retrospective of 
 ## Acceptance Criteria
 
 Story is complete when:
-- [ ] `CHANGELOG.md` exists at repo root
-- [ ] Format follows Keep a Changelog (https://keepachangelog.com/) — `## [version] — YYYY-MM-DD` with Added/Changed/Deprecated/Removed/Fixed/Security sections
-- [ ] Retrospective covers the version history visible in `git log` (down to v6.0.0 and earlier if tagged), grouped by release
-- [ ] An `## [Unreleased]` section is present for in-flight work
-- [ ] README has badges: CI status (enforce workflow), license (MIT), version (latest tag or static)
-- [ ] Badge URLs render (valid shield.io URLs)
-- [ ] CI stays green
+- [x] `CHANGELOG.md` exists at repo root
+- [x] Format follows Keep a Changelog (https://keepachangelog.com/) — `## [version] — YYYY-MM-DD` with Added/Changed/Deprecated/Removed/Fixed/Security sections
+- [x] Retrospective covers the version history visible in `git log` (down to v6.0.0 and earlier if tagged), grouped by release
+- [x] An `## [Unreleased]` section is present for in-flight work
+- [x] README has badges: CI status (enforce workflow), license (MIT), version (latest tag or static)
+- [x] Badge URLs render (valid shield.io URLs)
+- [x] CI stays green
 
 ---
 
@@ -43,8 +43,8 @@ Story is complete when:
 
 | # | Task | Output | Status |
 |---|------|--------|--------|
-| T1 | Subagent builds retrospective CHANGELOG from git log | `CHANGELOG.md` | ⬜ |
-| T2 | Add badges to README top | `README.md` | ⬜ |
+| T1 | Subagent builds retrospective CHANGELOG from git log | `CHANGELOG.md` | ✅ |
+| T2 | Add badges to README top | `README.md` | ✅ |
 
 ### T1: Subagent builds CHANGELOG
 
@@ -67,9 +67,9 @@ Story is complete when:
 4. Do NOT invent entries — if a commit's intent is unclear, summarize it neutrally or skip with a note
 
 **Done when:**
-- [ ] Every entry traces to a real commit
-- [ ] Format is Keep a Changelog compliant
-- [ ] Latest release at top, Unreleased above it
+- [x] Every entry traces to a real commit
+- [x] Format is Keep a Changelog compliant
+- [x] Latest release at top, Unreleased above it
 
 ### T2: README badges
 
@@ -85,14 +85,14 @@ Story is complete when:
 2. Keep the badge row minimal — three badges max
 
 **Done when:**
-- [ ] Badge URLs valid
-- [ ] Row renders inline correctly
+- [x] Badge URLs valid
+- [x] Row renders inline correctly
 
 ---
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] CHANGELOG entries trace to real commits
-- [ ] Badge URLs valid
-- [ ] CI `enforce.yml` green
+- [x] All acceptance criteria met
+- [x] CHANGELOG entries trace to real commits
+- [x] Badge URLs valid
+- [x] CI `enforce.yml` green

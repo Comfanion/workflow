@@ -3,7 +3,7 @@ type: epic
 title: "Epic 1: Public Release Readiness"
 description: Bring the comfanion/workflow repo to a public-OSS standard — license, contributor onboarding, community conduct, security policy, changelog, and GitHub repo grooming.
 domain: oss-readiness
-status: in_progress
+status: done
 tags: [oss, licensing, community, documentation]
 id: OSS-E1
 priority: P0
@@ -70,19 +70,19 @@ No formal PRD — `ARCHITECTURE.md` + `README.md` serve as the project contract 
 ## Acceptance Criteria
 
 Epic is complete when:
-- [ ] `LICENSE` exists at repo root (MIT, full canonical text)
-- [ ] README has a License section + license badge
-- [ ] `CONTRIBUTING.md` documents: skill frontmatter, `references/`, harness-neutral capability-prose, plugin structure checks, PR requirements
-- [ ] `CODE_OF_CONDUCT.md` present (Contributor Covenant v2.1, canonical text)
-- [ ] `SECURITY.md` defines reporting channel + scope + SLA
-- [ ] `.gitattributes` enforces LF on text, binary on assets
-- [ ] Issue templates (bug, feature) + config.yml present
-- [ ] `PULL_REQUEST_TEMPLATE.md` present
-- [ ] `CODEOWNERS` present
-- [ ] `SUPPORT.md` present
-- [ ] `CHANGELOG.md` present (Keep a Changelog format, retrospective entries)
-- [ ] README badges render (CI, license, version)
-- [ ] CI `enforce.yml` stays green (no YAML/JSON/plugin-structure regressions)
+- [x] `LICENSE` exists at repo root (MIT, full canonical text)
+- [x] README has a License section + license badge
+- [x] `CONTRIBUTING.md` documents: skill frontmatter, `references/`, harness-neutral capability-prose, plugin structure checks, PR requirements
+- [x] `CODE_OF_CONDUCT.md` present (Contributor Covenant v2.1, canonical text)
+- [x] `SECURITY.md` defines reporting channel + scope + SLA
+- [x] `.gitattributes` enforces LF on text, binary on assets
+- [x] Issue templates (bug, feature) + config.yml present
+- [x] `PULL_REQUEST_TEMPLATE.md` present
+- [x] `CODEOWNERS` present
+- [x] `SUPPORT.md` present
+- [x] `CHANGELOG.md` present (Keep a Changelog format, retrospective entries)
+- [x] README badges render (CI, license, version)
+- [x] CI `enforce.yml` stays green (no YAML/JSON/plugin-structure regressions)
 
 ---
 
@@ -90,11 +90,11 @@ Epic is complete when:
 
 | ID | Title | Size | File | Status |
 |----|-------|------|------|--------|
-| OSS-S01 | License the repo under MIT | XS | `story-01-license.md` | ⬜ |
-| OSS-S02 | Author CONTRIBUTING.md | M | `story-02-contributing.md` | ⬜ |
-| OSS-S03 | Community conduct + security + line-endings baseline | S | `story-03-conduct-security-attributes.md` | ⬜ |
-| OSS-S04 | Contributor experience templates | S | `story-04-contributor-templates.md` | ⬜ |
-| OSS-S05 | CHANGELOG + README badges | M | `story-05-changelog-badges.md` | ⬜ |
+| OSS-S01 | License the repo under MIT | XS | `story-01-license.md` | ✅ |
+| OSS-S02 | Author CONTRIBUTING.md | M | `story-02-contributing.md` | ✅ |
+| OSS-S03 | Community conduct + security + line-endings baseline | S | `story-03-conduct-security-attributes.md` | ✅ |
+| OSS-S04 | Contributor experience templates | S | `story-04-contributor-templates.md` | ✅ |
+| OSS-S05 | CHANGELOG + README badges | M | `story-05-changelog-badges.md` | ✅ |
 
 **Dependency Flow (DAG):**
 ```

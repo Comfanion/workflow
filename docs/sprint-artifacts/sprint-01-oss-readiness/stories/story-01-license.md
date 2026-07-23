@@ -3,7 +3,7 @@ type: story
 title: "Story 1.1: License the repo under MIT"
 description: Add MIT LICENSE at repo root and a License section + badge in README so the repo is legally usable and GitHub detects the license.
 domain: oss-readiness
-status: draft
+status: done
 tags: [license, mit, p0]
 id: OSS-S01
 epic: OSS-E1
@@ -29,12 +29,12 @@ The repository carries a valid MIT `LICENSE` file at the root and a License sect
 ## Acceptance Criteria
 
 Story is complete when:
-- [ ] `LICENSE` file exists at repo root
-- [ ] LICENSE contains the canonical MIT text with copyright line `2026 Comfanion / Evgeniy Stepanchuk`
-- [ ] README has a `## License` section near the end
-- [ ] README License section names MIT, links to `LICENSE`, and includes a license badge
-- [ ] No other files modified
-- [ ] CI `enforce.yml` stays green
+- [x] `LICENSE` file exists at repo root
+- [x] LICENSE contains the canonical MIT text with copyright line `2026 Comfanion / Evgeniy Stepanchuk`
+- [x] README has a `## License` section near the end
+- [x] README License section names MIT, links to `LICENSE`, and includes a license badge
+- [x] No other files modified
+- [x] CI `enforce.yml` stays green
 
 ---
 
@@ -42,8 +42,8 @@ Story is complete when:
 
 | # | Task | Output | Status |
 |---|------|--------|--------|
-| T1 | Write canonical MIT LICENSE | `LICENSE` | ⬜ |
-| T2 | Amend README with License section + badge | `README.md` | ⬜ |
+| T1 | Write canonical MIT LICENSE | `LICENSE` | ✅ |
+| T2 | Amend README with License section + badge | `README.md` | ✅ |
 
 ### T1: Write LICENSE
 
@@ -58,7 +58,7 @@ Story is complete when:
 3. No modifications to the license body text
 
 **Done when:**
-- [ ] File matches canonical MIT exactly except the copyright year/holder
+- [x] File matches canonical MIT exactly except the copyright year/holder
 
 ### T2: Amend README
 
@@ -75,14 +75,14 @@ Story is complete when:
 2. Add shield.io license badge (MIT)
 
 **Done when:**
-- [ ] Section renders correctly in GitHub markdown preview
-- [ ] Badge URL is valid
+- [x] Section renders correctly in GitHub markdown preview
+- [x] Badge URL is valid
 
 ---
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] All tasks completed
-- [ ] CI `enforce.yml` green
-- [ ] No unrelated files touched
+- [x] All acceptance criteria met
+- [x] All tasks completed
+- [x] CI `enforce.yml` green
+- [x] No unrelated files touched

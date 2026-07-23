@@ -11,8 +11,8 @@ AI agents read, not runtime software. The realistic attack surface is narrow:
 | Supply-chain risk in the plugin packaging: a symlinked manifest in `plugins/`, `.claude-plugin/`, `.codex-plugin/`, `.opencode/`, or `gemini-extension.json` pointing outside the repo or to an attacker-controlled path | "An agent following a skill did something I did not expect on my machine" — that is the harness's permission model, not this project |
 | Compromised release artifacts (a tag moved, a commit force-pushed) | Theoretical harms from an agent executing *correctly written* skills |
 
-If you are unsure whether something is in scope, report it anyway — we will
-triage.
+If you are unsure whether something is in scope, report it anyway — every
+report is triaged.
 
 ## Reporting a Vulnerability
 
@@ -55,6 +55,6 @@ Semantic Versioning; see `CHANGELOG.md` for the current version line.
 
 ## Disclosure Policy
 
-We prefer **coordinated disclosure**: the reporter and maintainers agree on a
-publication date after a fix is available. We will credit reporters in the
+**Coordinated disclosure** is preferred: the reporter and maintainer agree on a
+publication date after a fix is available. Reporters are credited in the
 release notes unless they prefer to remain anonymous.

@@ -3,7 +3,7 @@ type: story
 title: "Story 1.4: Contributor experience templates"
 description: Add GitHub issue templates (bug/feature), the issue-template config, a pull request template, CODEOWNERS, and SUPPORT.md so the contributor flow is structured end-to-end.
 domain: oss-readiness
-status: draft
+status: done
 tags: [github, templates, codeowners, support, p2]
 id: OSS-S04
 epic: OSS-E1
@@ -29,14 +29,14 @@ The GitHub contributor flow is structured: bug reports and feature requests arri
 ## Acceptance Criteria
 
 Story is complete when:
-- [ ] `.github/ISSUE_TEMPLATE/bug_report.yml` exists (GitHub Issue Forms YAML — typed form, not freeform markdown)
-- [ ] `.github/ISSUE_TEMPLATE/feature_request.yml` exists
-- [ ] `.github/ISSUE_TEMPLATE/config.yml` exists (`blank_issues_enabled: true`, links to Discussions once enabled / CONTRIBUTING)
-- [ ] `.github/PULL_REQUEST_TEMPLATE.md` exists with checklist: CI green, plugin structure verified, harness manifests updated if a skill/role was added, README/catalog updated if needed, CHANGELOG updated for user-visible changes
-- [ ] `.github/CODEOWNERS` exists (single owner for now — the user — on root, with note to expand as maintainers join)
-- [ ] `SUPPORT.md` exists and routes: bugs → issues with bug template, feature ideas → issues with feature template, questions → GitHub Discussions (or issues if Discussions disabled), security → SECURITY.md
-- [ ] All YAML files valid (CI YAML check must pass)
-- [ ] CI stays green
+- [x] `.github/ISSUE_TEMPLATE/bug_report.yml` exists (GitHub Issue Forms YAML — typed form, not freeform markdown)
+- [x] `.github/ISSUE_TEMPLATE/feature_request.yml` exists
+- [x] `.github/ISSUE_TEMPLATE/config.yml` exists (`blank_issues_enabled: true`, links to Discussions once enabled / CONTRIBUTING)
+- [x] `.github/PULL_REQUEST_TEMPLATE.md` exists with checklist: CI green, plugin structure verified, harness manifests updated if a skill/role was added, README/catalog updated if needed, CHANGELOG updated for user-visible changes
+- [x] `.github/CODEOWNERS` exists (single owner for now — the user — on root, with note to expand as maintainers join)
+- [x] `SUPPORT.md` exists and routes: bugs → issues with bug template, feature ideas → issues with feature template, questions → GitHub Discussions (or issues if Discussions disabled), security → SECURITY.md
+- [x] All YAML files valid (CI YAML check must pass)
+- [x] CI stays green
 
 ---
 
@@ -44,12 +44,12 @@ Story is complete when:
 
 | # | Task | Output | Status |
 |---|------|--------|--------|
-| T1 | Write bug_report.yml issue form | `.github/ISSUE_TEMPLATE/bug_report.yml` | ⬜ |
-| T2 | Write feature_request.yml issue form | `.github/ISSUE_TEMPLATE/feature_request.yml` | ⬜ |
-| T3 | Write config.yml | `.github/ISSUE_TEMPLATE/config.yml` | ⬜ |
-| T4 | Write PULL_REQUEST_TEMPLATE.md | `.github/PULL_REQUEST_TEMPLATE.md` | ⬜ |
-| T5 | Write CODEOWNERS | `.github/CODEOWNERS` | ⬜ |
-| T6 | Write SUPPORT.md | `SUPPORT.md` | ⬜ |
+| T1 | Write bug_report.yml issue form | `.github/ISSUE_TEMPLATE/bug_report.yml` | ✅ |
+| T2 | Write feature_request.yml issue form | `.github/ISSUE_TEMPLATE/feature_request.yml` | ✅ |
+| T3 | Write config.yml | `.github/ISSUE_TEMPLATE/config.yml` | ✅ |
+| T4 | Write PULL_REQUEST_TEMPLATE.md | `.github/PULL_REQUEST_TEMPLATE.md` | ✅ |
+| T5 | Write CODEOWNERS | `.github/CODEOWNERS` | ✅ |
+| T6 | Write SUPPORT.md | `SUPPORT.md` | ✅ |
 
 ### T1–T3: Issue forms + config
 
@@ -62,8 +62,8 @@ Story is complete when:
 4. config.yml: `blank_issues_enabled: true`, `contact_links` to CONTRIBUTING and (once enabled) Discussions
 
 **Done when:**
-- [ ] Forms render in GitHub UI (validated against Issue Forms schema)
-- [ ] YAML passes CI lint
+- [x] Forms render in GitHub UI (validated against Issue Forms schema)
+- [x] YAML passes CI lint
 
 ### T4: PR template
 
@@ -74,7 +74,7 @@ Story is complete when:
 2. Reference CONTRIBUTING.md for the why
 
 **Done when:**
-- [ ] Template renders on PR creation
+- [x] Template renders on PR creation
 
 ### T5: CODEOWNERS
 
@@ -87,7 +87,7 @@ Story is complete when:
 2. Comment noting this expands as maintainers join
 
 **Done when:**
-- [ ] Valid CODEOWNERS syntax
+- [x] Valid CODEOWNERS syntax
 
 ### T6: SUPPORT.md
 
@@ -101,6 +101,6 @@ Story is complete when:
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] All six files present and valid
-- [ ] CI `enforce.yml` green (especially the YAML validation step)
+- [x] All acceptance criteria met
+- [x] All six files present and valid
+- [x] CI `enforce.yml` green (especially the YAML validation step)

@@ -61,18 +61,10 @@ body:
       required: true
 
   - type: textarea
-    id: what-happened
+    id: observed
     attributes:
-      label: What happened?
-      description: A concise description of the observed (wrong) behavior.
-    validations:
-      required: true
-
-  - type: textarea
-    id: expected
-    attributes:
-      label: What did you expect?
-      description: What the documented or reasonably expected behavior is.
+      label: Observed vs. expected behavior
+      description: What happened, and what you expected instead. One block, keep it tight.
     validations:
       required: true
 

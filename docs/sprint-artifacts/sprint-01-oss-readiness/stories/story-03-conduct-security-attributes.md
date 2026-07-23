@@ -3,7 +3,7 @@ type: story
 title: "Story 1.3: Community conduct, security policy, line-endings baseline"
 description: Add Contributor Covenant v2.1 Code of Conduct, a SECURITY.md vulnerability reporting policy, and .gitattributes for cross-platform line-ending consistency.
 domain: oss-readiness
-status: draft
+status: done
 tags: [conduct, security, git, p1]
 id: OSS-S03
 epic: OSS-E1
@@ -29,12 +29,12 @@ The repo carries the standard community-conduct and security-reporting governanc
 ## Acceptance Criteria
 
 Story is complete when:
-- [ ] `CODE_OF_CONDUCT.md` exists with the canonical Contributor Covenant v2.1 text (en, the standard version)
-- [ ] CoC enforcement contact points to a real channel (GitHub issue / email — confirm with user)
-- [ ] `SECURITY.md` exists and defines: scope (this is a markdown/content toolkit — scope is narrow: malicious skill content, not runtime vulnerabilities), reporting channel, response SLA, what NOT to do (no public issue for security reports)
-- [ ] `.gitattributes` exists with `* text=auto eol=lf`, binary handling for `*.png`, and linguist-detection overrides if needed
-- [ ] No other files touched
-- [ ] CI stays green
+- [x] `CODE_OF_CONDUCT.md` exists with the canonical Contributor Covenant v2.1 text (en, the standard version)
+- [x] CoC enforcement contact points to a real channel (GitHub issue / email — confirm with user)
+- [x] `SECURITY.md` exists and defines: scope (this is a markdown/content toolkit — scope is narrow: malicious skill content, not runtime vulnerabilities), reporting channel, response SLA, what NOT to do (no public issue for security reports)
+- [x] `.gitattributes` exists with `* text=auto eol=lf`, binary handling for `*.png`, and linguist-detection overrides if needed
+- [x] No other files touched
+- [x] CI stays green
 
 ---
 
@@ -42,9 +42,9 @@ Story is complete when:
 
 | # | Task | Output | Status |
 |---|------|--------|--------|
-| T1 | Write CODE_OF_CONDUCT.md (Contributor Covenant v2.1) | `CODE_OF_CONDUCT.md` | ⬜ |
-| T2 | Write SECURITY.md | `SECURITY.md` | ⬜ |
-| T3 | Write .gitattributes | `.gitattributes` | ⬜ |
+| T1 | Write CODE_OF_CONDUCT.md (Contributor Covenant v2.1) | `CODE_OF_CONDUCT.md` | ✅ |
+| T2 | Write SECURITY.md | `SECURITY.md` | ✅ |
+| T3 | Write .gitattributes | `.gitattributes` | ✅ |
 
 ### T1: CODE_OF_CONDUCT.md
 
@@ -57,8 +57,8 @@ Story is complete when:
 2. Replace enforcement contact placeholder with a real channel (default: link to SECURITY.md reporting + GitHub issues for non-sensitive conduct reports — confirm with user if email preferred)
 
 **Done when:**
-- [ ] Text matches Covenant v2.1
-- [ ] Enforcement section has a concrete contact
+- [x] Text matches Covenant v2.1
+- [x] Enforcement section has a concrete contact
 
 ### T2: SECURITY.md
 
@@ -73,8 +73,8 @@ Story is complete when:
 4. Supported versions: latest major
 
 **Done when:**
-- [ ] Scope section is honest about what is and isn't a security issue here
-- [ ] Reporting channel uses GitHub's private advisory flow
+- [x] Scope section is honest about what is and isn't a security issue here
+- [x] Reporting channel uses GitHub's private advisory flow
 
 ### T3: .gitattributes
 
@@ -88,12 +88,12 @@ Story is complete when:
 3. Mark `.DS_Store` as ignored-ish via export-ignore
 
 **Done when:**
-- [ ] File present, no syntax errors
+- [x] File present, no syntax errors
 
 ---
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] All three files present and valid
-- [ ] CI `enforce.yml` green
+- [x] All acceptance criteria met
+- [x] All three files present and valid
+- [x] CI `enforce.yml` green

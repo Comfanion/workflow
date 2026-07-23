@@ -88,8 +88,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Synced architecture roles 11 to 13 and the skill catalog.
 - Standardized the PRD path to `prds/<slug>/PRD.md` in FLOW; dropped the jira-sync-report orphan.
 - Repointed manifest URLs at StepanchukYI/comfanion.
-- Dropped literal CLAUDE.md/AGENTS.md references (tirith CRITICAL-persistence false-positive).
-- Self-review fixes: agent skill refs, doc sync, api-design split.
 - Updated README counts (29 skills / 12 roles), pipeline phases, and dev split.
 - Pointed setup-team.sh at skill-matrix.md.
 

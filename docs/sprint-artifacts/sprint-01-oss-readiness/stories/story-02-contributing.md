@@ -3,7 +3,7 @@ type: story
 title: "Story 1.2: Author CONTRIBUTING.md"
 description: Document how to add skills, roles, and plugin manifests so external contributors can submit PRs that match the toolkit's conventions without guessing.
 domain: oss-readiness
-status: draft
+status: done
 tags: [contributing, documentation, p1]
 id: OSS-S02
 epic: OSS-E1
@@ -29,14 +29,14 @@ External contributors can read a single `CONTRIBUTING.md` and produce a PR that 
 ## Acceptance Criteria
 
 Story is complete when:
-- [ ] `CONTRIBUTING.md` exists at repo root
-- [ ] Documents skill authoring: frontmatter (`name` + `description` with trigger phrases), body conventions (imperative, explains why, heavy material in `references/`), harness-neutral capability-prose rule
-- [ ] Documents role authoring: `agents/*.md` is a viewpoint with mission+scope, never references another role, never owns a fixed skill set
-- [ ] Documents plugin structure: how `plugins/comfanion/`, `.claude-plugin/`, `.codex-plugin/`, `.opencode/` symlinks, `gemini-extension.json` relate to the single `skills/`+`agents/` source
-- [ ] Documents PR requirements: CI `enforce.yml` must be green (YAML/JSON valid, plugin structure check passes, protected.yaml sanity), SemVer bump per scope, commit message style observed in repo
-- [ ] States that contributions come under the project's MIT license (links to LICENSE)
-- [ ] Points at `ARCHITECTURE.md` and `FLOW.yaml` for the big picture rather than restating them
-- [ ] CI stays green
+- [x] `CONTRIBUTING.md` exists at repo root
+- [x] Documents skill authoring: frontmatter (`name` + `description` with trigger phrases), body conventions (imperative, explains why, heavy material in `references/`), harness-neutral capability-prose rule
+- [x] Documents role authoring: `agents/*.md` is a viewpoint with mission+scope, never references another role, never owns a fixed skill set
+- [x] Documents plugin structure: how `plugins/comfanion/`, `.claude-plugin/`, `.codex-plugin/`, `.opencode/` symlinks, `gemini-extension.json` relate to the single `skills/`+`agents/` source
+- [x] Documents PR requirements: CI `enforce.yml` must be green (YAML/JSON valid, plugin structure check passes, protected.yaml sanity), SemVer bump per scope, commit message style observed in repo
+- [x] States that contributions come under the project's MIT license (links to LICENSE)
+- [x] Points at `ARCHITECTURE.md` and `FLOW.yaml` for the big picture rather than restating them
+- [x] CI stays green
 
 ---
 
@@ -44,7 +44,7 @@ Story is complete when:
 
 | # | Task | Output | Status |
 |---|------|--------|--------|
-| T1 | Subagent analyzes skill/agent/plugin samples + authors CONTRIBUTING.md | `CONTRIBUTING.md` | ⬜ |
+| T1 | Subagent analyzes skill/agent/plugin samples + authors CONTRIBUTING.md | `CONTRIBUTING.md` | ✅ |
 
 ### T1: Subagent authors CONTRIBUTING.md
 
@@ -70,15 +70,15 @@ Story is complete when:
 3. Do NOT invent rules not present in the samples — if something is unclear, leave a TODO marker rather than guessing
 
 **Done when:**
-- [ ] Every convention stated traces to an actual file in the repo
-- [ ] A new contributor could add a skill by following only this doc + the linked ARCHITECTURE.md
-- [ ] CI green
+- [x] Every convention stated traces to an actual file in the repo
+- [x] A new contributor could add a skill by following only this doc + the linked ARCHITECTURE.md
+- [x] CI green
 
 ---
 
 ## Definition of Done
 
-- [ ] All acceptance criteria met
-- [ ] CONTRIBUTING grounded in real samples (no invented rules)
-- [ ] CI `enforce.yml` green
-- [ ] References LICENSE, ARCHITECTURE.md, FLOW.yaml by link
+- [x] All acceptance criteria met
+- [x] CONTRIBUTING grounded in real samples (no invented rules)
+- [x] CI `enforce.yml` green
+- [x] References LICENSE, ARCHITECTURE.md, FLOW.yaml by link
