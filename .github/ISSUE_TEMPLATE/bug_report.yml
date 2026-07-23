@@ -91,6 +91,9 @@ body:
     id: context
     attributes:
       label: Additional context
-      description: Logs, transcript excerpts, related skills involved. Trim to what matters.
+      description: >-
+        Logs, transcript excerpts, related skills involved. Trim to what matters.
+        REDACT secrets first — agent transcripts often embed tokens, API keys,
+        env vars, and credentials; never paste those into a public issue.
     validations:
       required: false

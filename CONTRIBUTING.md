@@ -111,7 +111,7 @@ The repo uses conventional-style commit prefixes with an optional scope (observe
 
 Scopes seen include `skills`, `claude-plugin`, `flows`, `enforcement`, `state`, and combined `docs,skills`. Version bumps are their own commit: `chore: bump version X -> Y (major|minor|patch)` (SemVer; the project tracks `MAJOR.MINOR.PATCH` and is currently at `6.0.0`).
 
-<!-- TODO: confirm with maintainer — there is no CHANGELOG.md in the repo, so the SemVer practice above is reconstructed from the manifest versions and `git log` alone. If a changelog is intended, point contributors at it here. -->
+For user-visible changes (new skill, changed behavior, removed capability), add an entry under `## [Unreleased]` in [CHANGELOG.md](CHANGELOG.md) — Keep a Changelog format, same buckets (`Added` / `Changed` / `Deprecated` / `Removed` / `Fixed` / `Security`). The PR checklist mirrors this rule.
 
 ## Project structure
 

@@ -23,7 +23,9 @@ Use one of these private channels:
 1. **Preferred — GitHub Private Security Advisory.** On the repo page
    (`https://github.com/Comfanion/workflow`), click the *Security* tab →
    *Report a vulnerability*. This opens a private thread visible only to
-   maintainers. (This button appears once `SECURITY.md` is present.)
+   maintainers. The maintainer must enable this under **Settings → Code
+   security and analysis → Private vulnerability reporting** — if the button
+   is absent, use the email fallback below.
 2. **Fallback — email.** If the advisory flow is unavailable, email the
    maintainer directly. (Contact to be confirmed — see TODO below.)
 
